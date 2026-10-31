@@ -70,6 +70,17 @@ def cmd_alignment(args):
     print(f"\njudge cost ${llm.ledger.total_usd:.4f}")
 
 
+def cmd_contrast(args):
+    from trmkb.eval.contrast import evaluate
+    from trmkb.llm import LLM
+    llm = LLM()
+    out = evaluate(args.run, llm)
+    for k in ("T1_fact_qa", "T2_trend_summary", "T3_opportunities"):
+        v = out[k]
+        print(f"{k:18s} S0={v['S0']} S4={v['S4']} gain={v['gain']}" + (f" (lenient S0={v['S0_lenient']} S4={v['S4_lenient']})" if "S0_lenient" in v else ""))
+    print(f"cost ${out['cost_usd']}")
+
+
 def cmd_compare(args):
     rows = [_run_summary(r) for r in args.runs]
     keys = ["config", "reader", "critic", "docs", "errors", "nodes", "claims", "numeric_claims", "edges_acc", "edges_rej",
@@ -103,8 +114,9 @@ def main():
     b = sub.add_parser("compare"); b.add_argument("runs", nargs="+")
     c = sub.add_parser("inspect"); c.add_argument("--run", required=True); c.add_argument("--layer"); c.add_argument("--claims", action="store_true")
     d = sub.add_parser("alignment"); d.add_argument("--run", required=True); d.add_argument("--judge", default="openai/gpt-4.1-mini")
+    e = sub.add_parser("contrast"); e.add_argument("--run", required=True)
     args = ap.parse_args()
-    {"recovery": cmd_recovery, "compare": cmd_compare, "inspect": cmd_inspect, "alignment": cmd_alignment}[args.cmd](args)
+    {"recovery": cmd_recovery, "compare": cmd_compare, "inspect": cmd_inspect, "alignment": cmd_alignment, "contrast": cmd_contrast}[args.cmd](args)
 
 
 if __name__ == "__main__":
