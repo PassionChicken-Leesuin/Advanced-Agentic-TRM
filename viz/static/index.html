@@ -96,16 +96,19 @@ let sim, svg, g, xScale, laneY, W, H, roadmaps = null;
 const $ = s => document.querySelector(s);
 const t = (k, o={}) => (T[k] || k).replace(/\{(\w+)\}/g, (_, n) => o[n] ?? "");
 
-async function loadI18n(lang){ T = await (await fetch(`/api/i18n?lang=${lang}`)).json(); renderAgents(); renderLegend(); }
+// STATIC 모드: 서버 없이 data/ 폴더의 JSON 파일로 동작 (GitHub Pages 등). export_static.py 가 window.STATIC=true 를 주입.
+const STATIC = !!window.STATIC;
+const getJSON = async (apiPath, staticPath) => (await fetch(STATIC ? staticPath : apiPath, {cache: "no-store"})).json();
+async function loadI18n(lang){ T = await getJSON(`/api/i18n?lang=${lang}`, `data/i18n_${lang}.json`); renderAgents(); renderLegend(); }
 async function loadRuns(){
-  const runs = await (await fetch("/api/runs")).json();
+  const runs = await getJSON("/api/runs", "data/runs.json");
   const sel = $("#run"); sel.innerHTML = "";
   runs.forEach(r => { const o = document.createElement("option"); o.value = r.run; o.textContent = `${r.run} (${r.events} ev${r.roadmaps.length? ", rm:"+r.roadmaps.join("/") : ""})`; sel.appendChild(o); });
   if (runs.length) { currentRun = runs[runs.length-1].run; sel.value = currentRun; }
 }
 function resetState(){ state = {nodes:new Map(), edges:new Map(), docsTotal:0, docsDone:0, conflicts:0, rejected:0, accepted:0, claims:0, evidence:0}; lastSeq = 0; $("#log").innerHTML=""; AGENTS.forEach(a=>setAgent(a,"", false)); }
 async function loadSnapshot(){
-  const snap = await (await fetch(`/api/runs/${currentRun}/snapshot`)).json();
+  const snap = await getJSON(`/api/runs/${currentRun}/snapshot`, `data/${currentRun}/snapshot.json`);
   attrs = {}; snap.nodes.forEach(n => attrs[n.id] = n);
   snap.edges.forEach(e => attrs[e.id] = e);
   state.docsTotal = snap.planned_total || snap.documents.length;
@@ -207,10 +210,24 @@ function renderAgents(){
 }
 function renderLegend(){ $("#legend").innerHTML = LAYERS.map(l => `<span><i style="background:${COLOR[l]}"></i>${t("layer."+l)}</span>`).join("") + `<span style="margin-left:10px">— 수락 &nbsp; ╌ 제안 &nbsp; <span style="color:var(--reject)">╌ 반려</span></span>`; }
 
-function stop(){ if (es) { es.close(); es = null; } playing = false; $("#status").textContent = "⏸"; }
+function stop(){ if (es) { es.close(); es = null; } if (staticAbort) { staticAbort.stop = true; staticAbort = null; } playing = false; $("#status").textContent = "⏸"; }
+let staticAbort = null;
 async function start(fromSeq){
   stop(); playing = true;
   const speed = +$("#speed").value, follow = $("#follow").checked;
+  if (STATIC) {   // 파일 재생: events.json 을 한 번 읽고 기록 간격/speed 로 지연 (상한 2초)
+    const evs = await getJSON("", `data/${currentRun}/events.json`);
+    const myAbort = {stop:false}; staticAbort = myAbort;
+    let prev = null;
+    for (const ev of evs) {
+      if (myAbort.stop) return;
+      if (ev.seq <= fromSeq) continue;
+      if (speed > 0 && prev) { const gap = (new Date(ev.ts) - new Date(prev)) / 1000 / speed; if (gap > 0) await new Promise(r => setTimeout(r, Math.min(gap, 2) * 1000)); }
+      prev = ev.ts; await applyEvent(ev); $("#status").textContent = `▶ #${lastSeq}`;
+    }
+    $("#status").textContent = `■ 완료 #${lastSeq}`; $("#progress").textContent = `문서 ${state.docsDone} / ${state.docsTotal} 완료`; playing = false;
+    return;
+  }
   es = new EventSource(`/api/runs/${currentRun}/stream?speed=${speed}&start=${fromSeq}&follow=${follow}`);
   es.addEventListener("kb", async e => { await applyEvent(JSON.parse(e.data)); $("#status").textContent = `▶ #${lastSeq}`; });
   es.addEventListener("done", () => { $("#status").textContent = `■ 완료 #${lastSeq}`; $("#progress").textContent = `문서 ${state.docsDone} / ${state.docsTotal} 완료`; stop(); });
@@ -221,7 +238,7 @@ async function resetAll(){ stop(); resetState(); await loadSnapshot(); setupSvg(
 // ---------------- Roadmap view ----------------
 async function showRoadmap(){
   stop(); svg = d3.select("#svg"); svg.selectAll("*").remove();
-  roadmaps = await (await fetch(`/api/runs/${currentRun}/roadmaps`)).json();
+  roadmaps = await getJSON(`/api/runs/${currentRun}/roadmaps`, `data/${currentRun}/roadmaps.json`);
   const conds = ["initial","advanced"].filter(c => roadmaps[c]);
   if (!conds.length) { svg.append("text").attr("x",40).attr("y",60).attr("fill","#8b93a7").text("이 run에는 roadmap_*.json 이 없습니다. scripts/gen_roadmap.py initial --run runs/<run>"); return; }
   const box = $("#canvas").getBoundingClientRect(); W = box.width; H = box.height;

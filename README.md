@@ -57,6 +57,28 @@ python -m uvicorn viz.server:app --port 8765                              # 시�
 에피소드 순서: Reader(triage→extract) → Router(병합/신규, 구조 선택, router_log) → Critic(모순) → Linker → Critic(층 규칙·근거) → Timing(ES/LS, infeasible) → Summarizer(dirty 행만).
 설정 A: gpt-4.1-nano triage / gpt-4.1-mini reader·router·linker·summarizer / claude-sonnet-4.6 critic. B: haiku-5.5 제안자 / gpt-4.1 critic.
 
+### 화면 보기 (P5)
+
+**온라인 (GitHub Pages, 서버 불필요)** — 저장소 Settings → Pages → *Deploy from a branch* → `main` / `/docs` 를 한 번 켜 두면 아래 주소가 열린다.
+
+| 화면 | 주소 |
+|---|---|
+| 2막 KB 구축 재생 (파일럿 D) | https://passionchicken-leesuin.github.io/Advanced-Agentic-TRM/site/?run=pilotD&autoplay=1&speed=20 |
+| 1막·3막 로드맵 diff (파일럿 D) | https://passionchicken-leesuin.github.io/Advanced-Agentic-TRM/site/?run=pilotD&view=rm |
+| 전체 실행 (180건) | 위 주소에서 `run=full` (전체 실행 완료 후 내보냄) |
+
+내보내기: `python scripts/export_static.py runs/pilotD runs/full` → `docs/site/` (이벤트·스냅샷·로드맵 JSON + 서버 없이 재생하는 index.html). 실시간 추적(follow)만 서버 모드 전용.
+
+**로컬 (실시간 추적 포함)**
+
+```powershell
+python -m uvicorn viz.server:app --port 8765              # 이 PC에서만
+python -m uvicorn viz.server:app --port 8765 --host 0.0.0.0   # 같은 네트워크의 다른 PC에서 http://<이 PC IP>:8765
+```
+
+- `http://127.0.0.1:8765/?run=full&autoplay=1&speed=0&follow=1` — 즉시 현재 상태 적용 후 실시간 추적
+- `?speed=20` 기록 재생(20배속), `?view=rm` 로드맵 diff, `?lang=en` 영어 라벨
+
 ## 핵심 규약
 
 - 주장(claim)은 노드에 **발언 시점 순으로 쌓이고 덮어쓰지 않는다**. 같은 노드에서 측도가 바뀌면 지표 교체다.
