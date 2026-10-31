@@ -13,9 +13,10 @@ trmkb/
   replay.py     events.jsonl 재생 / 꼬리 추적
   i18n.py       화면 라벨 (ko 기본, en 전환 예정)
   corpus/       (P2) common(frontmatter·index), edgar(SEC 공시), arxiv, ionq_web(블로그·리소스), synth(가상 내부자료)
-  agents/       (P4) reader, router, linker, critic, timing, summarizer
+  agents/       (P4) chunker, embed, timeparse, reader(2단), router, linker, critic, timing(CPM), summarizer
+  pipeline.py   (P4) 문서 1건 = 1 에피소드 오케스트레이션, 재개 가능, events.jsonl 기록
   roadmap/      (P3·P6) generate, retrieve(연산 ①~⑤), diff
-  eval/         (P7) metrics
+  eval/         (P7) recovery(심은 사실 회수율·모순 탐지율)
 data/corpus/{public,synthetic}/   문서 md
 data/facts_ledger.json            가상 자료의 심은 사실
 runs/<run_id>/                    kb/, events.jsonl, router_log.jsonl, roadmap_*.json
@@ -42,6 +43,19 @@ python scripts/gen_synthetic.py gen             # 가상 내부자료 50건 생�
 - 문서는 `data/corpus/{public,synthetic}/<id>.md` + YAML frontmatter, 색인은 `data/corpus/index.jsonl`.
 - 심은 사실 원장 `data/facts_ledger.json`: 42건, `not_before/not_after` 날짜 창, `contradicts` 모순 쌍 3개(pf07↔pf08, pf20↔pf21, pf02↔pf41), 생성 후 `planted_in_doc_ids` 역기록.
 - 공개 코퍼스 원본(md)은 용량 때문에 git에 넣지 않는다. 재현은 위 명령으로.
+
+### KB 구축 (P4)
+
+```powershell
+python scripts/run_pipeline.py --run runs/pilotA --pilot --config A      # 20건 파일럿 (가상 10 + 공개 10)
+python scripts/run_pipeline.py --run runs/full --select priority --limit 180
+python scripts/eval_run.py recovery --run runs/pilotA                     # 심은 사실 회수율
+python scripts/eval_run.py compare runs/pilotA runs/pilotB
+python -m uvicorn viz.server:app --port 8765                              # 시각화 (?run=pilotA&autoplay=1)
+```
+
+에피소드 순서: Reader(triage→extract) → Router(병합/신규, 구조 선택, router_log) → Critic(모순) → Linker → Critic(층 규칙·근거) → Timing(ES/LS, infeasible) → Summarizer(dirty 행만).
+설정 A: gpt-4.1-nano triage / gpt-4.1-mini reader·router·linker·summarizer / claude-sonnet-4.6 critic. B: haiku-5.5 제안자 / gpt-4.1 critic.
 
 ## 핵심 규약
 

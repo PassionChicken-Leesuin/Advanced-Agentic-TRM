@@ -63,6 +63,7 @@ NODE_LAYER: dict[NodeType, Layer] = {
 
 
 class ClaimType(StrEnum):
+    STATEMENT = "statement"              # 수치 없는 일반 주장 (드라이버·니즈·결정 등의 서술)
     SPEC = "spec"                        # 다차원 목표 사양 벡터
     CAPABILITY_CLAIM = "capability_claim"  # 단일 측도·값 (예: #AQ 64 by 2025)
     MARKET_SIZE = "market_size"
@@ -330,6 +331,7 @@ class NodeBase(BaseModel):
     priority: float | None = None      # Router/Critic가 재계산
     confidence: float = Field(default=0.5, ge=0.0, le=1.0)
     scope: str | None = None           # geography / ownership 한정어
+    flags: list[str] = Field(default_factory=list)   # "infeasible", "conflict" 등 (Timing/Critic가 부여)
     created_by_doc: str | None = None
     created_at: datetime = Field(default_factory=utcnow)
     updated_at: datetime = Field(default_factory=utcnow)
@@ -445,6 +447,10 @@ class ClaimBase(BaseModel):
     created_at: datetime = Field(default_factory=utcnow)
 
 
+class StatementClaim(ClaimBase):
+    type: Literal["statement"] = "statement"
+
+
 class SpecClaim(ClaimBase):
     type: Literal["spec"] = "spec"
     dims: dict[str, str] = Field(default_factory=dict)  # {"size": "shoebox", "cost": "£1-10k", ...}
@@ -498,12 +504,13 @@ class ActionClaim(ClaimBase):
 
 
 Claim = Annotated[
-    Union[SpecClaim, CapabilityClaim, MarketSizeClaim, MaturityClaim,
+    Union[StatementClaim, SpecClaim, CapabilityClaim, MarketSizeClaim, MaturityClaim,
           PriorityClaim, ComparisonClaim, ActionClaim],
     Field(discriminator="type"),
 ]
 
 CLAIM_CLASSES: dict[str, type[ClaimBase]] = {
+    "statement": StatementClaim,
     "spec": SpecClaim, "capability_claim": CapabilityClaim, "market_size": MarketSizeClaim,
     "maturity": MaturityClaim, "priority": PriorityClaim, "comparison": ComparisonClaim,
     "action": ActionClaim,

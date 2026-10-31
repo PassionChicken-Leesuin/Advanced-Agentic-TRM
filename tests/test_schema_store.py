@@ -142,6 +142,9 @@ def test_extract_json():
     assert _extract_json('text before {"a": [1,2]} after') == {"a": [1, 2]}
     with pytest.raises(ValueError):
         _extract_json("nothing here")
+    # 잘린 출력 복구: 마지막 완결 원소까지
+    truncated = '{"proposals": [{"label": "a", "n": 1}, {"label": "b", "n": 2}, {"label": "c", "n'
+    assert _extract_json(truncated) == {"proposals": [{"label": "a", "n": 1}, {"label": "b", "n": 2}]}
 
 
 def test_load_keys_order(tmp_path, monkeypatch):

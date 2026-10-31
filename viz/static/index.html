@@ -115,7 +115,9 @@ function setupSvg(){
   g = svg.append("g");
   const laneH = {why:.22, what:.24, how:.24, resource:.14, cross:.16}; let y = 24; laneY = {};
   LAYERS.forEach(l => { const h = laneH[l]*(H-60); laneY[l] = {y0:y, y1:y+h, c:y+h/2}; y += h; });
-  xScale = d3.scaleLinear().domain([2024.5, 2030.5]).range([150, W-30]);
+  const esVals = Object.values(attrs).filter(a => a.es != null).map(a => a.es);
+  const x0 = Math.min(2024.5, esVals.length ? Math.floor(d3.min(esVals)) : 2024.5);
+  xScale = d3.scaleLinear().domain([x0, 2030.5]).range([150, W-30]);
   LAYERS.forEach(l => {
     g.append("rect").attr("class","lane-bg").attr("x",0).attr("y",laneY[l].y0).attr("width",W).attr("height",laneY[l].y1-laneY[l].y0);
     g.append("line").attr("x1",0).attr("x2",W).attr("y1",laneY[l].y1).attr("y2",laneY[l].y1).attr("stroke","#262b36");
@@ -124,6 +126,8 @@ function setupSvg(){
   g.append("g").attr("class","axis").attr("transform",`translate(0,${H-30})`).call(d3.axisBottom(xScale).ticks(7).tickFormat(d3.format("d")));
   g.append("text").attr("class","lane-label").attr("x",W-110).attr("y",H-8).text("time (know-when)");
   g.append("g").attr("id","edges"); g.append("g").attr("id","nodes");
+  svg.call(d3.zoom().scaleExtent([0.5, 6]).filter(ev => ev.type === "wheel" || ev.type === "mousedown" || ev.type === "touchstart")
+     .on("zoom", ev => { g.select("#nodes").attr("transform", ev.transform); g.select("#edges").attr("transform", ev.transform); }));
   sim = d3.forceSimulation().alphaDecay(.03)
     .force("y", d3.forceY(d => laneY[d.layer].c).strength(1))
     .force("x", d3.forceX(d => d.es != null ? xScale(d.es) : 130 + Math.random()*0.001 + (W-160)/2).strength(d => d.es != null ? .9 : .04))
@@ -146,7 +150,8 @@ function redraw(){
   enter.on("mousemove", (ev, d) => tip(ev, `<b>${d.label}</b><br>${t("node."+d.type)} · ${d.category||""}<br>${t("claim.capability_claim")}: ${d.n_claims||0} · 근거: ${d.n_evidence||0}${d.es!=null? ` · ES ${d.es}`:""}${d.conflict? "<br><span style='color:#ffb454'>⚠ conflict</span>":""}`)).on("mouseleave", hideTip);
   const all = enter.merge(ns);
   all.select("circle").attr("r", r).attr("stroke", d => d.conflict ? "#ffb454" : "#0f1115").attr("stroke-width", d => d.conflict ? 2.5 : 1.5);
-  all.select("text").text(d => d.label.length > 28 ? d.label.slice(0,27)+"…" : d.label);
+  // 라벨은 주장 2개 이상(여러 문서가 말한 행)이거나 모순 노드만 상시 표시; 나머지는 툴팁
+  all.select("text").text(d => (d.n_claims >= 2 || d.conflict) ? (d.label.length > 28 ? d.label.slice(0,27)+"…" : d.label) : "");
   ns.exit().remove();
   const esel = g.select("#edges").selectAll("path.edge").data(edges, d => d.id);
   esel.enter().append("path").attr("class", d => "edge "+d.status);
@@ -207,7 +212,7 @@ async function start(fromSeq){
   es.addEventListener("done", () => { $("#status").textContent = `■ 완료 #${lastSeq}`; $("#progress").textContent = `문서 ${state.docsDone} / ${state.docsTotal} 완료`; stop(); });
   es.onerror = () => { $("#status").textContent = "연결 끊김"; stop(); };
 }
-async function resetAll(){ stop(); resetState(); setupSvg(); await loadSnapshot(); renderStats(); $("#bar").style.width="0"; $("#progress").textContent = t("ui.progress", {done:0, total: state.docsTotal}); }
+async function resetAll(){ stop(); resetState(); await loadSnapshot(); setupSvg(); renderStats(); $("#bar").style.width="0"; $("#progress").textContent = t("ui.progress", {done:0, total: state.docsTotal}); }
 
 // ---------------- Roadmap view ----------------
 async function showRoadmap(){

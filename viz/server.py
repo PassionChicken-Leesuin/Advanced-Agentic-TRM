@@ -28,6 +28,13 @@ app = FastAPI(title="trmkb viz")
 app.mount("/static", StaticFiles(directory=str(STATIC)), name="static")
 
 
+@app.middleware("http")
+async def _no_cache(request, call_next):
+    resp = await call_next(request)
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
+
+
 def _run_dir(run: str) -> Path:
     p = (RUNS / run).resolve()
     if not p.exists() or RUNS.resolve() not in p.parents:

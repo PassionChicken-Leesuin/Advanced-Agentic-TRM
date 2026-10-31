@@ -156,10 +156,23 @@ class LLM:
                 return schema.model_validate(_extract_json(raw))
             except (ValidationError, ValueError) as e:
                 if i == repair_attempts:
+                    _log_failure(model, purpose, raw, str(e))
                     raise
                 prompt = (f"{user}\n\nYour previous output failed validation:\n{e}\n"
                           f"Previous output:\n{raw}\nFix it and return valid JSON only.")
         raise AssertionError("unreachable")
+
+
+FAILURE_LOG = Path(__file__).resolve().parent.parent / "runs" / "_llm_failures.log"
+
+
+def _log_failure(model: str, purpose: str, raw: str, err: str) -> None:
+    try:
+        FAILURE_LOG.parent.mkdir(parents=True, exist_ok=True)
+        with FAILURE_LOG.open("a", encoding="utf-8") as f:
+            f.write(f"\n=== {time.strftime('%Y-%m-%d %H:%M:%S')} model={model} purpose={purpose} err={err[:200]}\n{raw[:1500]}\n")
+    except OSError:
+        pass
 
 
 def _extract_json(text: str) -> Any:
@@ -169,7 +182,35 @@ def _extract_json(text: str) -> Any:
     try:
         return json.loads(text)
     except json.JSONDecodeError:
-        m = re.search(r"\{.*\}", text, flags=re.S)
-        if not m:
-            raise ValueError("no JSON object in response")
-        return json.loads(m.group(0))
+        pass
+    m = re.search(r"\{.*\}", text, flags=re.S)
+    if m:
+        try:
+            return json.loads(m.group(0))
+        except json.JSONDecodeError:
+            pass
+    salvaged = _salvage_truncated(text)
+    if salvaged is not None:
+        return salvaged
+    raise ValueError("no JSON object in response")
+
+
+def _salvage_truncated(text: str) -> Any | None:
+    """잘린 JSON 복구: 마지막으로 완결된 배열 원소까지 자르고 괄호를 닫는다."""
+    start = text.find("{")
+    if start < 0:
+        return None
+    body = text[start:]
+    # 마지막 완결 객체 경계 찾기: '}' 뒤에 ',' 또는 ']' 가 올 수 있는 위치를 뒤에서부터 시도
+    for cut in [m.end() for m in re.finditer(r"\}", body)][::-1][:60]:
+        cand = body[:cut]
+        opens = cand.count("[") - cand.count("]")
+        braces = cand.count("{") - cand.count("}")
+        if opens < 0 or braces < 0:
+            continue
+        fixed = cand + "]" * opens + "}" * braces
+        try:
+            return json.loads(fixed)
+        except json.JSONDecodeError:
+            continue
+    return None
