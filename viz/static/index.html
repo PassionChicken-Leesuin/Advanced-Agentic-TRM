@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>trmkb — KB가 자라는 장면</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --line:#2a2f3a; --fg:#e6e8ee; --muted:#8b93a7;
+          --why:#e05d6f; --what:#3b9ddd; --how:#4cbf7a; --resource:#d9a441; --cross:#9a7bd6;
+          --accept:#8fd19e; --reject:#ff6b6b; --pending:#6b7280; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:13px/1.4 -apple-system, "Segoe UI", "Malgun Gothic", sans-serif; }
+  header { display:flex; gap:12px; align-items:center; padding:8px 14px; border-bottom:1px solid var(--line); background:var(--panel); }
+  header h1 { font-size:15px; margin:0 12px 0 0; font-weight:600; }
+  header select, header button, header input { background:#0f1115; color:var(--fg); border:1px solid var(--line); border-radius:6px; padding:4px 8px; font-size:12px; }
+  header button.active { border-color:#5b8def; color:#9db8ff; }
+  main { display:grid; grid-template-columns: 1fr 300px; height: calc(100vh - 44px); }
+  #canvas { position:relative; overflow:hidden; }
+  svg { width:100%; height:100%; display:block; }
+  aside { border-left:1px solid var(--line); background:var(--panel); display:flex; flex-direction:column; overflow:hidden; }
+  .sec { padding:10px 12px; border-bottom:1px solid var(--line); }
+  .sec h2 { font-size:12px; margin:0 0 8px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
+  .agent { display:flex; gap:8px; align-items:flex-start; padding:5px 0; }
+  .dot { width:9px; height:9px; border-radius:50%; margin-top:5px; background:#3a4050; flex:none; transition: background .2s, box-shadow .2s; }
+  .dot.on { background:#8fd19e; box-shadow:0 0 8px #8fd19e; }
+  .dot.reject { background:var(--reject); box-shadow:0 0 8px var(--reject); }
+  .agent b { display:block; font-weight:600; }
+  .agent small { color:var(--muted); display:block; }
+  .agent .last { color:#c9cfdc; font-size:12px; min-height:16px; }
+  .prog { height:6px; background:#262b36; border-radius:3px; overflow:hidden; margin-top:6px; }
+  .prog i { display:block; height:100%; background:#5b8def; width:0; transition: width .3s; }
+  #log { flex:1; overflow:auto; font-size:12px; padding:8px 12px; }
+  #log div { padding:2px 0; border-bottom:1px dotted #22262f; color:#c9cfdc; }
+  #log div.rej { color:var(--reject); } #log div.acc { color:var(--accept); } #log div.conf { color:#ffb454; }
+  .stats { display:grid; grid-template-columns:1fr 1fr; gap:4px 10px; font-size:12px; color:#c9cfdc; }
+  .stats b { color:var(--fg); }
+  .lane-label { fill:var(--muted); font-size:12px; font-weight:600; }
+  .lane-bg { fill:#ffffff; fill-opacity:.025; }
+  .axis text { fill:var(--muted); font-size:11px; } .axis line, .axis path { stroke:#3a4050; }
+  .node text { fill:#dfe3ec; font-size:11px; pointer-events:none; paint-order:stroke; stroke:#0f1115; stroke-width:3px; }
+  .edge { fill:none; stroke-width:1.2; }
+  .edge.pending { stroke:var(--pending); stroke-dasharray:4 3; }
+  .edge.accepted { stroke:#aab4c8; }
+  .edge.rejected { stroke:var(--reject); stroke-dasharray:2 2; }
+  .badge { fill:#1f2430; stroke:#5b8def; } .badge text { fill:#9db8ff; font-size:9px; }
+  #tip { position:absolute; pointer-events:none; background:#1f2430; border:1px solid var(--line); padding:6px 8px; border-radius:6px; font-size:12px; max-width:360px; display:none; }
+  .rm-bar { rx:3; } .rm-bar.prior { fill:#4a5061; } .rm-bar.kb { fill:#3b9ddd; } .rm-bar.infeasible { stroke:var(--reject); stroke-width:2; }
+  .rm-label { font-size:11px; fill:#e6e8ee; pointer-events:none; }
+  .rm-edge { fill:none; stroke:#6b7280; stroke-width:1; opacity:.6; }
+  .legend { position:absolute; right:12px; top:6px; font-size:11px; color:var(--muted); display:flex; gap:12px; }
+  .node { animation: fadein .4s ease-out both; } .edge { animation: fadein .3s ease-out both; }
+  @keyframes fadein { from { opacity:0 } to { opacity:1 } }
+  .legend i { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:4px; vertical-align:-1px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>TRM Knowledge Base</h1>
+  <label>run <select id="run"></select></label>
+  <button id="viewKb" class="active">② KB 구축</button>
+  <button id="viewRm">①/③ 로드맵</button>
+  <span style="width:10px"></span>
+  <button id="play">▶ 재생</button>
+  <button id="pause">⏸</button>
+  <button id="reset">↺ 처음부터</button>
+  <label>속도 <input id="speed" type="number" value="10" min="0" step="1" style="width:56px"></label>
+  <label><input id="follow" type="checkbox"> 실시간 추적</label>
+  <span id="status" style="color:var(--muted); margin-left:auto"></span>
+  <select id="lang"><option value="ko">한국어</option><option value="en">English</option></select>
+</header>
+<main>
+  <div id="canvas"><svg id="svg"></svg><div id="tip"></div>
+    <div class="legend" id="legend"></div>
+  </div>
+  <aside>
+    <div class="sec"><h2 id="h-progress">진행</h2><div id="progress">—</div><div class="prog"><i id="bar"></i></div></div>
+    <div class="sec"><h2>Agents</h2><div id="agents"></div></div>
+    <div class="sec"><h2 id="h-stats">KB</h2><div class="stats" id="stats"></div></div>
+    <div id="log"></div>
+  </aside>
+</main>
+<script>
+const LAYERS = ["why","what","how","resource","cross"];
+const COLOR = {why:"var(--why)", what:"var(--what)", how:"var(--how)", resource:"var(--resource)", cross:"var(--cross)"};
+const AGENTS = ["reader","router","linker","critic","timing","summarizer"];
+let T = {};                     // i18n
+let state = null;               // {nodes:Map, edges:Map, docsTotal, docsDone, stats}
+let attrs = {};                 // node id -> snapshot attrs
+let es = null, playing = false, view = "kb", currentRun = null, lastSeq = 0;
+let sim, svg, g, xScale, laneY, W, H, roadmaps = null;
+
+const $ = s => document.querySelector(s);
+const t = (k, o={}) => (T[k] || k).replace(/\{(\w+)\}/g, (_, n) => o[n] ?? "");
+
+async function loadI18n(lang){ T = await (await fetch(`/api/i18n?lang=${lang}`)).json(); renderAgents(); renderLegend(); }
+async function loadRuns(){
+  const runs = await (await fetch("/api/runs")).json();
+  const sel = $("#run"); sel.innerHTML = "";
+  runs.forEach(r => { const o = document.createElement("option"); o.value = r.run; o.textContent = `${r.run} (${r.events} ev${r.roadmaps.length? ", rm:"+r.roadmaps.join("/") : ""})`; sel.appendChild(o); });
+  if (runs.length) { currentRun = runs[runs.length-1].run; sel.value = currentRun; }
+}
+function resetState(){ state = {nodes:new Map(), edges:new Map(), docsTotal:0, docsDone:0, conflicts:0, rejected:0, accepted:0, claims:0, evidence:0}; lastSeq = 0; $("#log").innerHTML=""; AGENTS.forEach(a=>setAgent(a,"", false)); }
+async function loadSnapshot(){
+  const snap = await (await fetch(`/api/runs/${currentRun}/snapshot`)).json();
+  attrs = {}; snap.nodes.forEach(n => attrs[n.id] = n);
+  snap.edges.forEach(e => attrs[e.id] = e);
+  state.docsTotal = snap.documents.length;
+  return snap;
+}
+
+// ---------------- KB graph view ----------------
+function setupSvg(){
+  svg = d3.select("#svg"); svg.selectAll("*").remove();
+  const box = $("#canvas").getBoundingClientRect(); W = box.width; H = box.height;
+  g = svg.append("g");
+  const laneH = {why:.22, what:.24, how:.24, resource:.14, cross:.16}; let y = 24; laneY = {};
+  LAYERS.forEach(l => { const h = laneH[l]*(H-60); laneY[l] = {y0:y, y1:y+h, c:y+h/2}; y += h; });
+  xScale = d3.scaleLinear().domain([2024.5, 2030.5]).range([150, W-30]);
+  LAYERS.forEach(l => {
+    g.append("rect").attr("class","lane-bg").attr("x",0).attr("y",laneY[l].y0).attr("width",W).attr("height",laneY[l].y1-laneY[l].y0);
+    g.append("line").attr("x1",0).attr("x2",W).attr("y1",laneY[l].y1).attr("y2",laneY[l].y1).attr("stroke","#262b36");
+    g.append("text").attr("class","lane-label").attr("x",12).attr("y",laneY[l].y0+16).text(t("layer."+l)).attr("fill", COLOR[l]);
+  });
+  g.append("g").attr("class","axis").attr("transform",`translate(0,${H-30})`).call(d3.axisBottom(xScale).ticks(7).tickFormat(d3.format("d")));
+  g.append("text").attr("class","lane-label").attr("x",W-110).attr("y",H-8).text("time (know-when)");
+  g.append("g").attr("id","edges"); g.append("g").attr("id","nodes");
+  sim = d3.forceSimulation().alphaDecay(.03)
+    .force("y", d3.forceY(d => laneY[d.layer].c).strength(1))
+    .force("x", d3.forceX(d => d.es != null ? xScale(d.es) : 130 + Math.random()*0.001 + (W-160)/2).strength(d => d.es != null ? .9 : .04))
+    .force("collide", d3.forceCollide(d => 8 + Math.sqrt(d.n_evidence||0)*3))
+    .force("charge", d3.forceManyBody().strength(-25))
+    .on("tick", ticked);
+}
+function ticked(){
+  LAYERS.forEach(()=>{});
+  g.select("#nodes").selectAll("g.node").attr("transform", d => { d.y = Math.max(laneY[d.layer].y0+10, Math.min(laneY[d.layer].y1-10, d.y)); d.x = Math.max(140, Math.min(W-20, d.x)); return `translate(${d.x},${d.y})`; });
+  g.select("#edges").selectAll("path.edge").attr("d", e => { const s = state.nodes.get(e.src), d = state.nodes.get(e.dst); if(!s||!d) return ""; const mx=(s.x+d.x)/2, my=(s.y+d.y)/2 - 18; return `M${s.x},${s.y} Q${mx},${my} ${d.x},${d.y}`; });
+}
+function redraw(){
+  const nodes = [...state.nodes.values()], edges = [...state.edges.values()].filter(e => state.nodes.has(e.src) && state.nodes.has(e.dst));
+  const ns = g.select("#nodes").selectAll("g.node").data(nodes, d => d.id);
+  const r = d => 5 + Math.sqrt(d.n_evidence||0)*2.5;
+  const enter = ns.enter().append("g").attr("class","node").attr("transform", d => `translate(${d.x},${d.y})`);
+  enter.append("circle").attr("r", r).attr("fill", d => COLOR[d.layer]).attr("stroke","#0f1115").attr("stroke-width",1.5);
+  enter.append("text").attr("dx", 9).attr("dy", 4);
+  enter.on("mousemove", (ev, d) => tip(ev, `<b>${d.label}</b><br>${t("node."+d.type)} · ${d.category||""}<br>${t("claim.capability_claim")}: ${d.n_claims||0} · 근거: ${d.n_evidence||0}${d.es!=null? ` · ES ${d.es}`:""}${d.conflict? "<br><span style='color:#ffb454'>⚠ conflict</span>":""}`)).on("mouseleave", hideTip);
+  const all = enter.merge(ns);
+  all.select("circle").attr("r", r).attr("stroke", d => d.conflict ? "#ffb454" : "#0f1115").attr("stroke-width", d => d.conflict ? 2.5 : 1.5);
+  all.select("text").text(d => d.label.length > 28 ? d.label.slice(0,27)+"…" : d.label);
+  ns.exit().remove();
+  const esel = g.select("#edges").selectAll("path.edge").data(edges, d => d.id);
+  esel.enter().append("path").attr("class", d => "edge "+d.status);
+  esel.attr("class", d => "edge "+d.status);
+  esel.exit().remove();
+  sim.nodes(nodes); sim.alpha(.6).restart(); ticked();
+}
+function pulse(id, color){ g.select("#nodes").selectAll("g.node").filter(d => d.id === id).select("circle").transition().duration(150).attr("stroke", color).attr("stroke-width",4).transition().duration(600).attr("stroke-width",1.5).attr("stroke","#0f1115"); }
+function tip(ev, html){ const el = $("#tip"); el.innerHTML = html; el.style.display="block"; el.style.left = (ev.offsetX+14)+"px"; el.style.top = (ev.offsetY+10)+"px"; }
+function hideTip(){ $("#tip").style.display="none"; }
+
+// ---------------- events ----------------
+function ensureNode(id){
+  if (!id) return null;
+  if (state.nodes.has(id)) return state.nodes.get(id);
+  const a = attrs[id]; if (!a) return null;
+  const n = {id, label:a.label, type:a.type, layer:a.layer, category:a.category, es:a.es, n_claims:0, n_evidence:0, conflict:false, x: a.es!=null? xScale(a.es) : W/2 + (Math.random()-.5)*200, y: laneY[a.layer].c + (Math.random()-.5)*30};
+  state.nodes.set(id, n); return n;
+}
+function setAgent(a, msg, on, reject){ const d = $(`#ag-${a} .dot`); if(!d) return; d.className = "dot" + (on ? (reject? " reject":" on") : ""); if (msg !== undefined) $(`#ag-${a} .last`).textContent = msg; }
+let agentTimers = {};
+function flash(agent, msg, reject){ setAgent(agent, msg, true, reject); clearTimeout(agentTimers[agent]); agentTimers[agent] = setTimeout(()=>setAgent(agent, undefined, false), 900); }
+function logLine(ev){ const d = document.createElement("div"); d.textContent = `#${ev.seq} ${ev.message}`; d.className = ev.type.endsWith("rejected")? "rej" : ev.type.endsWith("accepted")? "acc" : ev.type==="conflict.flagged"? "conf":""; const log = $("#log"); log.prepend(d); while (log.children.length > 200) log.lastChild.remove(); }
+async function applyEvent(ev){
+  lastSeq = ev.seq; const p = ev.payload || {};
+  if (ev.node_id && !attrs[ev.node_id]) { await loadSnapshot(); }
+  switch(ev.type){
+    case "doc.started": $("#progress").textContent = t("ui.progress", {done: state.docsDone, total: state.docsTotal}) + " — " + (p.title||""); break;
+    case "doc.finished": state.docsDone++; $("#bar").style.width = (100*state.docsDone/Math.max(1,state.docsTotal))+"%"; $("#progress").textContent = t("ui.progress", {done: state.docsDone, total: state.docsTotal}); break;
+    case "node.created": { const n = ensureNode(ev.node_id); if(n) { redraw(); } break; }
+    case "node.merged": { const n = ensureNode(ev.node_id); if(n) pulse(ev.node_id, "#9db8ff"); break; }
+    case "node.updated": ensureNode(ev.node_id); break;
+    case "claim.added": { const n = ensureNode(ev.node_id); if(n){ n.n_claims++; state.claims++; } break; }
+    case "evidence.added": { const n = ensureNode(ev.node_id); if(n){ n.n_evidence += (p.n||1); state.evidence += (p.n||1); redraw(); } break; }
+    case "time.indexed": { const n = ensureNode(ev.node_id); if(n && p.year!=null){ n.es = +p.year; redraw(); } break; }
+    case "edge.proposed": { const a = attrs[ev.edge_id]; if(a){ state.edges.set(ev.edge_id, {id:ev.edge_id, src:a.src, dst:a.dst, type:a.type, status:"pending"}); ensureNode(a.src); ensureNode(a.dst); redraw(); } break; }
+    case "edge.accepted": { const e = state.edges.get(ev.edge_id); if(e){ e.status="accepted"; state.accepted++; redraw(); } break; }
+    case "edge.rejected": { const e = state.edges.get(ev.edge_id); if(e){ e.status="rejected"; state.rejected++; redraw(); setTimeout(()=>{ state.edges.delete(ev.edge_id); redraw(); }, 2500); } break; }
+    case "conflict.flagged": { const n = ensureNode(ev.node_id); if(n){ n.conflict = true; state.conflicts++; pulse(ev.node_id, "#ffb454"); redraw(); } break; }
+  }
+  const agent = ev.agent; if (AGENTS.includes(agent)) flash(agent, ev.message, ev.type.endsWith("rejected") || ev.type==="conflict.flagged");
+  logLine(ev); renderStats();
+}
+function renderStats(){
+  $("#stats").innerHTML = [["노드", state.nodes.size], ["주장", state.claims], ["근거", state.evidence], ["링크 수락", state.accepted], ["링크 반려", state.rejected], ["모순", state.conflicts]].map(([k,v]) => `<span>${k}</span><b>${v}</b>`).join("");
+}
+function renderAgents(){
+  $("#agents").innerHTML = AGENTS.map(a => `<div class="agent" id="ag-${a}"><span class="dot"></span><div><b>${t("agent."+a)}</b><small>${t("agent."+a+".desc")}</small><div class="last"></div></div></div>`).join("");
+}
+function renderLegend(){ $("#legend").innerHTML = LAYERS.map(l => `<span><i style="background:${COLOR[l]}"></i>${t("layer."+l)}</span>`).join("") + `<span style="margin-left:10px">— 수락 &nbsp; ╌ 제안 &nbsp; <span style="color:var(--reject)">╌ 반려</span></span>`; }
+
+function stop(){ if (es) { es.close(); es = null; } playing = false; $("#status").textContent = "⏸"; }
+async function start(fromSeq){
+  stop(); playing = true;
+  const speed = +$("#speed").value, follow = $("#follow").checked;
+  es = new EventSource(`/api/runs/${currentRun}/stream?speed=${speed}&start=${fromSeq}&follow=${follow}`);
+  es.addEventListener("kb", async e => { await applyEvent(JSON.parse(e.data)); $("#status").textContent = `▶ #${lastSeq}`; });
+  es.addEventListener("done", () => { $("#status").textContent = `■ 완료 #${lastSeq}`; $("#progress").textContent = `문서 ${state.docsDone} / ${state.docsTotal} 완료`; stop(); });
+  es.onerror = () => { $("#status").textContent = "연결 끊김"; stop(); };
+}
+async function resetAll(){ stop(); resetState(); setupSvg(); await loadSnapshot(); renderStats(); $("#bar").style.width="0"; $("#progress").textContent = t("ui.progress", {done:0, total: state.docsTotal}); }
+
+// ---------------- Roadmap view ----------------
+async function showRoadmap(){
+  stop(); svg = d3.select("#svg"); svg.selectAll("*").remove();
+  roadmaps = await (await fetch(`/api/runs/${currentRun}/roadmaps`)).json();
+  const conds = ["initial","advanced"].filter(c => roadmaps[c]);
+  if (!conds.length) { svg.append("text").attr("x",40).attr("y",60).attr("fill","#8b93a7").text("이 run에는 roadmap_*.json 이 없습니다. scripts/gen_roadmap.py initial --run runs/<run>"); return; }
+  const box = $("#canvas").getBoundingClientRect(); W = box.width; H = box.height;
+  const colW = W / conds.length;
+  conds.forEach((c, i) => drawRoadmap(roadmaps[c], i*colW, colW, c));
+}
+function drawRoadmap(rm, x0, w, cond){
+  const gg = svg.append("g").attr("transform",`translate(${x0},0)`);
+  gg.append("text").attr("x",14).attr("y",20).attr("fill","#e6e8ee").style("font-weight",600).text(t("ui.roadmap."+cond) + `  · ${rm.model} · ${rm.nodes.length} nodes`);
+  const x = d3.scaleLinear().domain(rm.horizon).range([120, w-20]);
+  const lanes = ["why","what","how","resource"];
+  const byLayer = {}; lanes.forEach(l => byLayer[l] = rm.nodes.filter(n => n.layer===l));
+  // 행(category) 배치
+  let y = 40; const rowH = 22; const laneInfo = {};
+  lanes.forEach(l => {
+    const cats = [...new Set(byLayer[l].map(n => n.category || "—"))];
+    laneInfo[l] = {y0:y, cats}; const h = Math.max(1, cats.length)*rowH + 10;
+    gg.append("rect").attr("class","lane-bg").attr("x",0).attr("y",y).attr("width",w).attr("height",h);
+    gg.append("text").attr("class","lane-label").attr("x",8).attr("y",y+14).text(t("layer."+l)).attr("fill", COLOR[l]);
+    cats.forEach((c,i) => gg.append("text").attr("x",8).attr("y",y+8+rowH*(i+1)).attr("fill","#8b93a7").style("font-size","10px").text(c.length>16? c.slice(0,15)+"…":c));
+    y += h;
+  });
+  gg.append("g").attr("class","axis").attr("transform",`translate(0,${y+4})`).call(d3.axisBottom(x).ticks(6).tickFormat(d3.format("d")));
+  const pos = {};
+  rm.nodes.forEach(n => { const li = laneInfo[n.layer]; const r = li.cats.indexOf(n.category || "—"); const yy = li.y0 + 8 + rowH*(r+1) - 8; pos[n.id] = {x:(x(n.start)+x(n.end))/2, y: yy+8};
+    const kb = n.produced_by && n.produced_by.some(o => o !== "llm_prior");
+    gg.append("rect").attr("class", "rm-bar " + (kb? "kb":"prior") + (n.flags.includes("infeasible")? " infeasible":"")).attr("x", x(n.start)).attr("y", yy).attr("width", Math.max(6, x(n.end)-x(n.start))).attr("height", 16)
+      .on("mousemove", ev => tip(ev, `<b>${n.label}</b><br>${n.description||""}<br>${n.start}–${n.end} · ${(n.produced_by||[]).join(", ")}${n.evidence_ids.length? " · 근거 "+n.evidence_ids.length:""}${n.flags.length? " · "+n.flags.join(","):""}`)).on("mouseleave", hideTip);
+    gg.append("text").attr("class","rm-label").attr("x", x(n.start)+4).attr("y", yy+12).text(n.label.length>34? n.label.slice(0,33)+"…": n.label);
+    if (n.evidence_ids.length) { gg.append("circle").attr("class","badge").attr("cx", x(n.end)).attr("cy", yy).attr("r", 7); gg.append("text").attr("x", x(n.end)).attr("y", yy+3).attr("text-anchor","middle").style("font-size","9px").attr("fill","#9db8ff").text(n.evidence_ids.length); }
+  });
+  rm.edges.forEach(e => { const s = pos[e.src], d = pos[e.dst]; if (s && d) gg.append("path").attr("class","rm-edge").attr("d", `M${s.x},${s.y} C${s.x},${(s.y+d.y)/2} ${d.x},${(s.y+d.y)/2} ${d.x},${d.y}`); });
+}
+
+// ---------------- wiring ----------------
+$("#play").onclick = () => { if (view !== "kb") switchView("kb"); start(lastSeq); };
+$("#pause").onclick = stop;
+$("#reset").onclick = async () => { await resetAll(); };
+$("#run").onchange = async e => { currentRun = e.target.value; if (view==="kb") await resetAll(); else showRoadmap(); };
+$("#lang").onchange = async e => { await loadI18n(e.target.value); if (view==="kb") { setupSvg(); redraw(); } else showRoadmap(); };
+$("#viewKb").onclick = () => switchView("kb"); $("#viewRm").onclick = () => switchView("rm");
+async function switchView(v){ view = v; $("#viewKb").classList.toggle("active", v==="kb"); $("#viewRm").classList.toggle("active", v==="rm"); if (v==="kb") await resetAll(); else showRoadmap(); }
+window.addEventListener("resize", () => { if (view==="kb") { setupSvg(); redraw(); } else showRoadmap(); });
+// URL 파라미터: ?run=demo&view=kb|rm&autoplay=1&speed=0&lang=en  (스크린샷·발표용)
+(async () => {
+  const q = new URLSearchParams(location.search);
+  await loadI18n(q.get("lang") || "ko"); if (q.get("lang")) $("#lang").value = q.get("lang");
+  await loadRuns(); resetState();
+  if (q.get("run")) { currentRun = q.get("run"); $("#run").value = currentRun; }
+  if (q.get("speed") != null) $("#speed").value = q.get("speed");
+  if (!currentRun) return;
+  if (q.get("view") === "rm") { await switchView("rm"); return; }
+  await resetAll();
+  if (q.get("autoplay")) start(0);
+})();
+</script>
+</body>
+</html>

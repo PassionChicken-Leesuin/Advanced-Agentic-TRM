@@ -78,8 +78,8 @@ class EventLog:
              edge_id: str | None = None, claim_id: str | None = None,
              payload: dict[str, Any] | None = None, **fmt) -> Event:
         self._seq += 1
-        payload = payload or {}
-        msg = t(message_key or f"ev.{type.value}", **{**payload, **fmt})
+        payload = {**(payload or {}), **{k: v for k, v in fmt.items() if isinstance(v, (str, int, float, bool))}}
+        msg = t(message_key or f"ev.{type.value}", **payload)
         ev = Event(seq=self._seq, agent=agent, type=type, doc_id=doc_id, node_id=node_id,
                    edge_id=edge_id, claim_id=claim_id, message=msg, payload=payload)
         _append_jsonl(self.path, ev)

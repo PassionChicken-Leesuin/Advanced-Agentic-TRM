@@ -1,0 +1,863 @@
+{
+ "id": "rm_1f7fbe2398",
+ "condition": "initial",
+ "company": "IonQ",
+ "horizon": [
+  2025.0,
+  2030.0
+ ],
+ "model": "openai/gpt-4.1",
+ "prompt_hash": "6ecd43f65be3e13b",
+ "nodes": [
+  {
+   "id": "rn_377960f05c",
+   "label": "Enterprise Quantum Demand",
+   "layer": "why",
+   "category": "enterprise demand",
+   "start": 2025.0,
+   "end": 2030.0,
+   "description": "Growing enterprise interest in quantum computing for optimization, ML, and security.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_0ba402b0e8",
+   "label": "Government Quantum Programs",
+   "layer": "why",
+   "category": "government programs",
+   "start": 2025.0,
+   "end": 2030.0,
+   "description": "US and allied government investments in quantum R&D and procurement.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_dcb8d6f82f",
+   "label": "Post-Quantum Security Needs",
+   "layer": "why",
+   "category": "security/PQC",
+   "start": 2025.0,
+   "end": 2029.0,
+   "description": "Market and regulatory push for quantum-safe cryptography and secure communications.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_414ae6a2b1",
+   "label": "Competitor System Benchmarks",
+   "layer": "why",
+   "category": "competitor pressure",
+   "start": 2025.0,
+   "end": 2030.0,
+   "description": "Competitive pressure from other quantum hardware vendors on performance metrics.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_9657b3ea63",
+   "label": "Export Control Regulation",
+   "layer": "why",
+   "category": "export control",
+   "start": 2025.0,
+   "end": 2027.5,
+   "description": "Evolving US and international export controls on advanced quantum systems.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_b916be8b3c",
+   "label": "Cloud Quantum Access",
+   "layer": "what",
+   "category": "cloud offerings",
+   "start": 2025.0,
+   "end": 2030.0,
+   "description": "Continued delivery of IonQ systems via AWS Braket, Azure Quantum, and Google Cloud.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_04b5420d50",
+   "label": "On-Premise Quantum Systems",
+   "layer": "what",
+   "category": "commercialization",
+   "start": 2025.0,
+   "end": 2030.0,
+   "description": "Deployment of IonQ systems directly to enterprise and government customer sites.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_1ef6037b71",
+   "label": "Forte System Upgrades",
+   "layer": "what",
+   "category": "system generations",
+   "start": 2025.0,
+   "end": 2027.0,
+   "description": "Incremental improvements to Forte and Forte Enterprise platforms.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_39d6c72527",
+   "label": "Tempo System Launch",
+   "layer": "what",
+   "category": "system generations",
+   "start": 2026.0,
+   "end": 2027.5,
+   "description": "Release of next-generation Tempo system with higher #AQ and modularity.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_4079d9cf0b",
+   "label": "Algorithmic Qubits 64 Target",
+   "layer": "what",
+   "category": "scale",
+   "start": 2026.0,
+   "end": 2028.0,
+   "description": "Achieve #AQ 64 performance milestone in IonQ systems.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_4f8c9b3acc",
+   "label": "Error Correction Milestone",
+   "layer": "what",
+   "category": "error correction",
+   "start": 2027.0,
+   "end": 2029.0,
+   "description": "Demonstration of logical qubits and error-corrected operations.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_2337450088",
+   "label": "Quantum Networking Products",
+   "layer": "what",
+   "category": "networking products",
+   "start": 2027.0,
+   "end": 2030.0,
+   "description": "Commercialization of quantum networking and photonic interconnect solutions.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_56284d0db2",
+   "label": "Modular System Architecture",
+   "layer": "what",
+   "category": "modularity/interconnect",
+   "start": 2027.0,
+   "end": 2029.0,
+   "description": "Introduction of modular, scalable architectures for multi-system quantum computing.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_ee1d4e95f2",
+   "label": "Advanced Ion Trap Chips",
+   "layer": "how",
+   "category": "trap chips",
+   "start": 2025.0,
+   "end": 2028.0,
+   "description": "Development of next-generation microfabricated ion trap chips for higher qubit counts.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_f7f574ea76",
+   "label": "Photonic Interconnects",
+   "layer": "how",
+   "category": "photonic interconnect",
+   "start": 2026.0,
+   "end": 2029.0,
+   "description": "Integration of photonic links for modular and networked quantum systems.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_ca7d399d64",
+   "label": "Improved Ion Control Systems",
+   "layer": "how",
+   "category": "control technology",
+   "start": 2025.0,
+   "end": 2027.5,
+   "description": "Enhanced laser and RF control for high-fidelity qubit operations.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_7c08765cb6",
+   "label": "Error Correction Codes",
+   "layer": "how",
+   "category": "error correction codes",
+   "start": 2027.0,
+   "end": 2029.0,
+   "description": "Implementation of surface code and other error correction protocols.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_bbddfa7bf0",
+   "label": "Ion Species Optimization",
+   "layer": "how",
+   "category": "ion species",
+   "start": 2025.0,
+   "end": 2027.0,
+   "description": "Selection and engineering of optimal ion species for performance and stability.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_999909f48a",
+   "label": "Quantum Compiler Improvements",
+   "layer": "how",
+   "category": "software/compilers",
+   "start": 2025.0,
+   "end": 2028.0,
+   "description": "Advances in software stack and compilers for efficient quantum program execution.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_29cdeae903",
+   "label": "Manufacturing Scale-Up",
+   "layer": "how",
+   "category": "manufacturing/foundry",
+   "start": 2025.0,
+   "end": 2027.5,
+   "description": "Expansion of fabrication and assembly capacity at Bothell facility.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_0233ddb848",
+   "label": "Quantum Networking Integration",
+   "layer": "how",
+   "category": "architectures",
+   "start": 2026.5,
+   "end": 2029.0,
+   "description": "Integration of acquired networking technologies into IonQ systems.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_f8b5f300fb",
+   "label": "Cloud Platform APIs",
+   "layer": "how",
+   "category": "software/compilers",
+   "start": 2025.0,
+   "end": 2026.5,
+   "description": "Development of robust APIs for cloud-based quantum access.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_ef07fb5b89",
+   "label": "US Government Funding",
+   "layer": "resource",
+   "category": "funding",
+   "start": 2025.0,
+   "end": 2030.0,
+   "description": "Federal grants and contracts supporting quantum R&D and commercialization.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_b78602157e",
+   "label": "Bothell Manufacturing Facility",
+   "layer": "resource",
+   "category": "facilities",
+   "start": 2025.0,
+   "end": 2030.0,
+   "description": "IonQ's Bothell, WA facility for system manufacturing and assembly.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_d30ee638a3",
+   "label": "Quantum Talent Pipeline",
+   "layer": "resource",
+   "category": "skills",
+   "start": 2025.0,
+   "end": 2030.0,
+   "description": "Recruitment and training of quantum engineers and scientists.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_b585c48c6a",
+   "label": "Standards and Certification",
+   "layer": "resource",
+   "category": "standards",
+   "start": 2026.0,
+   "end": 2029.0,
+   "description": "Participation in industry standards and certification for quantum systems.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_9e167ac93f",
+   "label": "Export Control Compliance",
+   "layer": "resource",
+   "category": "regulation approvals",
+   "start": 2025.0,
+   "end": 2027.5,
+   "description": "Processes and approvals to comply with export regulations for quantum hardware.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_81dfd04b03",
+   "label": "Enterprise Partnerships",
+   "layer": "resource",
+   "category": "partnerships",
+   "start": 2025.0,
+   "end": 2030.0,
+   "description": "Strategic partnerships with enterprise customers and cloud providers.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_b867bc513e",
+   "label": "Quantum Security Standards",
+   "layer": "resource",
+   "category": "standards",
+   "start": 2026.0,
+   "end": 2029.0,
+   "description": "Adoption and contribution to quantum-safe security protocols.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  },
+  {
+   "id": "rn_013562d612",
+   "label": "International Collaboration",
+   "layer": "resource",
+   "category": "partnerships",
+   "start": 2026.0,
+   "end": 2030.0,
+   "description": "Collaboration with international research and industry partners.",
+   "evidence_ids": [],
+   "produced_by": [
+    "llm_prior"
+   ],
+   "flags": []
+  }
+ ],
+ "edges": [
+  {
+   "src": "rn_377960f05c",
+   "dst": "rn_b916be8b3c",
+   "type": "drives",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_377960f05c",
+   "dst": "rn_04b5420d50",
+   "type": "drives",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_0ba402b0e8",
+   "dst": "rn_04b5420d50",
+   "type": "drives",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_0ba402b0e8",
+   "dst": "rn_1ef6037b71",
+   "type": "drives",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_0ba402b0e8",
+   "dst": "rn_39d6c72527",
+   "type": "drives",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_dcb8d6f82f",
+   "dst": "rn_2337450088",
+   "type": "drives",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_dcb8d6f82f",
+   "dst": "rn_4f8c9b3acc",
+   "type": "drives",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_414ae6a2b1",
+   "dst": "rn_4079d9cf0b",
+   "type": "drives",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_414ae6a2b1",
+   "dst": "rn_1ef6037b71",
+   "type": "drives",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_414ae6a2b1",
+   "dst": "rn_39d6c72527",
+   "type": "drives",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_9657b3ea63",
+   "dst": "rn_9e167ac93f",
+   "type": "drives",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_9657b3ea63",
+   "dst": "rn_04b5420d50",
+   "type": "drives",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_b916be8b3c",
+   "dst": "rn_f8b5f300fb",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_04b5420d50",
+   "dst": "rn_b78602157e",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_04b5420d50",
+   "dst": "rn_9e167ac93f",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_1ef6037b71",
+   "dst": "rn_ee1d4e95f2",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_1ef6037b71",
+   "dst": "rn_ca7d399d64",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_1ef6037b71",
+   "dst": "rn_bbddfa7bf0",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_1ef6037b71",
+   "dst": "rn_999909f48a",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_39d6c72527",
+   "dst": "rn_ee1d4e95f2",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_39d6c72527",
+   "dst": "rn_f7f574ea76",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_39d6c72527",
+   "dst": "rn_29cdeae903",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_4079d9cf0b",
+   "dst": "rn_ee1d4e95f2",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_4079d9cf0b",
+   "dst": "rn_ca7d399d64",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_4079d9cf0b",
+   "dst": "rn_bbddfa7bf0",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_4f8c9b3acc",
+   "dst": "rn_7c08765cb6",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_2337450088",
+   "dst": "rn_f7f574ea76",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_2337450088",
+   "dst": "rn_0233ddb848",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_56284d0db2",
+   "dst": "rn_f7f574ea76",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_56284d0db2",
+   "dst": "rn_0233ddb848",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_ee1d4e95f2",
+   "dst": "rn_29cdeae903",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_f7f574ea76",
+   "dst": "rn_0233ddb848",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_ca7d399d64",
+   "dst": "rn_ee1d4e95f2",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_7c08765cb6",
+   "dst": "rn_999909f48a",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_bbddfa7bf0",
+   "dst": "rn_ee1d4e95f2",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_999909f48a",
+   "dst": "rn_f8b5f300fb",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_29cdeae903",
+   "dst": "rn_b78602157e",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_0233ddb848",
+   "dst": "rn_f7f574ea76",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_f8b5f300fb",
+   "dst": "rn_999909f48a",
+   "type": "requires",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_ef07fb5b89",
+   "dst": "rn_1ef6037b71",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_ef07fb5b89",
+   "dst": "rn_39d6c72527",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_ef07fb5b89",
+   "dst": "rn_4f8c9b3acc",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_b78602157e",
+   "dst": "rn_29cdeae903",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_b78602157e",
+   "dst": "rn_1ef6037b71",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_b78602157e",
+   "dst": "rn_39d6c72527",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_d30ee638a3",
+   "dst": "rn_ee1d4e95f2",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_d30ee638a3",
+   "dst": "rn_ca7d399d64",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_d30ee638a3",
+   "dst": "rn_999909f48a",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_b585c48c6a",
+   "dst": "rn_4f8c9b3acc",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_b585c48c6a",
+   "dst": "rn_2337450088",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_9e167ac93f",
+   "dst": "rn_04b5420d50",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_81dfd04b03",
+   "dst": "rn_b916be8b3c",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_81dfd04b03",
+   "dst": "rn_04b5420d50",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_b867bc513e",
+   "dst": "rn_2337450088",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_b867bc513e",
+   "dst": "rn_4f8c9b3acc",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_013562d612",
+   "dst": "rn_2337450088",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_013562d612",
+   "dst": "rn_56284d0db2",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_1ef6037b71",
+   "dst": "rn_39d6c72527",
+   "type": "precedes",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_39d6c72527",
+   "dst": "rn_4079d9cf0b",
+   "type": "precedes",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_4079d9cf0b",
+   "dst": "rn_4f8c9b3acc",
+   "type": "precedes",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_4f8c9b3acc",
+   "dst": "rn_56284d0db2",
+   "type": "precedes",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_2337450088",
+   "dst": "rn_56284d0db2",
+   "type": "precedes",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_ee1d4e95f2",
+   "dst": "rn_f7f574ea76",
+   "type": "precedes",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_f7f574ea76",
+   "dst": "rn_7c08765cb6",
+   "type": "precedes",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_7c08765cb6",
+   "dst": "rn_0233ddb848",
+   "type": "precedes",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_bbddfa7bf0",
+   "dst": "rn_ee1d4e95f2",
+   "type": "precedes",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_999909f48a",
+   "dst": "rn_f8b5f300fb",
+   "type": "precedes",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_29cdeae903",
+   "dst": "rn_ee1d4e95f2",
+   "type": "precedes",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_0233ddb848",
+   "dst": "rn_f7f574ea76",
+   "type": "precedes",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_ef07fb5b89",
+   "dst": "rn_b78602157e",
+   "type": "enables",
+   "evidence_ids": []
+  },
+  {
+   "src": "rn_ef07fb5b89",
+   "dst": "rn_d30ee638a3",
+   "type": "enables",
+   "evidence_ids": []
+  }
+ ],
+ "generated_at": "2026-10-31T09:15:43.159772Z",
+ "cost_usd": 0.034708
+}
