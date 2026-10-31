@@ -55,6 +55,21 @@ def _run_summary(run: str) -> dict:
     }
 
 
+def cmd_alignment(args):
+    from trmkb.eval.alignment import evaluate_run
+    from trmkb.llm import LLM
+    llm = LLM()
+    out = evaluate_run(args.run, llm, model=args.judge)
+    for cond, s in out.items():
+        print(f"\n== {cond} ({s['model']}) ==")
+        print({k: v for k, v in s.items() if k not in ("results", "by_category", "condition", "model")})
+        print("by_category:", s["by_category"])
+        for r in s["results"]:
+            print(f"  {r['gt_id']} v{r['version']} {r['verdict']:11s} {r['category_row']:28s} → {str(r.get('node_label'))[:48]:48s} "
+                  f"gt={r.get('gt_year')} node={r.get('node_start')} ev={r.get('node_evidence', 0)}")
+    print(f"\njudge cost ${llm.ledger.total_usd:.4f}")
+
+
 def cmd_compare(args):
     rows = [_run_summary(r) for r in args.runs]
     keys = ["config", "reader", "critic", "docs", "errors", "nodes", "claims", "numeric_claims", "edges_acc", "edges_rej",
@@ -87,8 +102,9 @@ def main():
     a = sub.add_parser("recovery"); a.add_argument("--run", required=True); a.add_argument("--judge", default="openai/gpt-4.1-mini")
     b = sub.add_parser("compare"); b.add_argument("runs", nargs="+")
     c = sub.add_parser("inspect"); c.add_argument("--run", required=True); c.add_argument("--layer"); c.add_argument("--claims", action="store_true")
+    d = sub.add_parser("alignment"); d.add_argument("--run", required=True); d.add_argument("--judge", default="openai/gpt-4.1-mini")
     args = ap.parse_args()
-    {"recovery": cmd_recovery, "compare": cmd_compare, "inspect": cmd_inspect}[args.cmd](args)
+    {"recovery": cmd_recovery, "compare": cmd_compare, "inspect": cmd_inspect, "alignment": cmd_alignment}[args.cmd](args)
 
 
 if __name__ == "__main__":
