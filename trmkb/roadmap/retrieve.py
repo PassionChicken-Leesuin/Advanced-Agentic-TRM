@@ -73,18 +73,40 @@ def _claim_line(c) -> str:
     return f"{c.doc_date.year}/{c.modality.value}{extra}: {c.text[:200]}{t}"
 
 
-def build_context(kb: KBStore, *, per_layer: dict[Layer, int] | None = None, max_claims_per_node: int = 3,
-                  max_evidence_per_node: int = 1, max_rows: int = 30, max_chars: int = 70_000,
-                  summary_chars: int = 300) -> Context:
+# ----------------------------------------------------------------------------------------------
+# 비교 조건 (연구구상 §4.3). 같은 KB에서 컨텍스트 빌더만 바꾼다.
+#   S0  평면 RAG: 근거 청크 top-k 만 (구조 없음)
+#   S1  계층 요약만: 행 요약 (노드·주장·링크·근거 없음)
+#   S2  엔티티 그래프만: 노드+링크+근거, 층 타입·시간 없음
+#   S3  합집합: 네 구조를 서로 참조 없이 나열 (청크 / 요약 / 그래프 / 시간 인덱스)
+#   S4  제안 구조 (공통 뼈대 위 통합)      S4a 층 타입 제거 / S4b 시간 제거 / S4c 요약 제거 / S4d 근거 제거
+CONDITIONS = ("S0", "S1", "S2", "S3", "S4", "S4a", "S4b", "S4c", "S4d")
+
+
+def build_context(kb: KBStore, *, condition: str = "S4", per_layer: dict[Layer, int] | None = None,
+                  max_claims_per_node: int = 3, max_evidence_per_node: int = 1, max_rows: int = 30,
+                  max_chars: int = 70_000, summary_chars: int = 300) -> Context:
+    assert condition in CONDITIONS, condition
+    if condition == "S0":
+        return _context_flat(kb, max_chars=max_chars)
+    if condition == "S1":
+        return _context_summaries_only(kb, max_chars=max_chars)
+    if condition == "S3":
+        return _context_union(kb, max_chars=max_chars)
+    use_layers = condition not in ("S2", "S4a")
+    use_time = condition not in ("S2", "S4b")
+    use_summaries = condition not in ("S2", "S4c")
+    use_evidence = condition != "S4d"
     per_layer = per_layer or {Layer.WHY: 14, Layer.WHAT: 20, Layer.HOW: 24, Layer.RESOURCE: 10, Layer.CROSS: 16}
     ctx = Context(text="")
     sel = select_nodes(kb, per_layer)
     sel_ids = {n.id for n in sel}
     ctx.selected_node_ids = [n.id for n in sel]
-    parts: list[str] = []
+    parts: list[str] = [f"(context condition {condition})"]
 
     # ---- op2: row summaries (행 요약 + 측도 변화)
-    parts.append("## [op2] Roadmap rows — summaries and claim trajectories")
+    if use_summaries:
+        parts.append("## [op2] Roadmap rows — summaries and claim trajectories")
     rows: dict[str, list[NodeBase]] = defaultdict(list)
     for n in sel:
         rows[f"{NODE_LAYER[NodeType(n.type)].value}:{n.category or 'uncategorized'}"].append(n)
@@ -92,44 +114,51 @@ def build_context(kb: KBStore, *, per_layer: dict[Layer, int] | None = None, max
     def row_rank(key: str) -> float:
         base = sum(priority(kb, n) for n in rows[key])
         return base * (0.6 if key.startswith("cross:") else 1.0)
-    for key in sorted(rows, key=lambda k: -row_rank(k))[:max_rows]:
-        s = kb.summaries.get(key)
-        line = f"- row {key}" + (f" — {s.text[:summary_chars]}" if s else "")
-        parts.append(line)
-        for n in rows[key]:
-            measures = kb.measures_for(n.id)
-            if len({m for _, m in measures}) > 1:
-                seq = " → ".join(f"{d.year}:{m}" for d, m in measures)
-                parts.append(f"  - metric change on {n.id} ({n.label}): {seq}")
-                ctx.tag(n.id, RoadmapOp.TREND)
-        ctx.tag(key, RoadmapOp.TREND)
+    if use_summaries:
+        for key in sorted(rows, key=lambda k: -row_rank(k))[:max_rows]:
+            s = kb.summaries.get(key)
+            line = f"- row {key}" + (f" — {s.text[:summary_chars]}" if s else "")
+            parts.append(line)
+            for n in rows[key]:
+                measures = kb.measures_for(n.id)
+                if len({m for _, m in measures}) > 1:
+                    seq = " → ".join(f"{d.year}:{m}" for d, m in measures)
+                    parts.append(f"  - metric change on {n.id} ({n.label}): {seq}")
+                    ctx.tag(n.id, RoadmapOp.TREND)
+            ctx.tag(key, RoadmapOp.TREND)
 
     # ---- op1 + op5: nodes with claims, evidence, timing
-    parts.append("\n## [op1/op5] Nodes (id | layer/type | label | timing | flags) with claims and evidence ids")
+    hdr = "\n## [op1/op5] Nodes (id | " + ("layer/type | " if use_layers else "") + "label" + (" | timing | flags" if use_time else "") + ") with claims" + (" and evidence ids" if use_evidence else "")
+    parts.append(hdr)
     for n in sel:
         layer = NODE_LAYER[NodeType(n.type)].value
-        flags = f" flags={','.join(n.flags)}" if n.flags else ""
+        flags = f" flags={','.join(n.flags)}" if (n.flags and use_time) else ""
         kind = f"/{n.kind.value}" if isinstance(n, IssueNode) else ""
-        parts.append(f"- {n.id} | {layer}/{n.type}{kind} | {n.label} | {_fmt_time(n)}{flags} | row={n.category or '-'}")
+        typ = f" | {layer}/{n.type}{kind}" if use_layers else ""
+        tm = f" | {_fmt_time(n)}{flags}" if use_time else ""
+        row = f" | row={n.category or '-'}" if use_summaries or use_layers else ""
+        parts.append(f"- {n.id}{typ} | {n.label}{tm}{row}")
         ctx.tag(n.id, RoadmapOp.GROUNDING)
-        if n.es is not None:
+        if n.es is not None and use_time:
             ctx.tag(n.id, RoadmapOp.TIMING)
         for c in kb.claims_for(n.id)[-max_claims_per_node:]:
-            parts.append(f"    claim {c.id}: {_claim_line(c)}" + (" [CONFLICT]" if c.conflicts_with else ""))
+            line = _claim_line(c) if use_time else _claim_line_notime(c)
+            parts.append(f"    claim {c.id}: {line}" + (" [CONFLICT]" if c.conflicts_with else ""))
             ctx.tag(c.id, RoadmapOp.GROUNDING)
-        for ev in kb.evidence_for_node(n.id)[:max_evidence_per_node]:
-            parts.append(f"    evidence {ev.id} (doc {ev.doc_id[:28]}): \"{ev.text[:220]}\"")
-            ctx.tag(ev.id, RoadmapOp.GROUNDING)
+        if use_evidence:
+            for ev in kb.evidence_for_node(n.id)[:max_evidence_per_node]:
+                parts.append(f"    evidence {ev.id} (doc {ev.doc_id[:28]}): \"{ev.text[:220]}\"")
+                ctx.tag(ev.id, RoadmapOp.GROUNDING)
 
     # ---- op4: accepted links among selected nodes + why→what→how chains
     parts.append("\n## [op4] Accepted links (src → dst, relation, condition)")
     acc = [e for e in kb.edges.values() if e.critic_status == CriticStatus.ACCEPTED and e.src in sel_ids and e.dst in sel_ids]
     for e in acc[:150]:
         cond = f" if {e.condition}" if e.condition else ""
-        lag = f" lag={e.lag_years}y" if e.lag_years else ""
+        lag = f" lag={e.lag_years}y" if (e.lag_years and use_time) else ""
         parts.append(f"- {e.id}: {e.src} --{e.type.value}--> {e.dst}{cond}{lag}")
         ctx.tag(e.id, RoadmapOp.LINK); ctx.tag(e.src, RoadmapOp.LINK); ctx.tag(e.dst, RoadmapOp.LINK)
-    chains = _chains(kb, sel_ids)
+    chains = _chains(kb, sel_ids) if use_layers else []
     if chains:
         parts.append("Chains why → what → how:")
         for a, b, c in chains[:25]:
@@ -138,23 +167,26 @@ def build_context(kb: KBStore, *, per_layer: dict[Layer, int] | None = None, max
                 ctx.tag(x, RoadmapOp.LINK)
 
     # ---- op5: precedes order and infeasible
-    prec = [e for e in kb.edges.values() if e.critic_status == CriticStatus.ACCEPTED and e.type == RelationType.PRECEDES]
-    if prec:
-        parts.append("\n## [op5] Temporal order (precedes) and feasibility flags")
-        for e in prec[:60]:
-            parts.append(f"- {e.src} ({kb.nodes[e.src].label}, {_fmt_time(kb.nodes[e.src])}) precedes {e.dst} ({kb.nodes[e.dst].label}, {_fmt_time(kb.nodes[e.dst])})")
-            ctx.tag(e.src, RoadmapOp.TIMING); ctx.tag(e.dst, RoadmapOp.TIMING)
-    infeasible = [n for n in kb.nodes.values() if "infeasible" in n.flags]
-    for n in infeasible[:20]:
-        parts.append(f"- INFEASIBLE: {n.id} ({n.label}) needs a technology whose earliest start is later than its own ({_fmt_time(n)})")
-        ctx.tag(n.id, RoadmapOp.TIMING)
+    infeasible = []
+    if use_time:
+        prec = [e for e in kb.edges.values() if e.critic_status == CriticStatus.ACCEPTED and e.type == RelationType.PRECEDES]
+        if prec:
+            parts.append("\n## [op5] Temporal order (precedes) and feasibility flags")
+            for e in prec[:60]:
+                parts.append(f"- {e.src} ({kb.nodes[e.src].label}, {_fmt_time(kb.nodes[e.src])}) precedes {e.dst} ({kb.nodes[e.dst].label}, {_fmt_time(kb.nodes[e.dst])})")
+                ctx.tag(e.src, RoadmapOp.TIMING); ctx.tag(e.dst, RoadmapOp.TIMING)
+        infeasible = [n for n in kb.nodes.values() if "infeasible" in n.flags]
+        for n in infeasible[:20]:
+            parts.append(f"- INFEASIBLE: {n.id} ({n.label}) needs a technology whose earliest start is later than its own ({_fmt_time(n)})")
+            ctx.tag(n.id, RoadmapOp.TIMING)
 
-    # ---- op3: structural gaps
-    gaps = structural_gaps(kb)
-    parts.append("\n## [op3] Structural gaps (opportunities for new roadmap items)")
-    for kind, n, note in gaps[:30]:
-        parts.append(f"- gap/{kind}: {n.id} ({NODE_LAYER[NodeType(n.type)].value}/{n.type} \"{n.label}\") — {note}")
-        ctx.tag(n.id, RoadmapOp.OPPORTUNITY)
+    # ---- op3: structural gaps (층 타입이 있어야 정의됨)
+    gaps = structural_gaps(kb) if use_layers else []
+    if use_layers:
+        parts.append("\n## [op3] Structural gaps (opportunities for new roadmap items)")
+        for kind, n, note in gaps[:30]:
+            parts.append(f"- gap/{kind}: {n.id} ({NODE_LAYER[NodeType(n.type)].value}/{n.type} \"{n.label}\") — {note}")
+            ctx.tag(n.id, RoadmapOp.OPPORTUNITY)
 
     # ---- op6: issues
     issues = [n for n in kb.nodes.values() if n.type == "issue"]
@@ -178,8 +210,117 @@ def build_context(kb: KBStore, *, per_layer: dict[Layer, int] | None = None, max
     if len(text) > max_chars:
         text = text[:max_chars] + "\n... (context truncated)"
     ctx.text = text
-    ctx.stats = {"selected_nodes": len(sel), "rows": len(rows), "accepted_links": len(acc), "chains": len(chains),
+    ctx.stats = {"condition": condition, "selected_nodes": len(sel), "rows": len(rows), "accepted_links": len(acc), "chains": len(chains),
                  "gaps": len(gaps), "issues": min(len(issues), 25), "chars": len(text)}
+    return ctx
+
+
+def _claim_line_notime(c) -> str:
+    extra = ""
+    if getattr(c, "measure", None):
+        extra = f" [{c.measure}={c.value}]"
+    return f"{c.modality.value}{extra}: {c.text[:200]}"
+
+
+def _context_flat(kb: KBStore, *, max_chars: int) -> Context:
+    """S0: 근거 청크 top-k (쿼리 = 기업 로드맵 질문). 구조 없음. S4 와 같은 글자 예산까지 채운다."""
+    from ..agents.embed import embed
+    import numpy as np
+    ctx = Context(text="")
+    evs = [e for e in kb.evidence.values() if e.text]
+    if not evs:
+        ctx.text = "(no evidence)"; return ctx
+    vecs = embed([e.text[:600] for e in evs])
+    q = embed(["IonQ technology roadmap 2025-2030: market drivers, customer needs, products, milestones, targets, "
+               "technologies, components, funding, facilities, partnerships, risks"])[0]
+    order = np.argsort(-(vecs @ q))
+    parts = ["(context condition S0: retrieved passages)", "## Retrieved passages (id: text)"]
+    seen_text: set[str] = set(); n = 0; size = len("\n".join(parts))
+    for i in order:
+        e = evs[int(i)]
+        key = e.text[:120]
+        if key in seen_text:
+            continue
+        line = f"- {e.id} (doc {e.doc_id[:28]}): \"{e.text[:400]}\""
+        if size + len(line) > max_chars:
+            break
+        parts.append(line); size += len(line) + 1; seen_text.add(key); n += 1
+        ctx.tag(e.id, RoadmapOp.GROUNDING)
+    ctx.text = "\n".join(parts)
+    ctx.stats = {"condition": "S0", "passages": n, "chars": len(ctx.text)}
+    return ctx
+
+
+def _context_summaries_only(kb: KBStore, *, max_chars: int) -> Context:
+    """S1: 행 요약만."""
+    ctx = Context(text="")
+    parts = ["(context condition S1: row summaries only)", "## Roadmap row summaries (row key — summary)"]
+    for key, s in sorted(kb.summaries.items(), key=lambda kv: -kv[1].claim_count):
+        parts.append(f"- {key} — {s.text[:600]}")
+        ctx.tag(key, RoadmapOp.TREND)
+    text = "\n".join(parts)
+    ctx.text = text[:max_chars]
+    ctx.stats = {"condition": "S1", "rows": len(kb.summaries), "chars": len(ctx.text)}
+    return ctx
+
+
+def _context_union(kb: KBStore, *, max_chars: int) -> Context:
+    """S3: 네 구조를 서로 참조 없이 나열 (Zeng 2024 Mixed). 청크·요약·그래프·시간 인덱스가 각각 따로."""
+    from ..agents.embed import embed
+    import numpy as np
+    ctx = Context(text="")
+    budget = max_chars // 4
+    parts = ["(context condition S3: union of structures, not integrated)"]
+    # 1) chunks (예산까지)
+    evs = [e for e in kb.evidence.values() if e.text]
+    if evs:
+        vecs = embed([e.text[:600] for e in evs])
+        q = embed(["IonQ technology roadmap 2025-2030"])[0]
+        sec = ["## Passages"]; size = 0; seen = set()
+        for i in np.argsort(-(vecs @ q)):
+            e = evs[int(i)]
+            if e.text[:120] in seen:
+                continue
+            line = f"- {e.id}: \"{e.text[:300]}\""
+            if size + len(line) > budget:
+                break
+            sec.append(line); size += len(line) + 1; seen.add(e.text[:120]); ctx.tag(e.id, RoadmapOp.GROUNDING)
+        parts.append("\n".join(sec))
+    # 2) summaries (예산까지)
+    sec = ["\n## Summaries"]; size = 0
+    for key, s in sorted(kb.summaries.items(), key=lambda kv: -kv[1].claim_count):
+        line = f"- {key}: {s.text[:400]}"
+        if size + len(line) > budget:
+            break
+        sec.append(line); size += len(line) + 1; ctx.tag(key, RoadmapOp.TREND)
+    parts.append("\n".join(sec))
+    # 3) graph (nodes + edges, no claims attached; 예산까지)
+    sec = ["\n## Graph nodes (id: label)"]; size = 0
+    nodes = []
+    for n in sorted(kb.nodes.values(), key=lambda n: -priority(kb, n)):
+        line = f"- {n.id}: {n.label}"
+        if size + len(line) > budget * 0.45:
+            break
+        sec.append(line); size += len(line) + 1; nodes.append(n); ctx.tag(n.id, RoadmapOp.LINK)
+    ids = {n.id for n in nodes}
+    sec.append("## Graph edges")
+    for e in [e for e in kb.edges.values() if e.critic_status == CriticStatus.ACCEPTED and e.src in ids and e.dst in ids]:
+        line = f"- {e.src} --{e.type.value}--> {e.dst}"
+        if size + len(line) > budget:
+            break
+        sec.append(line); size += len(line) + 1; ctx.tag(e.id, RoadmapOp.LINK)
+    parts.append("\n".join(sec))
+    # 4) time index (year → labels)
+    sec = ["\n## Time index (year: labels)"]
+    for year in sorted(kb.time_index, key=lambda y: float(y)):
+        labels = [kb.nodes[i].label for i in kb.time_index[year] if i in kb.nodes][:12]
+        if labels:
+            sec.append(f"- {year}: " + "; ".join(labels))
+            for i in kb.time_index[year][:12]:
+                ctx.tag(i, RoadmapOp.TIMING)
+    parts.append("\n".join(sec)[:budget])
+    ctx.text = "\n".join(parts)[:max_chars]
+    ctx.stats = {"condition": "S3", "chars": len(ctx.text)}
     return ctx
 
 
