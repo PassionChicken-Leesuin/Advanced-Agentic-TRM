@@ -132,7 +132,8 @@ def test_events_seq_and_replay(tmp_path):
 def test_i18n_fallback():
     assert t("layer.why") == "Why (시장·동인)"
     assert t("layer.why", lang="en") == "Why (market & drivers)"
-    assert t("node.actor", lang="en") == "행위자"   # en 미정의 → ko 폴백
+    assert t("agent.reader", lang="en") == "Reader"   # en 미정의 키 → ko 폴백
+    assert t("node.actor", lang="en") == "Actor"
     assert t("no.such.key") == "no.such.key"
 
 

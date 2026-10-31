@@ -124,8 +124,7 @@ def main() -> None:
         d = run / "model2"; d.mkdir(exist_ok=True)
         m = "anthropic/claude-sonnet-4.6"
         sh([PY, "scripts/gen_roadmap.py", "initial", "--run", str(d), "--model", m])
-        sh([PY, "scripts/gen_roadmap.py", "advanced", "--run", str(d), "--model", m, "--initial-from", str(d / "roadmap_initial.json")] if False else
-           [PY, "-c", (
+        sh([PY, "-c", (
                "import sys,json; sys.path.insert(0,'.');"
                "from trmkb.llm import LLM; from trmkb.store import KBStore; from trmkb.roadmap import generate as G, retrieve as R, diff as D;"
                "from trmkb.eval.alignment import evaluate_run;"
