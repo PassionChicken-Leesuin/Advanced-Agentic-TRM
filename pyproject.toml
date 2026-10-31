@@ -1,0 +1,25 @@
+[project]
+name = "trmkb"
+version = "0.1.0"
+description = "TRM-specific Knowledge Base construction agentic system (IonQ demo)"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.10",
+    "openai>=1.60",
+    "python-dotenv>=1.0",
+    "networkx>=3.3",
+    "sentence-transformers>=3.0",
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+    "pymupdf>=1.25",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.setuptools.packages.find]
+include = ["trmkb*"]
