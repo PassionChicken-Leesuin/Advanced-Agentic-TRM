@@ -1,0 +1,978 @@
+{
+ "collected": [
+  {
+   "id": "pub_ionq_blog_2024-10-03_achieving_remote_ion_ion_entanglement_pa",
+   "date": "2024-10-03",
+   "title": "Achieving Remote Ion-Ion Entanglement: Paving the Way for Scalable Quantum Networking",
+   "url": "https://ionq.com/blog/achieving-remote-ion-ion-entanglement-paving-the-way-for-scalable-quantum",
+   "chars": 6246
+  },
+  {
+   "id": "pub_ionq_blog_2022-04-08_april_08_2022_ionq_zapata_darpa_award",
+   "date": "2022-04-08",
+   "title": "IonQ Joins DARPA Quantum Benchmarking Team",
+   "url": "https://ionq.com/blog/april-08-2022-ionq-zapata-darpa-award",
+   "chars": 3773
+  },
+  {
+   "id": "pub_ionq_blog_2022-04-14_april_14_2022_peter_chapman_letter_to_st",
+   "date": "2022-04-14",
+   "title": "Letter to Stockholders",
+   "url": "https://ionq.com/blog/april-14-2022-peter-chapman-letter-to-stockholders",
+   "chars": 14495
+  },
+  {
+   "id": "pub_ionq_blog_2022-04-14_april_22_2022_ionq_sponsors_bitcamp",
+   "date": "2022-04-14",
+   "title": "IonQ Sponsors Bitcamp’s First Quantum Hackathon",
+   "url": "https://ionq.com/blog/april-22-2022-ionq-sponsors-bitcamp",
+   "chars": 3281
+  },
+  {
+   "id": "pub_ionq_blog_2023-04-28_april_28_2023_peter_chapman_letter_to_st",
+   "date": "2023-04-28",
+   "title": "Letter to Stockholders About IonQ's 2022 Annual Report",
+   "url": "https://ionq.com/blog/april-28-2023-peter-chapman-letter-to-stockholders",
+   "chars": 10555
+  },
+  {
+   "id": "pub_ionq_blog_2021-12-07_december_07_2021_creating_business_value",
+   "date": "2021-12-07",
+   "title": "IonQ at Q2B 2021: Creating Business Value with Quantum Computing",
+   "url": "https://ionq.com/blog/december-07-2021-creating-business-value-at-q2b-2021",
+   "chars": 5217
+  },
+  {
+   "id": "pub_ionq_blog_2020-12-09_december_09_2020_scaling_quantum_compute",
+   "date": "2020-12-09",
+   "title": "Scaling IonQ's Quantum Computers: The Roadmap",
+   "url": "https://ionq.com/blog/december-09-2020-scaling-quantum-computer-roadmap",
+   "chars": 4818
+  },
+  {
+   "id": "pub_ionq_blog_2021-12-10_december_10_2021_ionq_to_use_barium",
+   "date": "2021-12-10",
+   "title": "In Industry First, IonQ to Use Barium Ions for Computation",
+   "url": "https://ionq.com/blog/december-10-2021-ionq-to-use-barium",
+   "chars": 4485
+  },
+  {
+   "id": "pub_ionq_blog_2024-02-22_enabling_networked_quantum_computing_wit",
+   "date": "2024-02-22",
+   "title": "Enabling Networked Quantum Computing with Ion-Photon Entanglement",
+   "url": "https://ionq.com/blog/enabling-networked-quantum-computing-with-ion-photon-entanglement",
+   "chars": 6362
+  },
+  {
+   "id": "pub_ionq_blog_2024-11-13_extreme_high_vacuum_xhv_reduces_computat",
+   "date": "2024-11-13",
+   "title": "Extreme High Vacuum (XHV) Reduces Computational Energy Costs and Furthers Room Temperature Quantum Computing",
+   "url": "https://ionq.com/blog/extreme-high-vacuum-xhv-reduces-computational-energy-costs-and-furthers-room",
+   "chars": 9341
+  },
+  {
+   "id": "pub_ionq_blog_2022-02-03_february_03_2022_welcome_inder_m_singh",
+   "date": "2022-02-03",
+   "title": "Meet Inder M. Singh, IonQ’s Latest Board Member",
+   "url": "https://ionq.com/blog/february-03-2022-welcome-inder-m-singh",
+   "chars": 5180
+  },
+  {
+   "id": "pub_ionq_blog_2022-02-09_february_09_2022_iquhack_winners_opti_ma",
+   "date": "2022-02-09",
+   "title": "iQuHack IonQ x Microsoft Challenge Winners: Opti-Maze",
+   "url": "https://ionq.com/blog/february-09-2022-iquhack-winners-opti-maze",
+   "chars": 5817
+  },
+  {
+   "id": "pub_ionq_blog_2024-12-05_full_stack_innovation_to_power_the_quant",
+   "date": "2024-12-05",
+   "title": "Full-Stack Innovation to Power the Quantum-Accelerated Future: IonQ Quantum OS, IonQ Hybrid Services, and IonQ Forte Enterprise Availability",
+   "url": "https://ionq.com/blog/full-stack-innovation-to-power-the-quantum-accelerated-future-ionq-quantum",
+   "chars": 20313
+  },
+  {
+   "id": "pub_ionq_blog_2023-07-05_how_does_quantum_machine_learning_work",
+   "date": "2023-07-05",
+   "title": "How Does Quantum Machine Learning Work?",
+   "url": "https://ionq.com/blog/how-does-quantum-machine-learning-work",
+   "chars": 6849
+  },
+  {
+   "id": "pub_ionq_blog_2023-01-26_how_we_achieved_a_significant_breakthrou",
+   "date": "2023-01-26",
+   "title": "How We Achieved a Significant Breakthrough in the Performance of Quantum Systems",
+   "url": "https://ionq.com/blog/how-we-achieved-a-significant-breakthrough-in-the-performance-of-quantum",
+   "chars": 3330
+  },
+  {
+   "id": "pub_ionq_blog_2024-01-25_how_we_achieved_our_2024_performance_tar",
+   "date": "2024-01-25",
+   "title": "How We Achieved Our 2024 Performance Target of #AQ 35",
+   "url": "https://ionq.com/blog/how-we-achieved-our-2024-performance-target-of-aq-35",
+   "chars": 10036
+  },
+  {
+   "id": "pub_ionq_blog_2023-06-22_ionq_achieves_new_performance_milestone_",
+   "date": "2023-06-22",
+   "title": "IonQ Achieves New Performance Milestone of 29 Algorithmic Qubits (#AQ) on IonQ Forte",
+   "url": "https://ionq.com/blog/ionq-achieves-new-performance-milestone-of-29-algorithmic-qubits-aq-on-ionq",
+   "chars": 5263
+  },
+  {
+   "id": "pub_ionq_blog_2022-12-07_ionq_achieves_quantum_breakthrough_for_n",
+   "date": "2022-12-07",
+   "title": "IonQ Achieves Quantum Breakthrough for Next-Generation Electric Batteries",
+   "url": "https://ionq.com/blog/ionq-achieves-quantum-breakthrough-for-next-generation-electric-batteries",
+   "chars": 3948
+  },
+  {
+   "id": "pub_ionq_blog_2023-02-06_ionq_acquires_entangled_networks_to_driv",
+   "date": "2023-02-06",
+   "title": "IonQ Acquires Entangled Networks to Drive Further Quantum Scale",
+   "url": "https://ionq.com/blog/ionq-acquires-entangled-networks-to-drive-further-quantum-scale",
+   "chars": 3077
+  },
+  {
+   "id": "pub_ionq_blog_2024-03-14_ionq_and_desy_tackle_the_gate_assignment",
+   "date": "2024-03-14",
+   "title": "IonQ and DESY Tackle the Gate Assignment Problem",
+   "url": "https://ionq.com/blog/ionq-and-desy-tackle-the-gate-assignment-problem",
+   "chars": 8656
+  },
+  {
+   "id": "pub_ionq_blog_2024-11-21_ionq_and_oak_ridge_national_laboratory_d",
+   "date": "2024-11-21",
+   "title": "IonQ and Oak Ridge National Laboratory Demonstrate a Novel, Scalable, and Efficient Quantum Approach to Combinatorial Optimization Problems",
+   "url": "https://ionq.com/blog/ionq-and-oak-ridge-national-laboratory-demonstrate-a-novel-scalable-and",
+   "chars": 11691
+  },
+  {
+   "id": "pub_ionq_blog_2024-08-28_ionq_announces_continued_collaboration_w",
+   "date": "2024-08-28",
+   "title": "IonQ Announces Continued Collaboration with Amazon Web Services to Extend Quantum Accessibility for All",
+   "url": "https://ionq.com/blog/ionq-announces-continued-collaboration-with-amazon-web-services-to-extend",
+   "chars": 2797
+  },
+  {
+   "id": "pub_ionq_blog_2023-05-17_ionq_aria_now_available_on_amazon_braket",
+   "date": "2023-05-17",
+   "title": "IonQ Aria Now Available on Amazon Braket",
+   "url": "https://ionq.com/blog/ionq-aria-now-available-on-amazon-braket",
+   "chars": 3937
+  },
+  {
+   "id": "pub_ionq_blog_2023-12-05_ionq_at_aws_re_invent_expanded_commercia",
+   "date": "2023-12-05",
+   "title": "IonQ at AWS re:Invent: Expanded Commercial and Public Availability of IonQ Forte and IonQ Application Support now available on Amazon",
+   "url": "https://ionq.com/blog/ionq-at-aws-re-invent-expanded-commercial-and-public-availability-of-ionq",
+   "chars": 1771
+  },
+  {
+   "id": "pub_ionq_blog_2022-11-18_ionq_azure_quantum_now_accessible_to_eve",
+   "date": "2022-11-18",
+   "title": "IonQ + Azure = Quantum Now Accessible to Everyone",
+   "url": "https://ionq.com/blog/ionq-azure-quantum-now-accessible-to-everyone",
+   "chars": 3666
+  },
+  {
+   "id": "pub_ionq_blog_2023-04-14_ionq_celebrates_world_quantum_day",
+   "date": "2023-04-14",
+   "title": "IonQ Celebrates World Quantum Day",
+   "url": "https://ionq.com/blog/ionq-celebrates-world-quantum-day",
+   "chars": 4397
+  },
+  {
+   "id": "pub_ionq_blog_2023-05-24_ionq_demos_new_project_with_classiq_at_i",
+   "date": "2023-05-24",
+   "title": "IonQ Demos New Project with Classiq at ISC High Performance 2023",
+   "url": "https://ionq.com/blog/ionq-demos-new-project-with-classiq-at-isc-high-performance-2023",
+   "chars": 1314
+  },
+  {
+   "id": "pub_ionq_blog_2022-11-16_ionq_employee_profile_cori_williams_soft",
+   "date": "2022-11-16",
+   "title": "IonQ Employee Profile: Cori Williams, Software Engineer",
+   "url": "https://ionq.com/blog/ionq-employee-profile-cori-williams-software-engineer",
+   "chars": 2614
+  },
+  {
+   "id": "pub_ionq_blog_2024-11-19_ionq_employee_profile_garrett_josemans_i",
+   "date": "2024-11-19",
+   "title": "IonQ Employee Profile: Garrett Josemans, IonQ Quantum Physicist and Netflix’s Season 7 Love is Blind Breakout Star",
+   "url": "https://ionq.com/blog/ionq-employee-profile-garrett-josemans-ionq-quantum-physicist-and-netflixs",
+   "chars": 3547
+  },
+  {
+   "id": "pub_ionq_blog_2024-04-23_ionq_employee_profile_nicolas_delfosse_p",
+   "date": "2024-04-23",
+   "title": "IonQ Employee Profile: Nicolas Delfosse, Principal Researcher",
+   "url": "https://ionq.com/blog/ionq-employee-profile-nicolas-delfosse-principal-researcher",
+   "chars": 4091
+  },
+  {
+   "id": "pub_ionq_blog_2023-02-10_ionq_employee_profile_nicole_barberis_te",
+   "date": "2023-02-10",
+   "title": "IonQ Employee Profile: Nicole Barberis, Technical Director, GTM",
+   "url": "https://ionq.com/blog/ionq-employee-profile-nicole-barberis-technical-director-gtm",
+   "chars": 3953
+  },
+  {
+   "id": "pub_ionq_blog_2023-06-22_ionq_forte_our_highest_performing_commer",
+   "date": "2023-06-22",
+   "title": "IonQ Forte: Our Highest Performing, Commercially Available Quantum Computer",
+   "url": "https://ionq.com/blog/ionq-forte-our-highest-performing-commercially-available-quantum-computer",
+   "chars": 7155
+  },
+  {
+   "id": "pub_ionq_blog_2023-09-18_ionq_participated_in_the_ieee_internatio",
+   "date": "2023-09-18",
+   "title": "IonQ to Participate in the IEEE International Conference on Quantum Computing and Engineering",
+   "url": "https://ionq.com/blog/ionq-participated-in-the-ieee-international-conference-on-quantum-computing",
+   "chars": 1411
+  },
+  {
+   "id": "pub_ionq_blog_2023-07-24_ionq_participates_in_q2b_tokyo_2023",
+   "date": "2023-07-24",
+   "title": "IonQ Participates in Q2B Tokyo 2023",
+   "url": "https://ionq.com/blog/ionq-participates-in-q2b-tokyo-2023",
+   "chars": 777
+  },
+  {
+   "id": "pub_ionq_blog_2023-06-29_ionq_participates_in_quantum_korea_2023",
+   "date": "2023-06-29",
+   "title": "IonQ Participates In Quantum Korea 2023",
+   "url": "https://ionq.com/blog/ionq-participates-in-quantum-korea-2023",
+   "chars": 850
+  },
+  {
+   "id": "pub_ionq_blog_2023-09-29_ionq_participates_in_quantum_world_congr",
+   "date": "2023-09-29",
+   "title": "IonQ Participates in Quantum World Congress 2023",
+   "url": "https://ionq.com/blog/ionq-participates-in-quantum-world-congress-2023",
+   "chars": 1183
+  },
+  {
+   "id": "pub_ionq_blog_2023-06-01_ionq_runs_the_first_known_quantum_circui",
+   "date": "2023-06-01",
+   "title": "IonQ runs the first known quantum circuits that model human cognitive biases",
+   "url": "https://ionq.com/blog/ionq-runs-the-first-known-quantum-circuits-that-model-human-cognitive-biases",
+   "chars": 5489
+  },
+  {
+   "id": "pub_ionq_blog_2023-04-18_ionq_scientists_closely_linked_to_innova",
+   "date": "2023-04-18",
+   "title": "IonQ Scientists Closely Linked to Innovation Spotlighted in 2022 Nobel Prize for Physics",
+   "url": "https://ionq.com/blog/ionq-scientists-closely-linked-to-innovation-spotlighted-in-2022-nobel-prize",
+   "chars": 3510
+  },
+  {
+   "id": "pub_ionq_blog_2023-09-18_ionq_to_participate_in_quantum_world_con",
+   "date": "2023-09-18",
+   "title": "IonQ to Participate In Quantum World Congress 2023",
+   "url": "https://ionq.com/blog/ionq-to-participate-in-quantum-world-congress-2023",
+   "chars": 1243
+  },
+  {
+   "id": "pub_ionq_blog_2023-11-09_ionq_to_participate_in_supercompute_2023",
+   "date": "2023-11-09",
+   "title": "IonQ to Participate in SuperCompute 2023",
+   "url": "https://ionq.com/blog/ionq-to-participate-in-supercompute-2023",
+   "chars": 1932
+  },
+  {
+   "id": "pub_ionq_blog_2022-03-28_ionq_welcomes_new_leaders_laurie_babinsk",
+   "date": "2022-03-28",
+   "title": "IonQ Welcomes New Leaders Laurie Babinski and Anant Sanchetee",
+   "url": "https://ionq.com/blog/ionq-welcomes-new-leaders-laurie-babinski-and-anant-sanchetee",
+   "chars": 3146
+  },
+  {
+   "id": "pub_ionq_blog_2022-11-17_ionq_works_with_dell_technologies_to_del",
+   "date": "2022-11-17",
+   "title": "IonQ Works with Dell Technologies to Deliver Hybrid Classical-Quantum Platform",
+   "url": "https://ionq.com/blog/ionq-works-with-dell-technologies-to-deliver-hybrid-classical-quantum",
+   "chars": 2652
+  },
+  {
+   "id": "pub_ionq_blog_2022-07-12_july_12_2022_kathy_chou_joins_board",
+   "date": "2022-07-12",
+   "title": "Kathy Chou Joins IonQ Board of Directors",
+   "url": "https://ionq.com/blog/july-12-2022-kathy-chou-joins-board",
+   "chars": 3713
+  },
+  {
+   "id": "pub_ionq_blog_2022-06-06_june_06_2022_ionq_kicks_off_expanded_int",
+   "date": "2022-06-06",
+   "title": "IonQ Kicks Off Expanded Internship Program",
+   "url": "https://ionq.com/blog/june-06-2022-ionq-kicks-off-expanded-internship-program",
+   "chars": 2573
+  },
+  {
+   "id": "pub_ionq_blog_2022-06-10_june_10_2022_ionq_unitaryhack",
+   "date": "2022-06-10",
+   "title": "IonQ Sponsors unitaryHACK Quantum Bounties",
+   "url": "https://ionq.com/blog/june-10-2022-ionq-unitaryhack",
+   "chars": 2226
+  },
+  {
+   "id": "pub_ionq_blog_2022-06-21_june_21_2022_employee_profile_kai_hudek",
+   "date": "2022-06-21",
+   "title": "IonQ Employee Profile: Kai Hudek, Senior Physicist",
+   "url": "https://ionq.com/blog/june-21-2022-employee-profile-kai-hudek",
+   "chars": 2854
+  },
+  {
+   "id": "pub_ionq_blog_2024-05-08_letter_to_stockholders_about_ionqs_2023_",
+   "date": "2024-05-08",
+   "title": "Letter to Stockholders About IonQ’s 2023 Annual Report",
+   "url": "https://ionq.com/blog/letter-to-stockholders-about-ionqs-2023-annual-report",
+   "chars": 11342
+  },
+  {
+   "id": "pub_ionq_blog_2022-03-30_march_30_2022_ionq_honored_time100_influ",
+   "date": "2022-03-30",
+   "title": "IonQ Honored in TIME100 Most Influential Companies",
+   "url": "https://ionq.com/blog/march-30-2022-ionq-honored-time100-influential-companies",
+   "chars": 3943
+  },
+  {
+   "id": "pub_ionq_blog_2022-05-12_may_12_2022_introducing_native_gates_for",
+   "date": "2022-05-12",
+   "title": "Introducing Native Gates for Cloud Customers",
+   "url": "https://ionq.com/blog/may-12-2022-introducing-native-gates-for-cloud-customers",
+   "chars": 841
+  },
+  {
+   "id": "pub_ionq_blog_2022-05-12_may_12_2022_ionq_founders_respond",
+   "date": "2022-05-12",
+   "title": "IonQ Founders Respond to Scorpion Capital Report",
+   "url": "https://ionq.com/blog/may-12-2022-ionq-founders-respond",
+   "chars": 3240
+  },
+  {
+   "id": "pub_ionq_blog_2021-11-19_november_19_2021_quantum_to_the_market_m",
+   "date": "2021-11-19",
+   "title": "Bringing Quantum to the Market With Multiverse Computing",
+   "url": "https://ionq.com/blog/november-19-2021-quantum-to-the-market-multiverse-computing",
+   "chars": 3567
+  },
+  {
+   "id": "pub_ionq_blog_2020-10-01_october_01_2020_introducing_most_powerfu",
+   "date": "2020-10-01",
+   "title": "Introducing the World’s Most Powerful Quantum Computer",
+   "url": "https://ionq.com/blog/october-01-2020-introducing-most-powerful-quantum-computer",
+   "chars": 4693
+  },
+  {
+   "id": "pub_ionq_blog_2022-10-03_october_03_2022_ionq_shines_at_ieee_even",
+   "date": "2022-10-03",
+   "title": "IonQ Shines at IEEE Event Tackling Quantum Successes, Industry Innovation",
+   "url": "https://ionq.com/blog/october-03-2022-ionq-shines-at-ieee-event",
+   "chars": 4818
+  },
+  {
+   "id": "pub_ionq_blog_2022-10-10_october_10_2022_hardware_noise_model_sim",
+   "date": "2022-10-10",
+   "title": "Introducing Hardware Noise Model Simulation for IonQ Aria and IonQ Harmony",
+   "url": "https://ionq.com/blog/october-10-2022-hardware-noise-model-simulation-for-ionq-aria-and-ionq-harmony",
+   "chars": 2948
+  },
+  {
+   "id": "pub_ionq_blog_2021-10-18_october_18_2021_benchmarking_our_next_ge",
+   "date": "2021-10-18",
+   "title": "Benchmarking our Next-Generation System",
+   "url": "https://ionq.com/blog/october-18-2021-benchmarking-our-next-generation-system",
+   "chars": 9210
+  },
+  {
+   "id": "pub_ionq_blog_2023-07-28_orbital_optimized_pair_correlated_electr",
+   "date": "2023-07-28",
+   "title": "Orbital-optimized pair-correlated electron simulations on trapped-ion quantum computers",
+   "url": "https://ionq.com/blog/orbital-optimized-pair-correlated-electron-simulations-on-trapped-ion",
+   "chars": 5178
+  },
+  {
+   "id": "pub_ionq_blog_2024-08-14_our_novel_efficient_approach_to_quantum_",
+   "date": "2024-08-14",
+   "title": "Our Novel, Efficient Approach to Quantum Error Correction",
+   "url": "https://ionq.com/blog/our-novel-efficient-approach-to-quantum-error-correction",
+   "chars": 12813
+  },
+  {
+   "id": "pub_ionq_blog_2024-12-19_q_day_and_the_impact_of_breaking_rsa2048",
+   "date": "2024-12-19",
+   "title": "Q-Day and the Impact of Breaking RSA2048",
+   "url": "https://ionq.com/blog/q-day-and-the-impact-of-breaking-rsa2048",
+   "chars": 15156
+  },
+  {
+   "id": "pub_ionq_blog_2023-06-16_quantum_computing_monte_carlo_algorithms",
+   "date": "2023-06-16",
+   "title": "Quantum Computing, Monte Carlo Algorithms, & Financial Modeling",
+   "url": "https://ionq.com/blog/quantum-computing-monte-carlo-algorithms-and-financial-modeling",
+   "chars": 4268
+  },
+  {
+   "id": "pub_ionq_blog_2024-09-11_quantum_is_now_with_ionq_building_a_larg",
+   "date": "2024-09-11",
+   "title": "Quantum is Now with IonQ: Building a Large Global Quantum Business",
+   "url": "https://ionq.com/blog/quantum-is-now-with-ionq-building-a-large-global-quantum-business",
+   "chars": 2145
+  },
+  {
+   "id": "pub_ionq_blog_2023-04-17_quantum_networking_accelerates_ionqs_dri",
+   "date": "2023-04-17",
+   "title": "Quantum Networking Accelerates IonQ’s Drive to Innovation",
+   "url": "https://ionq.com/blog/quantum-networking-accelerates-ionqs-drive-to-innovation",
+   "chars": 4623
+  },
+  {
+   "id": "pub_ionq_blog_2023-06-02_quantum_networking_how_work",
+   "date": "2023-06-02",
+   "title": "How Does Quantum Networking Work?",
+   "url": "https://ionq.com/blog/quantum-networking-how-work",
+   "chars": 6699
+  },
+  {
+   "id": "pub_ionq_blog_2024-10-23_quantum_takes_off",
+   "date": "2024-10-23",
+   "title": "Quantum takes off",
+   "url": "https://ionq.com/blog/quantum-takes-off",
+   "chars": 441
+  },
+  {
+   "id": "pub_ionq_blog_2023-02-01_rima_alameddine_joins_ionq_to_expand_ent",
+   "date": "2023-02-01",
+   "title": "Rima Alameddine Joins IonQ to Expand Enterprise Sales",
+   "url": "https://ionq.com/blog/rima-alameddine-joins-ionq-to-expand-enterprise-sales",
+   "chars": 2947
+  },
+  {
+   "id": "pub_ionq_blog_2023-09-22_security_enhancement_ionq_api_keys_no_lo",
+   "date": "2023-09-22",
+   "title": "Security Enhancement: IonQ API keys no longer visible after creation",
+   "url": "https://ionq.com/blog/security-enhancement-ionq-api-keys-no-longer-visible-after-creations",
+   "chars": 5856
+  },
+  {
+   "id": "pub_ionq_blog_2023-08-22_the_impact_of_quantum_computing_on_machi",
+   "date": "2023-08-22",
+   "title": "What Is the Relationship Between Quantum Computing and Machine Learning",
+   "url": "https://ionq.com/blog/the-impact-of-quantum-computing-on-machine-learning",
+   "chars": 6012
+  },
+  {
+   "id": "pub_ionq_blog_2023-08-22_the_impact_of_quantum_computing_on_machi",
+   "date": "2023-08-22",
+   "title": "What Is the Relationship Between Quantum Computing and Machine Learning",
+   "url": "https://ionq.com/blog/the-impact-of-quantum-computing-on-machine-learning-post",
+   "chars": 6012
+  },
+  {
+   "id": "pub_ionq_blog_2023-06-08_the_top_5_benefits_of_modular_quantum_co",
+   "date": "2023-06-08",
+   "title": "The Top 5 Benefits of Modular Quantum Computing for Business",
+   "url": "https://ionq.com/blog/the-top-5-benefits-of-modular-quantum-computing-for-business",
+   "chars": 5835
+  },
+  {
+   "id": "pub_ionq_blog_2024-09-17_understanding_the_ionq_quantum_clouds_ne",
+   "date": "2024-09-17",
+   "title": "Understanding the IonQ Quantum Cloud’s New Access Model",
+   "url": "https://ionq.com/blog/understanding-the-ionq-quantum-clouds-new-access-model",
+   "chars": 4107
+  },
+  {
+   "id": "pub_ionq_blog_2022-12-13_wendy_thomas_joins_ionq_board_of_directo",
+   "date": "2022-12-13",
+   "title": "Wendy Thomas Joins IonQ Board of Directors",
+   "url": "https://ionq.com/blog/wendy-thomas-joins-ionq-board-of-directors",
+   "chars": 3810
+  },
+  {
+   "id": "pub_ionq_blog_2023-06-06_what_is_the_value_of_quantum_networking",
+   "date": "2023-06-06",
+   "title": "What Is the Value of Quantum Networking?",
+   "url": "https://ionq.com/blog/what-is-the-value-of-quantum-networking",
+   "chars": 7402
+  },
+  {
+   "id": "pub_ionq_blog_2023-09-19_why_quantum_computing_is_the_new_space_r",
+   "date": "2023-09-19",
+   "title": "Why Quantum Computing Is the New Space Race",
+   "url": "https://ionq.com/blog/why-quantum-computing-is-the-new-space-race",
+   "chars": 4342
+  },
+  {
+   "id": "pub_ionq_resources_2024-01-31_get_started_with_google_cloud_and_ionq",
+   "date": "2024-01-31",
+   "title": "Get started with Google Cloud and IonQ",
+   "url": "https://ionq.com/resources/get-started-with-google-cloud-and-ionq",
+   "chars": 1727
+  },
+  {
+   "id": "pub_ionq_resources_2024-01-31_get_started_with_projectq_on_ionq_hardwa",
+   "date": "2024-01-31",
+   "title": "Get started with ProjectQ on IonQ Hardware",
+   "url": "https://ionq.com/resources/get-started-with-projectq-on-ionq-hardware",
+   "chars": 3700
+  },
+  {
+   "id": "pub_ionq_resources_2023-03-03_ionq_forte_first_configurable_quantum_co",
+   "date": "2023-03-03",
+   "title": "IonQ Forte: The First Software-Configurable Quantum Computer",
+   "url": "https://ionq.com/resources/ionq-forte-first-configurable-quantum-computer",
+   "chars": 12599
+  },
+  {
+   "id": "pub_ionq_resources_2024-01-31_using_native_gates_with_pennylane",
+   "date": "2024-01-31",
+   "title": "Using Native Gates with PennyLane",
+   "url": "https://ionq.com/resources/using-native-gates-with-pennylane",
+   "chars": 2316
+  }
+ ],
+ "skipped": [
+  {
+   "url": "https://ionq.com/blog/a-platform-solution-to-the-deep-trotter-dilemma-improving-quantum-chemistry-simulations",
+   "reason": "after cutoff 2026-09-01"
+  },
+  {
+   "url": "https://ionq.com/blog/accelerating-towards-fault-tolerance-unlocking-99-99-two-qubit-gate",
+   "reason": "after cutoff 2025-10-21"
+  },
+  {
+   "url": "https://ionq.com/blog/advancing-quantum-computing-faster-mixed-species-gates-for-trapped-ion",
+   "reason": "after cutoff 2025-03-05"
+  },
+  {
+   "url": "https://ionq.com/blog/beyond-qubit-counts-introducing-ionqs-application-centric-benchmarking-framework",
+   "reason": "after cutoff 2026-04-14"
+  },
+  {
+   "url": "https://ionq.com/blog/blueprint-for-fault-tolerant-trapped-ion-quantum-computing-the-walking-cat-architecture",
+   "reason": "after cutoff 2026-04-22"
+  },
+  {
+   "url": "https://ionq.com/blog/breaking-the-decoding-bottleneck-fast-and-accurate-software-decoding-for-quantum-ldpc-codes",
+   "reason": "after cutoff 2026-01-08"
+  },
+  {
+   "url": "https://ionq.com/blog/bridging-a-historical-divide-in-quantum-computing",
+   "reason": "after cutoff 2026-09-14"
+  },
+  {
+   "url": "https://ionq.com/blog/bypassing-the-horizon-how-space-based-laser-networks-are-rewriting-the-rules-of-satellite-intelligence",
+   "reason": "after cutoff 2026-06-24"
+  },
+  {
+   "url": "https://ionq.com/blog/co-innovating-with-ionq-how-one-utility-is-solving-power-grid-complexity",
+   "reason": "after cutoff 2026-10-28"
+  },
+  {
+   "url": "https://ionq.com/blog/demystifying-logical-qubits-and-fault-tolerance",
+   "reason": "after cutoff 2025-11-20"
+  },
+  {
+   "url": "https://ionq.com/blog/diamond-thin-films-unlock-foundry-scale-production-for-quantum-technologies",
+   "reason": "after cutoff 2025-10-09"
+  },
+  {
+   "url": "https://ionq.com/blog/ecosystem-innovation-ionqs-life-sciences-application-workflow-accelerates",
+   "reason": "after cutoff 2025-06-09"
+  },
+  {
+   "url": "https://ionq.com/blog/executive-orders-move-quantum-from-research-to-real-life--and-its-truly-a-watershed-moment",
+   "reason": "after cutoff 2026-08-04"
+  },
+  {
+   "url": "https://ionq.com/blog/from-flash-cells-to-qubits-how-ionq-is-drawing-inspiration-from-classical",
+   "reason": "after cutoff 2025-02-20"
+  },
+  {
+   "url": "https://ionq.com/blog/from-signal-to-insight-evaluating-quantum-generative-models-on-real-satellite-radar",
+   "reason": "after cutoff 2026-09-24"
+  },
+  {
+   "url": "https://ionq.com/blog/from-wall-street-hypothesis-to-nyse-production-the-real-world-arrival-ofquantum-finance",
+   "reason": "after cutoff 2026-05-12"
+  },
+  {
+   "url": "https://ionq.com/blog/how-qldpc-with-scheduled-error-correction-unlocks-faster-fault-tolerant-quantum-computers",
+   "reason": "after cutoff 2026-10-06"
+  },
+  {
+   "url": "https://ionq.com/blog/innovating-manufacturing-and-scaling-highlights-from-ionq-investor-day-2026",
+   "reason": "after cutoff 2026-09-18"
+  },
+  {
+   "url": "https://ionq.com/blog/ionq-and-leading-global-automotive-manufacturer-collaborate-to-advance",
+   "reason": "after cutoff 2025-04-30"
+  },
+  {
+   "url": "https://ionq.com/blog/ionq-hits-aq-64-milestone-ahead-of-schedule-and-sets-its-sights-even-higher",
+   "reason": "after cutoff 2025-10-13"
+  },
+  {
+   "url": "https://ionq.com/blog/ionqs-accelerated-roadmap-turning-quantum-ambition-into-reality",
+   "reason": "after cutoff 2025-06-13"
+  },
+  {
+   "url": "https://ionq.com/blog/leading-with-proof-ionqs-blueprint-for-quantum-safe-enterprise-security",
+   "reason": "after cutoff 2026-10-26"
+  },
+  {
+   "url": "https://ionq.com/blog/mind-the-gaps-quantum-optimization-for-efficient-electric-and-autonomous-freight-dispatch-with-ionq-and-einride",
+   "reason": "after cutoff 2026-04-30"
+  },
+  {
+   "url": "https://ionq.com/blog/protecting-the-network-before-the-network-is-ready",
+   "reason": "after cutoff 2026-10-29"
+  },
+  {
+   "url": "https://ionq.com/blog/quantum-computing-meets-wall-street-running-real-portfolio-optimization-on-trapped-ion-hardware",
+   "reason": "after cutoff 2026-03-23"
+  },
+  {
+   "url": "https://ionq.com/blog/reimagining-error-correction-for-modular-quantum-computing",
+   "reason": "after cutoff 2025-11-17"
+  },
+  {
+   "url": "https://ionq.com/blog/supercharging-ai-with-quantum-computing-quantum-enhanced-large-language",
+   "reason": "after cutoff 2025-04-30"
+  },
+  {
+   "url": "https://ionq.com/blog/the-birth-of-quantum-computers-how-dr-chris-monroe-ignited-the-quantum-computing-revolution",
+   "reason": "after cutoff 2025-12-18"
+  },
+  {
+   "url": "https://ionq.com/blog/the-first-full-stack-blueprint-for-breaking-256-bit-elliptic-curve-signatures",
+   "reason": "after cutoff 2026-09-08"
+  },
+  {
+   "url": "https://ionq.com/blog/the-four-clocks-of-pqc-migration-and-why-they-dont-agree",
+   "reason": "after cutoff 2026-09-16"
+  },
+  {
+   "url": "https://ionq.com/blog/what-it-means-to-put-a-quantum-roadmap-to-the-test",
+   "reason": "after cutoff 2026-10-08"
+  },
+  {
+   "url": "https://ionq.com/blog/why-quantum-fine-tuning-is-the-scalable-answer-to-ais-power-crisis",
+   "reason": "after cutoff 2026-07-20"
+  },
+  {
+   "url": "https://ionq.com/resources/algorithmic-qubits-a-better-single-number-metric",
+   "reason": "after cutoff 2025-01-23"
+  },
+  {
+   "url": "https://ionq.com/resources/application-centric-benchmark-verification-report-by-kearney",
+   "reason": "after cutoff 2026-04-14"
+  },
+  {
+   "url": "https://ionq.com/resources/applications-as-performance-benchmarks-for-quantum-computing",
+   "reason": "too short"
+  },
+  {
+   "url": "https://ionq.com/resources/approaching-quantum-advantage-with-ionq-quantum-computers",
+   "reason": "too short"
+  },
+  {
+   "url": "https://ionq.com/resources/azure-quantum-and-microsoft-qdk-demo",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/benchmarking-white-paper",
+   "reason": "after cutoff 2026-04-14"
+  },
+  {
+   "url": "https://ionq.com/resources/best-practices-for-using-ionq-hardware",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/comparing-quantum-computers-metrics-and-monroney",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/connecting-your-saml-identity-provider-with-ionq-quantum-cloud",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/debiasing-and-sharpening",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/defensetalks-2025-delivering-quantum-advantage-unbreakable-security-across-land-sea-air-space",
+   "reason": "after cutoff 2025-12-16"
+  },
+  {
+   "url": "https://ionq.com/resources/defensetalks-2025-executive-spotlight-interview---niccolo-de-masi",
+   "reason": "after cutoff 2025-12-16"
+  },
+  {
+   "url": "https://ionq.com/resources/demystifying-logical-qubits-and-fault-tolerance",
+   "reason": "after cutoff 2025-11-20"
+  },
+  {
+   "url": "https://ionq.com/resources/enterprise-quantum-computing",
+   "reason": "too short"
+  },
+  {
+   "url": "https://ionq.com/resources/fault-tolerant-quantum-computing-with-trapped-ions-the-walking-cat-architecture",
+   "reason": "after cutoff 2026-04-22"
+  },
+  {
+   "url": "https://ionq.com/resources/generating-high-resolution-digits-on-quantum-computers",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/generative-quantum-machine-learning-for-finance",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/get-started-with-azure-quantum",
+   "reason": "after cutoff 2025-10-28"
+  },
+  {
+   "url": "https://ionq.com/resources/get-started-with-cirq",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/get-started-with-hardware-noise-model-simulation",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/get-started-with-ionq-quantum-cloud",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/get-started-with-qiskit",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/get-started-with-tensorflow-quantum",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/getting-ready-for-enterprise-grade-quantum-computing-lead-the-next-life",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/getting-started-with-native-gates",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/hello-many-worlds-seven-quantum-languages",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/how-do-trapped-ion-computers-work",
+   "reason": "too short"
+  },
+  {
+   "url": "https://ionq.com/resources/how-to-read-an-algorithmic-qubits-aq-chart",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/how-to-run-your-first-program-on-the-ionq-cloud",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/idc-spotlight-sponsored-by-ionq-distributed-quantum-computing-scaling-quantum-from-standalone-qpus-to-full-stack-system-architectures",
+   "reason": "after cutoff 2026-02-23"
+  },
+  {
+   "url": "https://ionq.com/resources/idc-vendor-profile-ionq-quantum-hardware-evolution-from-early-ion-traps-to-networked-architectures",
+   "reason": "after cutoff 2025-10-08"
+  },
+  {
+   "url": "https://ionq.com/resources/improving-battery-chemistry-with-quantum-computing",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/inside-a-trapped-ion-quantum-computer",
+   "reason": "too short"
+  },
+  {
+   "url": "https://ionq.com/resources/ionq-analyst-day-2025",
+   "reason": "after cutoff 2025-10-02"
+  },
+  {
+   "url": "https://ionq.com/resources/ionq-aria-past-and-future",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/ionq-aria-practical-performance",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/ionq-quantum-world-congress-keynote-2025",
+   "reason": "after cutoff 2025-10-02"
+  },
+  {
+   "url": "https://ionq.com/resources/ionq-technology-and-performance-updates-milestones-commercial-advantage",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/ionqs-enterprise-grade-capabilities-meeting-real-world-needs",
+   "reason": "after cutoff 2025-04-07"
+  },
+  {
+   "url": "https://ionq.com/resources/ionqs-fully-compiled-end-to-end-resource-estimate-for-breaking-256-bit-elliptic-curve-signatures",
+   "reason": "after cutoff 2026-09-08"
+  },
+  {
+   "url": "https://ionq.com/resources/ionqs-performance-driving-efficiency-and-unparalleled-flexibility",
+   "reason": "after cutoff 2025-04-07"
+  },
+  {
+   "url": "https://ionq.com/resources/ionqs-quantum-ai-in-action-smarter-more-energy-efficient-less-resource-intensive",
+   "reason": "after cutoff 2025-10-22"
+  },
+  {
+   "url": "https://ionq.com/resources/ionqs-scale-architecture-that-enables-expansive-growth",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/joint-economic-committee-hearing-on-technology-and-innovation-ionq-ceo",
+   "reason": "after cutoff 2025-11-20"
+  },
+  {
+   "url": "https://ionq.com/resources/learn-quantum-cargo-loading-optimization",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/learn-quantum-how-does-quantum-computing-work",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/learn-quantum-machine-learning-image-recognition-application",
+   "reason": "too short"
+  },
+  {
+   "url": "https://ionq.com/resources/learn-quantum-what-is-quantum-computing",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/learn-quantum-what-is-trapped-ion-quantum-computing",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/machine-learning-algorithms-on-ionq-computers",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/moor-insights-strategy-research-brief-2026-ionqs-progression-from-foundational-research-to-fault-tolerant-machines",
+   "reason": "after cutoff 2026-02-21"
+  },
+  {
+   "url": "https://ionq.com/resources/new-approach-for-accurately-simulating-larger-molecules",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/optimizing-automated-performance-of-a-quantum-computer",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/picturing-the-future-quantum-enabled-road-sign-recognition",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/programming-ionqs-trapped-ion-quantum-computer",
+   "reason": "too short"
+  },
+  {
+   "url": "https://ionq.com/resources/projections-and-order-effects",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/quantum-cloud-solutions",
+   "reason": "too short"
+  },
+  {
+   "url": "https://ionq.com/resources/quantum-computers-and-the-future-of-computing",
+   "reason": "too short"
+  },
+  {
+   "url": "https://ionq.com/resources/quantum-computing-101-introduction-evaluation-applications",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/quantum-copulas-how-quantum-entanglement-improves-risk-assessment",
+   "reason": "after cutoff 2025-10-28"
+  },
+  {
+   "url": "https://ionq.com/resources/quantum-is-now-building-a-large-global-quantum-business",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/quantum-natural-language-processing-with-ionq-hardware",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/quantum-speedup-for-string-matching",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/quantum-world-congress-2023-keynote",
+   "reason": "too short"
+  },
+  {
+   "url": "https://ionq.com/resources/reconfigurable-multicore-quantum-architecture",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/start-building-with-blqs",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/state-preparation-and-measurement-with-barium-qubits",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/supporting-diversity-in-quantum-computing",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/technical-roadmap-webinar-getting-ready-for-the-era-of-enterprise-grade",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/the-foundry-bet-ionq-skywater-and-the-industrialization-of-quantum",
+   "reason": "after cutoff 2026-09-10"
+  },
+  {
+   "url": "https://ionq.com/resources/the-value-of-classical-quantum-simulators",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/using-native-gates-with-cirq",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/using-native-gates-with-qiskit",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/webinar-ionqs-full-stack-quantum-innovation",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/webinar-ionqs-path-to-large-scale-fault-tolerant-quantum-computing",
+   "reason": "after cutoff 2025-06-13"
+  },
+  {
+   "url": "https://ionq.com/resources/what-is-hybrid-quantum-computing",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/what-is-quantum-computing",
+   "reason": "after cutoff 2025-01-08"
+  },
+  {
+   "url": "https://ionq.com/resources/world-quantum-day-2026-the-full-stack-advantage",
+   "reason": "after cutoff 2026-07-09"
+  }
+ ]
+}

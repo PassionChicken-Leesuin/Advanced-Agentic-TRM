@@ -1,0 +1,20 @@
+{
+  "total_usd": 1.146954,
+  "by_model": {
+    "anthropic/claude-sonnet-4.6": {
+      "calls": 49,
+      "cost_usd": 1.1469539999999998,
+      "prompt_tokens": 25858,
+      "completion_tokens": 71292
+    }
+  },
+  "by_purpose": {
+    "synth": {
+      "calls": 49,
+      "cost_usd": 1.1469539999999998,
+      "prompt_tokens": 25858,
+      "completion_tokens": 71292
+    }
+  },
+  "n_calls": 49
+}

@@ -6,3 +6,6 @@ __pycache__/
 data/corpus/public/*.pdf
 data/corpus/public/*.html
 *.tmp
+# 공개 코퍼스 원문은 재수집 가능하므로 제외 (manifest만 추적)
+data/corpus/public/*.md
+data/corpus/index.jsonl

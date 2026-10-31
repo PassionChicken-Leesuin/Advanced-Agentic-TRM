@@ -12,6 +12,7 @@ trmkb/
   llm.py        OpenRouter 클라이언트 (키 로테이션, 구조화 출력, 비용 집계)
   replay.py     events.jsonl 재생 / 꼬리 추적
   i18n.py       화면 라벨 (ko 기본, en 전환 예정)
+  corpus/       (P2) common(frontmatter·index), edgar(SEC 공시), arxiv, ionq_web(블로그·리소스), synth(가상 내부자료)
   agents/       (P4) reader, router, linker, critic, timing, summarizer
   roadmap/      (P3·P6) generate, retrieve(연산 ①~⑤), diff
   eval/         (P7) metrics
@@ -29,6 +30,18 @@ python -m pytest -q
 ```
 
 .env 에 `Open_Router_key1..N` 이 있어야 LLM 호출이 된다 (테스트는 네트워크 없이 통과).
+
+### 코퍼스 (P2)
+
+```powershell
+python scripts/collect_public.py all            # EDGAR(10-K/10-Q/8-K EX-99/425/DEFA14A) + arXiv(all:IonQ) + ionq.com(blog/resources), cutoff 2024-12-31
+python scripts/gen_synthetic.py plan            # 심은 사실 → 문서 배정 계획 (LLM 없음)
+python scripts/gen_synthetic.py gen             # 가상 내부자료 50건 생성 (기본 anthropic/claude-sonnet-4.6, 약 $1)
+```
+
+- 문서는 `data/corpus/{public,synthetic}/<id>.md` + YAML frontmatter, 색인은 `data/corpus/index.jsonl`.
+- 심은 사실 원장 `data/facts_ledger.json`: 42건, `not_before/not_after` 날짜 창, `contradicts` 모순 쌍 3개(pf07↔pf08, pf20↔pf21, pf02↔pf41), 생성 후 `planted_in_doc_ids` 역기록.
+- 공개 코퍼스 원본(md)은 용량 때문에 git에 넣지 않는다. 재현은 위 명령으로.
 
 ## 핵심 규약
 

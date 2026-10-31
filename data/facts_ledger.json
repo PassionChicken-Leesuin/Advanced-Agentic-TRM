@@ -1,0 +1,596 @@
+{
+ "_about": "가상 내부자료에 심는 사실 원장. 모두 허구이며 모델이 알 수 없는 세부 사항. 공개 사실과 충돌하지 않도록 설계. 2023-10 ~ 2024-12 시점. contradicts 쌍은 Critic이 잡아야 할 모순. not_before/not_after: 그 사실이 문서에 등장할 수 있는 날짜 창(시점 정합성).",
+ "_company": "IonQ (실존 기업, 내부 사항은 허구)",
+ "facts": [
+  {
+   "id": "pf01",
+   "node_hint": "photonic interconnect",
+   "expected_node_type": "capability",
+   "expected_claim_type": "capability_claim",
+   "modality": "planned",
+   "text": "Project Lighthouse targets a remote ion-ion entanglement rate of 1,000 per second by end of 2025 for the photonic interconnect.",
+   "not_before": "2024-01-08",
+   "planted_in_doc_ids": [
+    "syn_rd_report_2024-01-28_01",
+    "syn_rd_report_2024-02-09_02",
+    "syn_rd_report_2024-12-20_14"
+   ]
+  },
+  {
+   "id": "pf02",
+   "node_hint": "photonic interconnect",
+   "expected_node_type": "capability",
+   "expected_claim_type": "capability_claim",
+   "modality": "current",
+   "text": "As of Q2 2024 the measured remote entanglement rate on the Lighthouse testbed is about 12 per second.",
+   "not_before": "2024-06-17",
+   "not_after": "2024-12-20",
+   "planted_in_doc_ids": [
+    "syn_rd_report_2024-07-01_05",
+    "syn_rd_report_2024-10-06_11"
+   ],
+   "contradicts": "pf41"
+  },
+  {
+   "id": "pf03",
+   "node_hint": "barium ion species",
+   "expected_node_type": "issue",
+   "issue_kind": "decision",
+   "expected_claim_type": null,
+   "modality": "achieved",
+   "text": "In September 2024 the hardware council selected barium-137 over ytterbium-171 for the Tempo successor (internal name Forte-N), because visible-wavelength lasers make integrated photonics feasible.",
+   "not_before": "2024-09-09",
+   "planted_in_doc_ids": [
+    "syn_rd_report_2024-09-14_08",
+    "syn_rd_report_2024-11-02_12"
+   ]
+  },
+  {
+   "id": "pf04",
+   "node_hint": "electronic qubit control",
+   "expected_node_type": "issue",
+   "issue_kind": "open_question",
+   "expected_claim_type": null,
+   "modality": "planned",
+   "text": "Open question in the Q3 2024 technology assessment: build electronic (RF/microwave) gate control in-house, or obtain it through licensing or acquisition.",
+   "not_before": "2024-08-01",
+   "planted_in_doc_ids": [
+    "syn_meeting_2024-08-10_06",
+    "syn_rd_report_2024-08-24_07",
+    "syn_tech_assessment_2024-08-09_05"
+   ]
+  },
+  {
+   "id": "pf05",
+   "node_hint": "electronic qubit control",
+   "expected_node_type": "issue",
+   "issue_kind": "assumption",
+   "expected_claim_type": "comparison",
+   "modality": "forecast",
+   "text": "Engineering estimates an in-house electronic-control program would take at least four years, whereas an acquisition path could deliver it in roughly eighteen months.",
+   "not_before": "2024-08-01",
+   "planted_in_doc_ids": [
+    "syn_meeting_2024-08-10_06",
+    "syn_rd_report_2024-12-05_13",
+    "syn_tech_assessment_2024-09-26_06"
+   ]
+  },
+  {
+   "id": "pf06",
+   "node_hint": "2D surface trap chip (Harbor)",
+   "expected_node_type": "component",
+   "expected_claim_type": "capability_claim",
+   "modality": "current",
+   "text": "The Harbor 2D surface-trap prototype chip reached a fabrication yield of 23% at the external foundry in Q1 2024.",
+   "not_before": "2024-03-18",
+   "planted_in_doc_ids": [
+    "syn_rd_report_2024-08-24_07",
+    "syn_rd_report_2024-09-14_08"
+   ]
+  },
+  {
+   "id": "pf07",
+   "node_hint": "2D surface trap chip (Harbor)",
+   "expected_node_type": "component",
+   "expected_claim_type": "capability_claim",
+   "modality": "planned",
+   "contradicts": "pf08",
+   "text": "The Harbor chip yield target is 60% by Q2 2025.",
+   "not_before": "2024-03-18",
+   "not_after": "2024-10-31",
+   "planted_in_doc_ids": [
+    "syn_supplier_email_2024-04-22_02",
+    "syn_supplier_email_2024-09-02_04",
+    "syn_supplier_email_2024-09-17_05"
+   ]
+  },
+  {
+   "id": "pf08",
+   "node_hint": "2D surface trap chip (Harbor)",
+   "expected_node_type": "component",
+   "expected_claim_type": "capability_claim",
+   "modality": "planned",
+   "contradicts": "pf07",
+   "text": "The November 2024 R&D review revised the Harbor chip yield target down to 45%, with the date pushed to Q4 2025.",
+   "not_before": "2024-11-11",
+   "planted_in_doc_ids": [
+    "syn_rd_report_2024-12-05_13",
+    "syn_rd_report_2024-12-20_14",
+    "syn_supplier_email_2024-11-24_07"
+   ]
+  },
+  {
+   "id": "pf09",
+   "node_hint": "XHV vacuum chamber",
+   "expected_node_type": "component",
+   "expected_claim_type": "capability_claim",
+   "modality": "achieved",
+   "text": "The cryogen-free extreme-high-vacuum chamber bake-out time was cut from 14 days to 5 days in May 2024.",
+   "not_before": "2024-05-13",
+   "planted_in_doc_ids": [
+    "syn_rd_report_2024-07-01_05",
+    "syn_rd_report_2024-10-02_10"
+   ]
+  },
+  {
+   "id": "pf10",
+   "node_hint": "real-time error decoder",
+   "expected_node_type": "component",
+   "expected_claim_type": "spec",
+   "modality": "planned",
+   "text": "The FPGA real-time error decoder for Tempo-class systems has a latency target below 1 microsecond for 2025.",
+   "not_before": "2024-04-01",
+   "planted_in_doc_ids": [
+    "syn_rd_report_2024-07-16_06",
+    "syn_supplier_email_2024-04-09_01"
+   ]
+  },
+  {
+   "id": "pf11",
+   "node_hint": "pharma simulation customer need",
+   "expected_node_type": "need",
+   "expected_claim_type": "spec",
+   "modality": "required",
+   "text": "Northfield Pharma requires two-qubit gate fidelity of at least 99.9% and at least 60 algorithmic qubits for its drug-binding simulation pilot in the second half of 2025.",
+   "not_before": "2024-02-01",
+   "planted_in_doc_ids": [
+    "syn_customer_email_2024-02-07_01",
+    "syn_meeting_2024-02-26_02"
+   ]
+  },
+  {
+   "id": "pf12",
+   "node_hint": "defense on-premise need",
+   "expected_node_type": "need",
+   "expected_claim_type": "spec",
+   "modality": "required",
+   "text": "The AFRL program office requires an on-premise system that can run fully air-gapped and fits within two standard racks.",
+   "not_before": "2023-11-01",
+   "planted_in_doc_ids": [
+    "syn_customer_email_2024-02-14_02",
+    "syn_customer_email_2024-03-25_03",
+    "syn_customer_email_2024-11-09_08"
+   ]
+  },
+  {
+   "id": "pf13",
+   "node_hint": "cloud queue latency need",
+   "expected_node_type": "need",
+   "expected_claim_type": "spec",
+   "modality": "required",
+   "text": "The AWS Braket team asked for job queue latency under 10 minutes for Forte Enterprise workloads.",
+   "not_before": "2024-01-15",
+   "planted_in_doc_ids": [
+    "syn_customer_email_2024-04-01_04",
+    "syn_meeting_2024-02-26_02"
+   ]
+  },
+  {
+   "id": "pf14",
+   "node_hint": "automotive battery simulation need",
+   "expected_node_type": "need",
+   "expected_claim_type": "spec",
+   "modality": "forecast",
+   "text": "An automotive customer expects battery-chemistry simulations needing more than 80 qubits by 2026.",
+   "not_before": "2024-03-01",
+   "planted_in_doc_ids": [
+    "syn_customer_email_2024-03-25_03",
+    "syn_customer_email_2024-04-01_04",
+    "syn_meeting_2024-05-14_03"
+   ]
+  },
+  {
+   "id": "pf15",
+   "node_hint": "finance portfolio optimization need",
+   "expected_node_type": "need",
+   "expected_claim_type": "spec",
+   "modality": "required",
+   "text": "A financial-services customer wants portfolio optimization at 120 qubits; internal consensus is that this scale requires error-corrected logical qubits rather than raw physical qubits.",
+   "not_before": "2024-05-01",
+   "planted_in_doc_ids": [
+    "syn_customer_email_2024-05-11_05",
+    "syn_meeting_2024-05-14_03"
+   ]
+  },
+  {
+   "id": "pf16",
+   "node_hint": "NIST PQC standardization",
+   "expected_node_type": "driver",
+   "expected_claim_type": null,
+   "modality": "forecast",
+   "text": "A strategy memo argues that NIST's finalization of post-quantum cryptography standards in August 2024 will shift enterprise security budgets, creating an opening for a bundled quantum-networking and QKD offer.",
+   "not_before": "2024-08-19",
+   "planted_in_doc_ids": [
+    "syn_customer_email_2024-08-27_06",
+    "syn_meeting_2024-08-28_07"
+   ]
+  },
+  {
+   "id": "pf17",
+   "node_hint": "US export controls on quantum",
+   "expected_node_type": "driver",
+   "expected_claim_type": null,
+   "modality": "forecast",
+   "text": "Legal flagged that the BIS September 2024 interim rule on quantum items will require export licenses for shipping Forte-class systems to several Asia-Pacific partners.",
+   "not_before": "2024-09-09",
+   "planted_in_doc_ids": [
+    "syn_customer_email_2024-10-27_07",
+    "syn_tech_assessment_2024-10-28_07"
+   ]
+  },
+  {
+   "id": "pf18",
+   "node_hint": "competitor qubit count pressure",
+   "expected_node_type": "driver",
+   "expected_claim_type": null,
+   "modality": "current",
+   "text": "Sales flagged three lost deals in 2024 where the customer cited a competitor's 56-qubit system, raising pressure on raw qubit count as a buying criterion.",
+   "not_before": "2024-06-01",
+   "planted_in_doc_ids": [
+    "syn_meeting_2024-06-30_05",
+    "syn_tech_assessment_2024-06-09_02"
+   ]
+  },
+  {
+   "id": "pf19",
+   "node_hint": "shift from AQ to logical-qubit metrics",
+   "expected_node_type": "issue",
+   "issue_kind": "decision",
+   "expected_claim_type": null,
+   "modality": "planned",
+   "text": "Marketing proposed retiring the #AQ metric after the AQ 64 milestone and moving to physical and logical qubit counts in 2025, anticipating that the industry will converge on logical-qubit metrics.",
+   "not_before": "2024-10-01",
+   "planted_in_doc_ids": [
+    "syn_meeting_2024-10-22_10",
+    "syn_rd_report_2024-10-02_10",
+    "syn_supplier_email_2024-10-30_06"
+   ]
+  },
+  {
+   "id": "pf20",
+   "node_hint": "Tempo first customer shipment",
+   "expected_node_type": "milestone",
+   "expected_claim_type": null,
+   "modality": "planned",
+   "contradicts": "pf21",
+   "text": "The first customer shipment of Tempo is scheduled for Q1 2025.",
+   "not_before": "2024-04-01",
+   "not_after": "2024-09-30",
+   "planted_in_doc_ids": [
+    "syn_supplier_email_2024-04-09_01",
+    "syn_supplier_email_2024-04-22_02"
+   ]
+  },
+  {
+   "id": "pf21",
+   "node_hint": "Tempo first customer shipment",
+   "expected_node_type": "milestone",
+   "expected_claim_type": null,
+   "modality": "planned",
+   "contradicts": "pf20",
+   "text": "The first Tempo customer shipment has slipped to Q2 2025 because of a laser subsystem supplier delay.",
+   "not_before": "2024-10-07",
+   "planted_in_doc_ids": [
+    "syn_meeting_2024-10-19_09",
+    "syn_rd_report_2024-11-02_12"
+   ]
+  },
+  {
+   "id": "pf22",
+   "node_hint": "quantum networking starter kit",
+   "expected_node_type": "opportunity",
+   "expected_claim_type": null,
+   "modality": "planned",
+   "text": "A 'quantum networking starter kit' product combining QKD hardware and a quantum memory node is targeted for 2026.",
+   "not_before": "2024-06-01",
+   "planted_in_doc_ids": [
+    "syn_meeting_2024-06-03_04",
+    "syn_meeting_2024-06-30_05",
+    "syn_meeting_2024-11-10_12"
+   ]
+  },
+  {
+   "id": "pf23",
+   "node_hint": "on-premise enterprise QC market",
+   "expected_node_type": "opportunity",
+   "expected_claim_type": "market_size",
+   "modality": "forecast",
+   "text": "The internal estimate for the on-premise enterprise quantum computing market is $1.2 billion by 2028.",
+   "not_before": "2024-02-01",
+   "planted_in_doc_ids": [
+    "syn_customer_email_2024-02-07_01",
+    "syn_customer_email_2024-02-14_02",
+    "syn_meeting_2024-02-16_01"
+   ]
+  },
+  {
+   "id": "pf24",
+   "node_hint": "FY2025 bookings target",
+   "expected_node_type": "opportunity",
+   "expected_claim_type": "market_size",
+   "modality": "planned",
+   "text": "The internal bookings target for fiscal 2025 is $75 million to $95 million.",
+   "not_before": "2024-10-01",
+   "planted_in_doc_ids": [
+    "syn_customer_email_2024-11-09_08",
+    "syn_meeting_2024-10-14_08"
+   ]
+  },
+  {
+   "id": "pf25",
+   "node_hint": "frequency converter supplier",
+   "expected_node_type": "enabler",
+   "enabler_kind": "partnership",
+   "expected_claim_type": null,
+   "modality": "current",
+   "text": "Helion Photonics quotes a 26-week lead time for the 1550 nm to visible frequency converters used in the interconnect.",
+   "not_before": "2024-02-01",
+   "planted_in_doc_ids": [
+    "syn_meeting_2024-02-16_01",
+    "syn_tech_assessment_2024-02-18_01",
+    "syn_tech_assessment_2024-07-05_03"
+   ]
+  },
+  {
+   "id": "pf26",
+   "node_hint": "Seattle manufacturing cleanroom",
+   "expected_node_type": "enabler",
+   "enabler_kind": "facility",
+   "expected_claim_type": null,
+   "modality": "planned",
+   "text": "Phase 2 of the Seattle manufacturing facility, an ISO 6 cleanroom, is targeted for commissioning in Q3 2025.",
+   "not_before": "2024-06-01",
+   "planted_in_doc_ids": [
+    "syn_meeting_2024-06-03_04",
+    "syn_tech_assessment_2024-08-09_05"
+   ]
+  },
+  {
+   "id": "pf27",
+   "node_hint": "control electronics hiring",
+   "expected_node_type": "enabler",
+   "enabler_kind": "skills",
+   "expected_claim_type": null,
+   "modality": "planned",
+   "text": "The 2025 hiring plan calls for 40 additional control-electronics engineers.",
+   "not_before": "2024-10-01",
+   "planted_in_doc_ids": [
+    "syn_meeting_2024-10-14_08",
+    "syn_meeting_2024-10-19_09",
+    "syn_meeting_2024-12-11_14"
+   ]
+  },
+  {
+   "id": "pf28",
+   "node_hint": "DARPA QBI funding",
+   "expected_node_type": "enabler",
+   "enabler_kind": "funding",
+   "expected_claim_type": null,
+   "modality": "planned",
+   "text": "The DARPA Quantum Benchmarking Initiative Stage A application was submitted in August 2024; the internal estimate of award probability is 60%.",
+   "not_before": "2024-08-12",
+   "planted_in_doc_ids": [
+    "syn_supplier_email_2024-08-13_03",
+    "syn_supplier_email_2024-09-02_04"
+   ]
+  },
+  {
+   "id": "pf29",
+   "node_hint": "export license for Korea shipment",
+   "expected_node_type": "enabler",
+   "enabler_kind": "regulation",
+   "expected_claim_type": "action",
+   "modality": "achieved",
+   "text": "An export license application for the Forte system destined for KISTI in Korea was filed in September 2024.",
+   "not_before": "2024-09-16",
+   "planted_in_doc_ids": [
+    "syn_meeting_2024-11-22_13",
+    "syn_supplier_email_2024-09-17_05",
+    "syn_tech_assessment_2024-09-26_06"
+   ]
+  },
+  {
+   "id": "pf30",
+   "node_hint": "UHV chamber vendor dependency",
+   "expected_node_type": "issue",
+   "issue_kind": "risk",
+   "expected_claim_type": null,
+   "modality": "current",
+   "text": "Risk register: single-source dependency on one ultra-high-vacuum chamber vendor.",
+   "not_before": "2023-10-01",
+   "planted_in_doc_ids": [
+    "syn_rd_report_2024-09-18_09",
+    "syn_tech_assessment_2024-02-18_01"
+   ]
+  },
+  {
+   "id": "pf31",
+   "node_hint": "benchmark acceptance barrier",
+   "expected_node_type": "issue",
+   "issue_kind": "barrier",
+   "expected_claim_type": null,
+   "modality": "current",
+   "text": "Customers do not accept any standard benchmark beyond #AQ, which blocks apples-to-apples comparison in procurement.",
+   "not_before": "2023-10-01",
+   "planted_in_doc_ids": [
+    "syn_rd_report_2024-01-28_01",
+    "syn_supplier_email_2024-08-13_03"
+   ]
+  },
+  {
+   "id": "pf32",
+   "node_hint": "QLDPC encoding ratio",
+   "expected_node_type": "issue",
+   "issue_kind": "assumption",
+   "expected_claim_type": null,
+   "modality": "forecast",
+   "text": "Planning assumes a physical-to-logical qubit ratio of about 12.5 to 1 using QLDPC codes by 2027.",
+   "not_before": "2024-05-01",
+   "planted_in_doc_ids": [
+    "syn_meeting_2024-08-28_07",
+    "syn_rd_report_2024-06-16_04"
+   ]
+  },
+  {
+   "id": "pf33",
+   "node_hint": "laser scientist attrition risk",
+   "expected_node_type": "issue",
+   "issue_kind": "risk",
+   "expected_claim_type": null,
+   "modality": "forecast",
+   "text": "Risk register: attrition of key laser scientists during post-acquisition integration.",
+   "not_before": "2024-03-01",
+   "planted_in_doc_ids": [
+    "syn_rd_report_2024-03-08_03",
+    "syn_tech_assessment_2024-06-09_02"
+   ]
+  },
+  {
+   "id": "pf34",
+   "node_hint": "Harmony deprecation",
+   "expected_node_type": "issue",
+   "issue_kind": "decision",
+   "expected_claim_type": null,
+   "modality": "achieved",
+   "text": "Support for the 11-qubit Harmony system will be wound down by the end of 2024 to free engineering capacity.",
+   "not_before": "2024-06-01",
+   "planted_in_doc_ids": [
+    "syn_rd_report_2024-06-16_04",
+    "syn_tech_assessment_2024-07-11_04"
+   ]
+  },
+  {
+   "id": "pf35",
+   "node_hint": "trap chip second source partner",
+   "expected_node_type": "actor",
+   "expected_claim_type": null,
+   "modality": "planned",
+   "text": "A letter of intent with Nordic Quantum Fabrication for a second source of trap chips was signed in November 2024.",
+   "not_before": "2024-11-18",
+   "planted_in_doc_ids": [
+    "syn_meeting_2024-11-22_13",
+    "syn_meeting_2024-12-11_14",
+    "syn_supplier_email_2024-11-24_07"
+   ]
+  },
+  {
+   "id": "pf36",
+   "node_hint": "electronic control acquisition candidates",
+   "expected_node_type": "actor",
+   "expected_claim_type": null,
+   "modality": "planned",
+   "text": "The Q4 2024 screening shortlisted three acquisition candidates for electronic qubit control, including a UK-based startup referred to as Candidate B.",
+   "not_before": "2024-10-14",
+   "planted_in_doc_ids": [
+    "syn_meeting_2024-11-08_11",
+    "syn_meeting_2024-11-10_12",
+    "syn_tech_assessment_2024-10-28_07"
+   ]
+  },
+  {
+   "id": "pf37",
+   "node_hint": "interconnect tiger team",
+   "expected_node_type": "issue",
+   "issue_kind": "decision",
+   "expected_claim_type": "action",
+   "modality": "planned",
+   "text": "An Interconnect Tiger Team of eight full-time engineers will be formed in Q4 2024, owned by the VP of Hardware.",
+   "not_before": "2024-09-16",
+   "planted_in_doc_ids": [
+    "syn_meeting_2024-11-08_11",
+    "syn_rd_report_2024-09-18_09"
+   ]
+  },
+  {
+   "id": "pf38",
+   "node_hint": "AQ-to-logical benchmark crosswalk",
+   "expected_node_type": "issue",
+   "issue_kind": "barrier",
+   "expected_claim_type": "action",
+   "modality": "planned",
+   "text": "Action: engage NIST on an #AQ-to-logical-qubit benchmark crosswalk white paper by Q1 2025.",
+   "not_before": "2024-10-01",
+   "planted_in_doc_ids": [
+    "syn_rd_report_2024-10-06_11",
+    "syn_supplier_email_2024-10-30_06"
+   ]
+  },
+  {
+   "id": "pf39",
+   "node_hint": "Forte Enterprise on-prem spec",
+   "expected_node_type": "opportunity",
+   "expected_claim_type": "spec",
+   "modality": "current",
+   "text": "Forte Enterprise on-premise specification: two 19-inch racks, about 3 kW power, no cryogenics, 36 algorithmic qubits.",
+   "not_before": "2023-10-01",
+   "planted_in_doc_ids": [
+    "syn_customer_email_2024-05-11_05",
+    "syn_meeting_2024-11-08_11",
+    "syn_meeting_2024-11-22_13"
+   ]
+  },
+  {
+   "id": "pf40",
+   "node_hint": "Tempo spec target",
+   "expected_node_type": "opportunity",
+   "expected_claim_type": "spec",
+   "modality": "planned",
+   "text": "Tempo target specification: 64 algorithmic qubits, 99.9% two-qubit fidelity, about 100 physical qubits.",
+   "not_before": "2024-03-01",
+   "planted_in_doc_ids": [
+    "syn_customer_email_2024-08-27_06",
+    "syn_customer_email_2024-10-27_07",
+    "syn_meeting_2024-10-22_10"
+   ]
+  },
+  {
+   "id": "pf41",
+   "node_hint": "photonic interconnect",
+   "expected_node_type": "capability",
+   "expected_claim_type": "capability_claim",
+   "modality": "achieved",
+   "contradicts": "pf02",
+   "text": "A draft customer deck claims a demonstrated remote entanglement rate of 100 per second; engineering flagged this as unsupported by current testbed data.",
+   "not_before": "2024-07-01",
+   "planted_in_doc_ids": [
+    "syn_rd_report_2024-07-16_06",
+    "syn_tech_assessment_2024-07-05_03",
+    "syn_tech_assessment_2024-07-11_04"
+   ]
+  },
+  {
+   "id": "pf42",
+   "node_hint": "foundry strategy",
+   "expected_node_type": "issue",
+   "issue_kind": "open_question",
+   "expected_claim_type": null,
+   "modality": "planned",
+   "text": "Open question: build an in-house trap-chip foundry or stay fabless with two external sources.",
+   "not_before": "2023-12-01",
+   "planted_in_doc_ids": [
+    "syn_rd_report_2024-02-09_02",
+    "syn_rd_report_2024-03-08_03"
+   ]
+  }
+ ]
+}

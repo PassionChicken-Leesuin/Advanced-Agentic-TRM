@@ -1,0 +1,123 @@
+[
+ {
+  "id": "syn_customer_email_2024-02-14_02",
+  "date": "2024-02-14",
+  "type": "syn_customer_email",
+  "facts": [
+   "pf23",
+   "pf12"
+  ],
+  "missing_self_report": [],
+  "chars": 3530
+ },
+ {
+  "id": "syn_meeting_2024-02-26_02",
+  "date": "2024-02-26",
+  "type": "syn_meeting",
+  "facts": [
+   "pf11",
+   "pf13"
+  ],
+  "missing_self_report": [],
+  "chars": 5455
+ },
+ {
+  "id": "syn_supplier_email_2024-04-22_02",
+  "date": "2024-04-22",
+  "type": "syn_supplier_email",
+  "facts": [
+   "pf20",
+   "pf07"
+  ],
+  "missing_self_report": [],
+  "chars": 3495
+ },
+ {
+  "id": "syn_customer_email_2024-05-11_05",
+  "date": "2024-05-11",
+  "type": "syn_customer_email",
+  "facts": [
+   "pf15",
+   "pf39"
+  ],
+  "missing_self_report": [],
+  "chars": 3628
+ },
+ {
+  "id": "syn_tech_assessment_2024-06-09_02",
+  "date": "2024-06-09",
+  "type": "syn_tech_assessment",
+  "facts": [
+   "pf18",
+   "pf33"
+  ],
+  "missing_self_report": [],
+  "chars": 6173
+ },
+ {
+  "id": "syn_rd_report_2024-07-01_05",
+  "date": "2024-07-01",
+  "type": "syn_rd_report",
+  "facts": [
+   "pf02",
+   "pf09"
+  ],
+  "missing_self_report": [],
+  "chars": 4657
+ },
+ {
+  "id": "syn_tech_assessment_2024-07-05_03",
+  "date": "2024-07-05",
+  "type": "syn_tech_assessment",
+  "facts": [
+   "pf41",
+   "pf25"
+  ],
+  "missing_self_report": [],
+  "chars": 6216
+ },
+ {
+  "id": "syn_rd_report_2024-07-16_06",
+  "date": "2024-07-16",
+  "type": "syn_rd_report",
+  "facts": [
+   "pf41",
+   "pf10"
+  ],
+  "missing_self_report": [],
+  "chars": 4701
+ },
+ {
+  "id": "syn_supplier_email_2024-08-13_03",
+  "date": "2024-08-13",
+  "type": "syn_supplier_email",
+  "facts": [
+   "pf28",
+   "pf31"
+  ],
+  "missing_self_report": [],
+  "chars": 3474
+ },
+ {
+  "id": "syn_rd_report_2024-10-06_11",
+  "date": "2024-10-06",
+  "type": "syn_rd_report",
+  "facts": [
+   "pf38",
+   "pf02"
+  ],
+  "missing_self_report": [],
+  "chars": 4486
+ },
+ {
+  "id": "syn_rd_report_2024-12-20_14",
+  "date": "2024-12-20",
+  "type": "syn_rd_report",
+  "facts": [
+   "pf08",
+   "pf01"
+  ],
+  "missing_self_report": [],
+  "chars": 4812
+ }
+]

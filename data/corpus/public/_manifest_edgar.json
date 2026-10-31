@@ -1,0 +1,850 @@
+[
+ {
+  "id": "pub_edgar_8-k_2020-11-17_d85456dex991",
+  "form": "8-K",
+  "date": "2020-11-17",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312520296051/d85456dex991.htm",
+  "chars": 4436,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2020-11-17_d85456dex992",
+  "form": "8-K",
+  "date": "2020-11-17",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312520296051/d85456dex992.htm",
+  "chars": 4262,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2020-11-23_d13287dex991",
+  "form": "8-K",
+  "date": "2020-11-23",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312520301544/d13287dex991.htm",
+  "chars": 47527,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_10-q_2020-12-18_d86312d10q",
+  "form": "10-Q",
+  "date": "2020-12-18",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312520321478/d86312d10q.htm",
+  "chars": 74364,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2020-12-31_d44425dex991",
+  "form": "8-K",
+  "date": "2020-12-31",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312520330614/d44425dex991.htm",
+  "chars": 3577,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2021-01-19_d73357d8k",
+  "form": "8-K",
+  "date": "2021-01-19",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521011527/d73357d8k.htm",
+  "chars": 5250,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-03-08_d107190d425",
+  "form": "425",
+  "date": "2021-03-08",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072530/d107190d425.htm",
+  "chars": 13821,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-03-08_d145975d425",
+  "form": "425",
+  "date": "2021-03-08",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072523/d145975d425.htm",
+  "chars": 12939,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-03-08_d142911d425",
+  "form": "425",
+  "date": "2021-03-08",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072518/d142911d425.htm",
+  "chars": 11893,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-03-08_d125014d425",
+  "form": "425",
+  "date": "2021-03-08",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072507/d125014d425.htm",
+  "chars": 14906,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-03-08_d101095d425",
+  "form": "425",
+  "date": "2021-03-08",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072386/d101095d425.htm",
+  "chars": 12631,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2021-03-08_d142872dex991",
+  "form": "8-K",
+  "date": "2021-03-08",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/d142872dex991.htm",
+  "chars": 15061,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2021-03-08_d142872dex992",
+  "form": "8-K",
+  "date": "2021-03-08",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/d142872dex992.htm",
+  "chars": 60000,
+  "truncated": true
+ },
+ {
+  "id": "pub_edgar_8-k_2021-03-08_d142872dex993",
+  "form": "8-K",
+  "date": "2021-03-08",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/d142872dex993.htm",
+  "chars": 19256,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2021-03-08_d142872dex994",
+  "form": "8-K",
+  "date": "2021-03-08",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/d142872dex994.htm",
+  "chars": 11133,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-03-08_d142872d8k",
+  "form": "425",
+  "date": "2021-03-08",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072374/d142872d8k.htm",
+  "chars": 32477,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-03-09_d202860d425",
+  "form": "425",
+  "date": "2021-03-09",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521073515/d202860d425.htm",
+  "chars": 15049,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-03-10_d118423d425",
+  "form": "425",
+  "date": "2021-03-10",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521076441/d118423d425.htm",
+  "chars": 13387,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-03-10_d138786d425",
+  "form": "425",
+  "date": "2021-03-10",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521076436/d138786d425.htm",
+  "chars": 16084,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-03-10_d143447d425",
+  "form": "425",
+  "date": "2021-03-10",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521076433/d143447d425.htm",
+  "chars": 12680,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-03-10_d151053d425",
+  "form": "425",
+  "date": "2021-03-10",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521076313/d151053d425.htm",
+  "chars": 14474,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-03-10_d107723d425",
+  "form": "425",
+  "date": "2021-03-10",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521076026/d107723d425.htm",
+  "chars": 56395,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-03-11_d127434d425",
+  "form": "425",
+  "date": "2021-03-11",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521077584/d127434d425.htm",
+  "chars": 12119,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_10-k_2021-03-25_d78322d10k",
+  "form": "10-K",
+  "date": "2021-03-25",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521094052/d78322d10k.htm",
+  "chars": 353643,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-04-08_d17191d425",
+  "form": "425",
+  "date": "2021-04-08",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521109819/d17191d425.htm",
+  "chars": 12136,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-04-13_d139699d425",
+  "form": "425",
+  "date": "2021-04-13",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521114548/d139699d425.htm",
+  "chars": 25469,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-04-13_d138896d425",
+  "form": "425",
+  "date": "2021-04-13",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521114546/d138896d425.htm",
+  "chars": 22973,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-04-13_d138876d425",
+  "form": "425",
+  "date": "2021-04-13",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521114527/d138876d425.htm",
+  "chars": 78502,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2021-05-18_d156419d8k",
+  "form": "8-K",
+  "date": "2021-05-18",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521165525/d156419d8k.htm",
+  "chars": 6478,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2021-06-01_d136290dex991",
+  "form": "8-K",
+  "date": "2021-06-01",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521178706/d136290dex991.htm",
+  "chars": 2772,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-06-03_d189715d425",
+  "form": "425",
+  "date": "2021-06-03",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521181130/d189715d425.htm",
+  "chars": 12229,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_10-q_2021-06-04_d183003d10q",
+  "form": "10-Q",
+  "date": "2021-06-04",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521182981/d183003d10q.htm",
+  "chars": 111777,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_10-ka_2021-06-04_d917982d10ka",
+  "form": "10-K/A",
+  "date": "2021-06-04",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521182887/d917982d10ka.htm",
+  "chars": 100000,
+  "truncated": true
+ },
+ {
+  "id": "pub_edgar_425_2021-07-01_d162395d425",
+  "form": "425",
+  "date": "2021-07-01",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521205738/d162395d425.htm",
+  "chars": 9387,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-07-08_d173634d425",
+  "form": "425",
+  "date": "2021-07-08",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521210636/d173634d425.htm",
+  "chars": 16136,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-07-16_d196587d425",
+  "form": "425",
+  "date": "2021-07-16",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521217476/d196587d425.htm",
+  "chars": 71671,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-07-23_d182348d425",
+  "form": "425",
+  "date": "2021-07-23",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521222670/d182348d425.htm",
+  "chars": 63160,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_10-q_2021-08-16_d216629d10q",
+  "form": "10-Q",
+  "date": "2021-08-16",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521247711/d216629d10q.htm",
+  "chars": 108691,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-08-16_d215660d425",
+  "form": "425",
+  "date": "2021-08-16",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521247704/d215660d425.htm",
+  "chars": 11013,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-08-24_d216170d425",
+  "form": "425",
+  "date": "2021-08-24",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521254201/d216170d425.htm",
+  "chars": 35749,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-09-08_d199314d425",
+  "form": "425",
+  "date": "2021-09-08",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521267537/d199314d425.htm",
+  "chars": 14599,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-09-13_d204390d425",
+  "form": "425",
+  "date": "2021-09-13",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521271213/d204390d425.htm",
+  "chars": 39979,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-09-15_d214884d425",
+  "form": "425",
+  "date": "2021-09-15",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521273799/d214884d425.htm",
+  "chars": 59129,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-09-17_d205925d425",
+  "form": "425",
+  "date": "2021-09-17",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521275561/d205925d425.htm",
+  "chars": 12562,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-09-20_d205925d425",
+  "form": "425",
+  "date": "2021-09-20",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521276336/d205925d425.htm",
+  "chars": 54252,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-09-22_d197478d425",
+  "form": "425",
+  "date": "2021-09-22",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521279521/d197478d425.htm",
+  "chars": 14794,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-09-22_d197478d425",
+  "form": "425",
+  "date": "2021-09-22",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521279517/d197478d425.htm",
+  "chars": 22731,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-09-22_d197478d425",
+  "form": "425",
+  "date": "2021-09-22",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521279514/d197478d425.htm",
+  "chars": 21679,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-09-23_d197478d425",
+  "form": "425",
+  "date": "2021-09-23",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521280513/d197478d425.htm",
+  "chars": 12950,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-09-27_d173065d425",
+  "form": "425",
+  "date": "2021-09-27",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521283767/d173065d425.htm",
+  "chars": 12710,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-09-28_d173065d425",
+  "form": "425",
+  "date": "2021-09-28",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521285640/d173065d425.htm",
+  "chars": 12042,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_425_2021-10-01_d173065d425",
+  "form": "425",
+  "date": "2021-10-01",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521288271/d173065d425.htm",
+  "chars": 10366,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2021-10-04_d234711dex991",
+  "form": "8-K",
+  "date": "2021-10-04",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521290624/d234711dex991.htm",
+  "chars": 10007,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2021-10-04_d234711dex992",
+  "form": "8-K",
+  "date": "2021-10-04",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521290624/d234711dex992.htm",
+  "chars": 46614,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2021-10-04_d234711dex993",
+  "form": "8-K",
+  "date": "2021-10-04",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521290624/d234711dex993.htm",
+  "chars": 28741,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2021-10-04_d234711dex994",
+  "form": "8-K",
+  "date": "2021-10-04",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521290624/d234711dex994.htm",
+  "chars": 46571,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2021-10-04_d191470d8k",
+  "form": "8-K",
+  "date": "2021-10-04",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521290515/d191470d8k.htm",
+  "chars": 9499,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_10-q_2021-11-15_d235265d10q",
+  "form": "10-Q",
+  "date": "2021-11-15",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521329877/d235265d10q.htm",
+  "chars": 150000,
+  "truncated": true
+ },
+ {
+  "id": "pub_edgar_8-k_2021-11-15_d260367dex991",
+  "form": "8-K",
+  "date": "2021-11-15",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521329866/d260367dex991.htm",
+  "chars": 17662,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2021-12-17_d229016dex991",
+  "form": "8-K",
+  "date": "2021-12-17",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521361128/d229016dex991.htm",
+  "chars": 60000,
+  "truncated": true
+ },
+ {
+  "id": "pub_edgar_10-k_2022-03-28_d257705d10k",
+  "form": "10-K",
+  "date": "2022-03-28",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312522086738/d257705d10k.htm",
+  "chars": 400000,
+  "truncated": true
+ },
+ {
+  "id": "pub_edgar_8-k_2022-03-28_d311301dex991",
+  "form": "8-K",
+  "date": "2022-03-28",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312522086676/d311301dex991.htm",
+  "chars": 17681,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_10-ka_2022-03-29_d335414d10ka",
+  "form": "10-K/A",
+  "date": "2022-03-29",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312522088278/d335414d10ka.htm",
+  "chars": 17961,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_defa14a_2022-04-12_d303186ddefa14a",
+  "form": "DEFA14A",
+  "date": "2022-04-12",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312522102944/d303186ddefa14a.htm",
+  "chars": 3688,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_10-q_2022-05-16_d230443d10q",
+  "form": "10-Q",
+  "date": "2022-05-16",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312522151860/d230443d10q.htm",
+  "chars": 150000,
+  "truncated": true
+ },
+ {
+  "id": "pub_edgar_8-k_2022-05-16_d354501dex991",
+  "form": "8-K",
+  "date": "2022-05-16",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312522151772/d354501dex991.htm",
+  "chars": 16790,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2022-05-26_d254366d8k",
+  "form": "8-K",
+  "date": "2022-05-26",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312522161020/d254366d8k.htm",
+  "chars": 3818,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2022-07-21_d375685dex991",
+  "form": "8-K",
+  "date": "2022-07-21",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312522199263/d375685dex991.htm",
+  "chars": 7007,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_10-q_2022-08-15_d317387d10q",
+  "form": "10-Q",
+  "date": "2022-08-15",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312522221299/d317387d10q.htm",
+  "chars": 150000,
+  "truncated": true
+ },
+ {
+  "id": "pub_edgar_8-k_2022-08-15_d351828dex991",
+  "form": "8-K",
+  "date": "2022-08-15",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312522221244/d351828dex991.htm",
+  "chars": 19889,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_10-q_2022-11-14_d378202d10q",
+  "form": "10-Q",
+  "date": "2022-11-14",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312522284614/d378202d10q.htm",
+  "chars": 150000,
+  "truncated": true
+ },
+ {
+  "id": "pub_edgar_8-k_2022-11-14_d405820dex991",
+  "form": "8-K",
+  "date": "2022-11-14",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312522284591/d405820dex991.htm",
+  "chars": 16701,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2022-12-09_d422055d8k",
+  "form": "8-K",
+  "date": "2022-12-09",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312522301815/d422055d8k.htm",
+  "chars": 6832,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2023-03-03_d466447d8k",
+  "form": "8-K",
+  "date": "2023-03-03",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312523060007/d466447d8k.htm",
+  "chars": 8435,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2023-03-06_d413737dex991",
+  "form": "8-K",
+  "date": "2023-03-06",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312523060754/d413737dex991.htm",
+  "chars": 5844,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2023-03-17_d455208d8k",
+  "form": "8-K",
+  "date": "2023-03-17",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312523073870/d455208d8k.htm",
+  "chars": 3850,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_10-k_2023-03-30_d424437d10k",
+  "form": "10-K",
+  "date": "2023-03-30",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312523085558/d424437d10k.htm",
+  "chars": 400000,
+  "truncated": true
+ },
+ {
+  "id": "pub_edgar_8-k_2023-03-30_d489796dex991",
+  "form": "8-K",
+  "date": "2023-03-30",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312523085543/d489796dex991.htm",
+  "chars": 19093,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_defa14a_2023-04-28_d423582ddefa14a",
+  "form": "DEFA14A",
+  "date": "2023-04-28",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312523123991/d423582ddefa14a.htm",
+  "chars": 3778,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_10-q_2023-05-11_d246263d10q",
+  "form": "10-Q",
+  "date": "2023-05-11",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312523142049/d246263d10q.htm",
+  "chars": 150000,
+  "truncated": true
+ },
+ {
+  "id": "pub_edgar_8-k_2023-05-11_d466863dex991",
+  "form": "8-K",
+  "date": "2023-05-11",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312523142034/d466863dex991.htm",
+  "chars": 15526,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_defa14a_2023-06-07_d498261ddefa14a",
+  "form": "DEFA14A",
+  "date": "2023-06-07",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312523162599/d498261ddefa14a.htm",
+  "chars": 2992,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2023-06-30_d503669d8k",
+  "form": "8-K",
+  "date": "2023-06-30",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312523180389/d503669d8k.htm",
+  "chars": 3782,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_10-q_2023-08-10_ionq_20230630",
+  "form": "10-Q",
+  "date": "2023-08-10",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000095017023041364/ionq-20230630.htm",
+  "chars": 150000,
+  "truncated": true
+ },
+ {
+  "id": "pub_edgar_8-k_2023-08-10_ionq_ex99_1",
+  "form": "8-K",
+  "date": "2023-08-10",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000095017023041321/ionq-ex99_1.htm",
+  "chars": 17227,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2023-08-17_d508363d8k",
+  "form": "8-K",
+  "date": "2023-08-17",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312523215147/d508363d8k.htm",
+  "chars": 10912,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2023-10-05_d539511d8k",
+  "form": "8-K",
+  "date": "2023-10-05",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312523251611/d539511d8k.htm",
+  "chars": 3361,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2023-11-08_ionq_ex99_1",
+  "form": "8-K",
+  "date": "2023-11-08",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000095017023061111/ionq-ex99_1.htm",
+  "chars": 18292,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_10-q_2023-11-09_ionq_20230930",
+  "form": "10-Q",
+  "date": "2023-11-09",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000095017023061982/ionq-20230930.htm",
+  "chars": 150000,
+  "truncated": true
+ },
+ {
+  "id": "pub_edgar_10-k_2024-02-28_ionq_20231231",
+  "form": "10-K",
+  "date": "2024-02-28",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000095017024022072/ionq-20231231.htm",
+  "chars": 400000,
+  "truncated": true
+ },
+ {
+  "id": "pub_edgar_8-k_2024-02-28_ionq_ex99_1",
+  "form": "8-K",
+  "date": "2024-02-28",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000095017024022062/ionq-ex99_1.htm",
+  "chars": 20798,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_defa14a_2024-04-25_d104516ddefa14a",
+  "form": "DEFA14A",
+  "date": "2024-04-25",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312524114125/d104516ddefa14a.htm",
+  "chars": 3409,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_defa14a_2024-04-26_d818040ddefa14a",
+  "form": "DEFA14A",
+  "date": "2024-04-26",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312524118339/d818040ddefa14a.htm",
+  "chars": 8742,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2024-05-08_ionq_ex99_1",
+  "form": "8-K",
+  "date": "2024-05-08",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000095017024055629/ionq-ex99_1.htm",
+  "chars": 16943,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_defa14a_2024-05-08_d836084ddefa14a",
+  "form": "DEFA14A",
+  "date": "2024-05-08",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312524133841/d836084ddefa14a.htm",
+  "chars": 12407,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_10-q_2024-05-10_ionq_20240331",
+  "form": "10-Q",
+  "date": "2024-05-10",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000095017024057804/ionq-20240331.htm",
+  "chars": 150000,
+  "truncated": true
+ },
+ {
+  "id": "pub_edgar_defa14a_2024-05-29_d837902ddefa14a",
+  "form": "DEFA14A",
+  "date": "2024-05-29",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312524149280/d837902ddefa14a.htm",
+  "chars": 3522,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_defa14a_2024-06-04_d847559ddefa14a",
+  "form": "DEFA14A",
+  "date": "2024-06-04",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312524154392/d847559ddefa14a.htm",
+  "chars": 2085,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_defa14a_2024-06-04_d829474ddefa14a",
+  "form": "DEFA14A",
+  "date": "2024-06-04",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312524153361/d829474ddefa14a.htm",
+  "chars": 3656,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2024-06-07_ionq_20240605",
+  "form": "8-K",
+  "date": "2024-06-07",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000095017024070604/ionq-20240605.htm",
+  "chars": 4552,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_10-q_2024-08-07_ionq_20240630",
+  "form": "10-Q",
+  "date": "2024-08-07",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000095017024092782/ionq-20240630.htm",
+  "chars": 150000,
+  "truncated": true
+ },
+ {
+  "id": "pub_edgar_8-k_2024-08-07_ionq_ex99_1",
+  "form": "8-K",
+  "date": "2024-08-07",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000095017024092737/ionq-ex99_1.htm",
+  "chars": 18983,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_10-q_2024-11-06_ionq_20240930",
+  "form": "10-Q",
+  "date": "2024-11-06",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000095017024122305/ionq-20240930.htm",
+  "chars": 150000,
+  "truncated": true
+ },
+ {
+  "id": "pub_edgar_8-k_2024-11-06_ionq_ex99_1",
+  "form": "8-K",
+  "date": "2024-11-06",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000095017024122264/ionq-ex99_1.htm",
+  "chars": 20510,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2024-12-06_d867835d8k",
+  "form": "8-K",
+  "date": "2024-12-06",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312524272566/d867835d8k.htm",
+  "chars": 7016,
+  "truncated": false
+ },
+ {
+  "id": "pub_edgar_8-k_2024-12-20_d921213d8k",
+  "form": "8-K",
+  "date": "2024-12-20",
+  "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312524283171/d921213d8k.htm",
+  "chars": 7641,
+  "truncated": false
+ }
+]
