@@ -101,8 +101,9 @@ def evaluate(run_dir: str | Path, llm: LLM, model: str = "openai/gpt-4.1-mini", 
         "recovery_rate_lenient": round((present + partial) / n, 3) if n else None,
         "by_node_type": {k: round(sum(v) / len(v), 2) for k, v in by_type.items()},
         "conflicts": conflict_rows,
-        "conflict_detection": (sum(c["flagged"] for c in conflict_rows) / max(1, sum(c["both_recovered"] for c in conflict_rows))
-                               if conflict_rows else None),
+        "conflict_detection": (sum(c["flagged"] for c in conflict_rows) / sum(c["both_recovered"] for c in conflict_rows)
+                               if conflict_rows and sum(c["both_recovered"] for c in conflict_rows) else None),
+        "conflict_pairs_both_recovered": sum(c["both_recovered"] for c in conflict_rows),
         "results": results,
     }
     Path(run_dir, "eval_recovery.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1), encoding="utf-8")

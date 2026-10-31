@@ -59,6 +59,8 @@ def main() -> None:
         "conflict_pairs": rec.get("conflicts"),
         "alignment": {c: {k: v for k, v in s.items() if k != "results"} for c, s in al.items()},
         "finalize_cost_usd": round(llm.ledger.total_usd, 4),
+        "full_cost_usd": (json.loads((run / "cost.json").read_text(encoding="utf-8")).get("total_usd")
+                          if (run / "cost.json").exists() else None),
     }
     (run / "summary.json").write_text(json.dumps(summ, ensure_ascii=False, indent=1), encoding="utf-8")
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """진행 보고서 docx 빌드 — 원본 계획서를 템플릿으로 열어 본문을 비우고 같은 스타일로 채운다."""
-import io, sys, re, copy, shutil
+import io, sys, re, copy, shutil, os, json, argparse
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 from docx import Document
 from docx.shared import Pt, Emu, Inches, RGBColor
@@ -8,9 +8,43 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_COLOR_INDEX
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
-TEMPLATE = r"C:/Users/User/OneDrive/문서/이수인/서울대학교/Agentic AI_TRM/연구계획/이수인_Cambridge 연구계획 초안.docx"
-OUT = r"C:/Users/User/OneDrive/문서/이수인/서울대학교/Agentic AI_TRM/연구계획/이수인_KB구축시스템_진행보고_1031.docx"
-SCR = r"C:/Users/User/AppData/Local/Temp/claude/c--Users-User-OneDrive--------------Agentic-AI-TRM/f159079b-ef5b-4376-bc63-2ca981386475/scratchpad"
+HERE = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE = os.path.join(HERE, "..", "..", "연구계획", "이수인_Cambridge 연구계획 초안.docx")
+OUT = os.path.join(HERE, "..", "..", "연구계획", "이수인_KB구축시스템_진행보고_1031.docx")
+import os, json, argparse
+_ap = argparse.ArgumentParser(); _ap.add_argument("--run", default=None); _ap.add_argument("--date", default="2026. 10. 31")
+_args, _ = _ap.parse_known_args()
+HERE = os.path.dirname(os.path.abspath(__file__))
+SCR = os.path.join(HERE, "..", "docs", "screenshots")
+FIG_KB = os.path.join(SCR, "viz_kb_pilotD.png"); FIG_RM = os.path.join(SCR, "viz_roadmap_diff_pilotD.png")
+RES = None   # 전체 run 결과 (summary.json) — 있으면 표 7·Summary 를 그 수치로 채움
+if _args.run and os.path.exists(os.path.join(_args.run, "summary.json")):
+    RES = json.load(open(os.path.join(_args.run, "summary.json"), encoding="utf-8"))
+    if os.path.exists(os.path.join(SCR, "viz_kb_full.png")): FIG_KB = os.path.join(SCR, "viz_kb_full.png")
+    if os.path.exists(os.path.join(SCR, "viz_roadmap_diff_full.png")): FIG_RM = os.path.join(SCR, "viz_roadmap_diff_full.png")
+
+def pct(x): return "—" if x is None else f"{round(x*100)}%"
+def _res_rows():
+    if not RES:
+        return ("7> 파일럿 D (20건 KB) 결과", [
+            ["항목 수", "30", "36"], ["근거 문서를 인용한 항목", "0", "33"],
+            ["심은 사실 회수율 (KB)", "—", "엄격 89% / 관대 100%"],
+            ["diff", "—", "신규 23(전부 근거 있음) · 세분화 8 · 동일 1 · 일반화 4 · 탈락 17"],
+            ["공식 로드맵 recall 엄격/관대", "21% / 53%", "21% / 42%"],
+            ["2025년판 recall (관대, 선견)", "60%", "50%"], ["연도 오차 MAE", "3.25년", "1.0년"]])
+    ai, aa = RES["alignment"].get("initial", {}), RES["alignment"].get("advanced", {})
+    d, r = RES["diff"], RES["recovery"]; c = d["counts"]
+    conf = r.get("conflict_detection"); conf_s = "측정 불가" if conf is None else pct(conf)
+    return (f"7> 전체 실행 ({RES['kb']['documents']}건 KB) 결과", [
+        ["항목 수", str(RES["initial"]["nodes"]), str(RES["advanced"]["nodes"])],
+        ["근거 문서를 인용한 항목", str(RES["initial"]["with_evidence"]), str(RES["advanced"]["with_evidence"])],
+        ["심은 사실 회수율 (KB)", "—", f"엄격 {pct(r.get('recovery_rate'))} / 관대 {pct(r.get('recovery_rate_lenient'))}"],
+        ["모순 탐지율 (모순 쌍 3개)", "—", conf_s],
+        ["diff", "—", f"신규 {c.get('new',0)}(근거 있음 {d['new_with_evidence']}) · 세분화 {c.get('refined',0)} · 동일 {c.get('same',0)} · 일반화 {c.get('generalized',0)} · 탈락 {c.get('dropped',0)}"],
+        ["공식 로드맵 recall 엄격/관대", f"{pct(ai.get('recall_strict'))} / {pct(ai.get('recall_lenient'))}", f"{pct(aa.get('recall_strict'))} / {pct(aa.get('recall_lenient'))}"],
+        ["2020년판 recall (관대)", pct(ai.get('recall_2020_lenient')), pct(aa.get('recall_2020_lenient'))],
+        ["2025년판 recall (관대, 선견)", pct(ai.get('recall_2025_lenient')), pct(aa.get('recall_2025_lenient'))],
+        ["연도 오차 MAE", f"{ai.get('year_mae')}년", f"{aa.get('year_mae')}년"]])
 FIG_FW = r"C:/Users/User/OneDrive/문서/이수인/서울대학교/Agentic AI_TRM/연구계획/그림_연구프레임워크.png"
 FIG_DEMO = r"C:/Users/User/OneDrive/문서/이수인/서울대학교/Agentic AI_TRM/연구계획/CambridgeDemo.png"
 
@@ -118,12 +152,19 @@ W4 = [2200 * EMU, 2600 * EMU, 2200 * EMU, 2016 * EMU]
 
 # ============================================================== 본문
 para("**[진행 보고] TRM-Specific Knowledge Base Construction Agentic AI System — 구현 현황과 첫 결과**", 14, True, C)
-para("DDSI Lab 이수인 (2026. 10. 31)", 10, align=R)
+para(f"DDSI Lab 이수인 ({_args.date})", 10, align=R)
 
 summary_box([
     "10월 21일 세미나와 10월 23일 Cambridge 연구계획 초안에서 제안한 **TRM-Specific Knowledge Base Construction Agentic AI System**을 실제로 구현해 첫 결과를 얻었음. 결과물은 지식베이스(Knowledge Base, 에이전트가 읽고 추론하는 조직된 지식) 자체가 아니라 __그 지식베이스를 문서로부터 자율적으로 구축하는 에이전트 시스템__이며, 지식베이스와 로드맵은 그 시스템의 산출물임.",
     "대상 산업은 양자기술(Quantum Technology), 대상 기업은 미국 상장사 **IonQ**로 정함. 2024년 12월 31일 이전의 공개 자료 259건(공시·보도자료·논문·블로그)과 LLM으로 생성한 가상 내부자료 50건(회의록·주간보고·고객/공급사 메일·기술평가서)을 코퍼스로 구성함. 가상 자료에는 모델이 알 수 없는 사실 42건을 미리 심어 두어, 시스템이 그것을 회수했는지로 구축 품질을 측정함.",
     "Cambridge IfM의 2014년 양자기술 로드맵 워크숍 보고서(76쪽)를 전수 분석해 __로드맵이 요구하는 지식 단위를 노드 10종·주장 8종·관계 11종__으로 도출했고, 이를 그대로 지식베이스 스키마로 삼음. 지식베이스는 **Reader → Router → Linker → Critic → Timing → Summarizer** 여섯 에이전트가 문서 한 건씩 읽으며 쌓고, 모든 변화는 이벤트 로그로 남겨 실시간 화면으로 재생함.",
+    (f"같은 LLM, 같은 프롬프트로 지식베이스 없이 만든 **Initial Roadmap**과 지식베이스를 연산 ①~⑦로 읽어 만든 **Advanced Roadmap**을 비교함. "
+     f"{RES['kb']['documents']}건 전체 실행에서 KB는 노드 {RES['kb']['nodes']}개·주장 {RES['kb']['claims']}개·수락 링크 {RES['kb']['edges_by_status'].get('accepted',0)}개가 되었고, "
+     f"__심은 사실 회수율 {pct(RES['recovery'].get('recovery_rate'))}(관대 기준 {pct(RES['recovery'].get('recovery_rate_lenient'))})__, "
+     f"Advanced의 {RES['advanced']['nodes']}개 항목 중 {RES['advanced']['with_evidence']}개가 근거 문서를 인용했으며(Initial은 {RES['initial']['with_evidence']}개), "
+     f"공식 로드맵 마일스톤 재현율(관대)은 Initial {pct(RES['alignment'].get('initial',{}).get('recall_lenient'))} → Advanced {pct(RES['alignment'].get('advanced',{}).get('recall_lenient'))}, "
+     f"2025년판(cutoff 이후) 선견 재현율은 {pct(RES['alignment'].get('initial',{}).get('recall_2025_lenient'))} → {pct(RES['alignment'].get('advanced',{}).get('recall_2025_lenient'))}, "
+     f"연도 오차는 {RES['alignment'].get('initial',{}).get('year_mae')}년 → {RES['alignment'].get('advanced',{}).get('year_mae')}년임(6절).") if RES else
     "같은 LLM, 같은 프롬프트로 지식베이스 없이 만든 **Initial Roadmap**과 지식베이스를 연산 ①~⑦로 읽어 만든 **Advanced Roadmap**을 비교함. 20건 파일럿에서 __심은 사실 회수율 89%(관대 기준 100%)__, Advanced의 36개 항목 중 33개가 근거 문서를 인용했으며(Initial은 0개), 공식 로드맵 마일스톤과의 연도 오차가 3.25년에서 1.0년으로 줄었음. 180건 전체 실행은 보고서 작성 시점에 진행 중임(2절·9절).",
     "비용은 지금까지 약 $5.3, 전체 실행 완료까지 약 $12 수준으로 예상됨. 코드는 GitHub(PassionChicken-Leesuin/Advanced-Agentic-TRM)에 공개되어 있음.",
 ])
@@ -237,27 +278,32 @@ bullet("첫 파일럿의 회수율은 17%였음. 원인은 트리아지가 보�
 h2("6.2 공식 로드맵과의 정렬 (정답표)")
 bullet("IonQ 공식 로드맵에서 마일스톤 19건을 역량 단위로 뽑아 정답표를 만듦. 2020년판 9건(#AQ 지표 도입, 32큐비트/22AQ 시스템, 2023년 모듈화, 2025년 광범위 양자우위 등)과 2025년판 10건(2027년 단일 칩 1만 물리 큐비트, 2028년 두 칩 연결 2만, 2030년 200만 물리/4~8만 논리, 지표 교체 자체 등). 2025년판은 cutoff 이후 자료이므로 ‘KB가 변화를 앞서 봤는가’(선견)의 지표가 됨.")
 bullet("정렬 절차: 정답 마일스톤마다 로드맵 항목을 임베딩으로 추려 LLM이 match/refined/generalized/missed로 판정. 지표는 recall(엄격 = match+refined, 관대 = generalized 포함), 판별(2020/2025) recall, 짝이 지어진 항목의 연도 오차 MAE.")
-h2("6.3 파일럿 D의 1막 vs 3막")
-table("7> 파일럿 D (20건 KB) 결과", ["지표", "Initial (KB 없음)", "Advanced (KB 사용)"], [
-    ["항목 수", "30", "36"],
-    ["근거 문서를 인용한 항목", "0", "33"],
-    ["심은 사실 회수율 (KB)", "—", "엄격 89% / 관대 100%"],
-    ["diff", "—", "신규 23(전부 근거 있음) · 세분화 8 · 동일 1 · 일반화 4 · 탈락 17"],
-    ["공식 로드맵 recall 엄격/관대", "21% / 53%", "21% / 42%"],
-    ["2025년판 recall (관대, 선견)", "60%", "50%"],
-    ["연도 오차 MAE", "3.25년", "1.0년"],
-], [3200 * EMU, 2900 * EMU, 2916 * EMU], first_col_shade=True)
-bullet("20건짜리 작은 KB로는 Advanced가 내부 가상 항목(Harbor 칩 로트, Northfield 파일럿, 공급사 납기)에 치우쳐 공식 마일스톤 재현율이 Initial보다 낮게 나옴. 이는 KB가 ‘읽은 것’을 충실히 반영한다는 뜻이기도 함. 근거 부착률(0→33/36)과 연도 오차(3.25→1.0년)는 분명히 개선됨.")
-bullet("모순 탐지율은 파일럿에서 측정 불가였음. 모순 쌍의 양쪽이 같은 20건 안에 들어 있지 않았기 때문이며, 전체 실행에서 측정함.")
-arrow("공식 로드맵 재현율은 180건 전체 실행 결과로 다시 봐야 함. 작은 KB에서 Advanced가 Initial을 못 이기는 것은 정상이고, 전체 실행에서도 그렇다면 연산 ⑦(우선순위)이 공개 자료의 큰 마일스톤을 내부 세부 항목보다 위로 올리도록 손봐야 함.")
+_cap7, _rows7 = _res_rows()
+h2("6.3 1막 vs 3막" + (" (전체 실행)" if RES else " (파일럿 D)"))
+table(_cap7, ["지표", "Initial (KB 없음)", "Advanced (KB 사용)"], _rows7, [3200 * EMU, 2900 * EMU, 2916 * EMU], first_col_shade=True)
+if RES:
+    _ai, _aa = RES["alignment"].get("initial", {}), RES["alignment"].get("advanced", {})
+    _better = (_aa.get("recall_lenient") or 0) >= (_ai.get("recall_lenient") or 0)
+    _mae_ok = (_aa.get("year_mae") is not None and _ai.get("year_mae") is not None and _aa["year_mae"] <= _ai["year_mae"])
+    bullet(f"20건 파일럿에서는 Advanced가 내부 가상 항목에 치우쳐 공식 마일스톤 재현율이 Initial보다 낮았음. {RES['kb']['documents']}건 KB에서는 "
+           + ("Advanced가 Initial과 같거나 앞섬. " if _better else "여전히 Initial이 앞섬. ")
+           + f"근거 부착률은 Initial {RES['initial']['with_evidence']} → Advanced {RES['advanced']['with_evidence']}/{RES['advanced']['nodes']}, 연도 오차는 {_ai.get('year_mae')} → {_aa.get('year_mae')}년으로 "
+           + ("개선됨." if _mae_ok else "연도 오차는 개선되지 않음."))
+    _cd = RES["recovery"].get("conflict_detection")
+    bullet("모순 탐지율은 모순 쌍 3개 중 양쪽 사실이 모두 회수된 쌍에서 Critic이 conflict를 표시한 비율임: " + ("측정 불가(양쪽이 회수된 쌍 없음)." if _cd is None else f"{pct(_cd)}."))
+    arrow("전체 실행에서 확인된 KB 효과는 ‘근거가 붙은 항목’과 ‘시점의 정확도’에서 가장 크고, 공식 마일스톤 재현율은 " + ("개선되었음." if _better else "아직 Initial과 비슷하거나 낮음. 연산 ⑦(우선순위)이 공개 자료의 큰 마일스톤을 내부 세부 항목보다 위로 올리도록 손봐야 함."))
+else:
+    bullet("20건짜리 작은 KB로는 Advanced가 내부 가상 항목(Harbor 칩 로트, Northfield 파일럿, 공급사 납기)에 치우쳐 공식 마일스톤 재현율이 Initial보다 낮게 나옴. 이는 KB가 ‘읽은 것’을 충실히 반영한다는 뜻이기도 함. 근거 부착률(0→33/36)과 연도 오차(3.25→1.0년)는 분명히 개선됨.")
+    bullet("모순 탐지율은 파일럿에서 측정 불가였음. 모순 쌍의 양쪽이 같은 20건 안에 들어 있지 않았기 때문이며, 전체 실행에서 측정함.")
+    arrow("공식 로드맵 재현율은 180건 전체 실행 결과로 다시 봐야 함. 작은 KB에서 Advanced가 Initial을 못 이기는 것은 정상이고, 전체 실행에서도 그렇다면 연산 ⑦(우선순위)이 공개 자료의 큰 마일스톤을 내부 세부 항목보다 위로 올리도록 손봐야 함.")
 
 # ------------------------------------------------------------------ 7
 h1("7. [화면: 지식이 쌓이는 장면과 달라진 로드맵]")
 para("데모 3막 구성(10월 23일 초안 <그림 2>)을 그대로 웹 화면으로 구현함. FastAPI(파이썬 웹 서버)가 이벤트 로그를 SSE(Server-Sent Events, 서버가 브라우저로 사건을 한 줄씩 밀어주는 방식)로 흘리고, D3(브라우저 그래프 그리기 라이브러리)가 받아 그림. 기록 재생(속도 조절)과 실시간 추적을 같은 화면으로 처리하므로 발표 때는 기록 재생을 써서 API 지연·실패를 차단함.")
-figure(SCR + "/fig_kb_pilotD.png", "<그림 1> 2막: KB가 구축되는 장면 (파일럿 D, 20건 투입 완료 시점)")
+figure(FIG_KB, "<그림 1> 2막: KB가 구축되는 장면 " + ("(전체 실행, 180건 투입 완료 시점)" if "full" in FIG_KB else "(파일럿 D, 20건 투입 완료 시점)"))
 bullet("세로는 다섯 레인(why / what / how / 자원 / 횡단), 가로는 시간축(know-when). 시간 정보가 있는 노드는 ES 위치에 고정되고 없는 노드는 레인 안에서 힘 기반 배치(force layout)로 퍼짐. 노드 크기는 근거 수, 라벨은 두 문서 이상이 말한 행만 상시 표시하고 나머지는 마우스를 올리면 보임.")
 bullet("Linker의 제안은 점선, Critic이 수락하면 실선, 반려하면 붉은 점선으로 바뀐 뒤 사라짐. 모순이 잡힌 노드는 주황 테두리. 오른쪽에는 에이전트 여섯의 상태등과 마지막 행동, 문서 진행바, KB 통계, 이벤트 로그가 있음.")
-figure(SCR + "/fig_rm_pilotD.png", "<그림 2> 1막·3막: Initial(왼쪽)과 Advanced(오른쪽) 로드맵과 diff 색상")
+figure(FIG_RM, "<그림 2> 1막·3막: Initial(왼쪽)과 Advanced(오른쪽) 로드맵과 diff 색상" + (" (전체 실행)" if "full" in FIG_RM else " (파일럿 D)"))
 bullet("오른쪽 Advanced에서 초록은 신규, 파랑 테두리는 세분화, 회색은 동일, 점선은 일반화. 왼쪽 Initial에서 점선 테두리는 탈락한 항목. 막대 끝의 숫자 배지는 근거 문서 수이고, 기술이 수요보다 늦은 항목은 붉은 테두리(infeasible)로 표시됨. 범례의 ‘근거 있는 신규 23/23’이 3막의 핵심 메시지임.")
 bullet("화면 라벨은 사전 파일 하나(i18n)에 모아 두어 영어 전환 시 그 파일만 채우면 됨.")
 
@@ -267,8 +313,8 @@ table("8> 지금까지의 비용 (OpenRouter 실측)", ["항목", "비용"], [
     ["가상 내부자료 50건 생성 + 재생성 11건 (claude-sonnet-4.6)", "$1.39"],
     ["파일럿 6회 + 스모크 3회 (설정 비교·디버깅)", "$2.80"],
     ["로드맵 생성·diff·평가 판정자", "약 $0.35"],
-    ["전체 실행 180건 (진행 중, 문서당 약 $0.035)", "약 $6.3 예상"],
-    ["합계 (전체 실행 완료 시)", "약 $11~12"],
+    ([f"전체 실행 {RES['kb']['documents']}건 (완료, 문서당 약 ${RES.get('full_cost_usd', 6.3)/max(1,RES['kb']['documents']):.3f})", f"${RES.get('full_cost_usd', 6.3):.2f}"] if RES else ["전체 실행 180건 (진행 중, 문서당 약 $0.035)", "약 $6.3 예상"]),
+    ([f"합계", f"약 ${1.39+2.80+0.35+RES.get('full_cost_usd', 6.3)+RES.get('finalize_cost_usd',0):.1f}"] if RES else ["합계 (전체 실행 완료 시)", "약 $11~12"]),
 ], [6000 * EMU, 3016 * EMU], first_col_shade=True)
 bullet("문서당 비용의 약 40%가 Critic(sonnet)임. 본 실험에서 구조 조건(S0~S4)별로 KB를 여러 번 지어야 한다면 Critic을 gpt-4.1이나 배치 가격으로 바꾸는 것이 절감 지점임. 데모 한 세트에는 그대로 둠.")
 bullet("속도는 문서당 55초(최적화 전)에서 22~63초로 줄었고, 가장 긴 것은 14청크짜리 10-K·논문(약 60초)임.")
@@ -276,7 +322,10 @@ bullet("속도는 문서당 55초(최적화 전)에서 22~63초로 줄었고, �
 # ------------------------------------------------------------------ 9
 h1("9. [남은 일과 열린 질문]")
 circle_restart()
-circle("**전체 실행 결과 반영**: 180건 KB로 Advanced를 다시 생성하고, 회수율·모순 탐지율·공식 로드맵 정렬(특히 2025년판 선견)을 산출해 <표 7>을 갱신함. 마무리 스크립트 한 번으로 돌아가게 준비되어 있음.")
+if RES:
+    circle("**전체 실행 결과 반영 완료**: 180건 KB로 Advanced를 생성하고 회수율·모순 탐지율·공식 로드맵 정렬을 산출해 <표 7>과 Summary에 반영함. 남은 것은 결과 해석과 본 실험 설계로의 연결임.")
+else:
+    circle("**전체 실행 결과 반영**: 180건 KB로 Advanced를 다시 생성하고, 회수율·모순 탐지율·공식 로드맵 정렬(특히 2025년판 선견)을 산출해 <표 7>을 갱신함. 마무리 스크립트 한 번으로 돌아가게 준비되어 있음.")
 circle("**Generator 모델 2종**: 연구구상 §5.1의 요구대로 gpt-4.1 외에 한 모델을 더 돌려 결과가 모델에 의존하지 않는지 확인함(약 $0.3).")
 circle("**본 실험과의 연결**: 지금의 KB는 S4(제안 구조)임. 같은 이벤트 로그에서 구조를 하나씩 빼는 방식(S0 평면 RAG, S1 계층 요약만, S2 엔티티 그래프만, S3 합집합, S4-a~d ablation)으로 비교 조건을 만들 수 있음. 연산 ①~⑦이 구조별로 어디서 막히는지가 곧 ‘로드맵이 이 구조를 요구한다’의 증거가 됨.")
 circle("**한계**: (a) 공개 자료의 사실은 모델이 이미 알 수 있으므로 사전지식 오염은 심은 사실과 cutoff 전후 구간 분리로만 통제됨. (b) 가상 자료가 KB의 1/3이라 Advanced가 내부 세부 항목에 치우칠 수 있음(6.3). (c) Router의 병합 임계값(0.80/0.65)은 파일럿 로그로 정한 값이라 다른 도메인에서는 재조정이 필요함. (d) 모순 탐지는 수치가 있는 주장에만 걸어 두어 서술형 모순은 놓침.")
