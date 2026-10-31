@@ -1,5 +1,10 @@
 # trmkb — TRM 특화 KB 자율구축 에이전트 시스템 (IonQ 데모)
 
+> **주의 / Disclaimer.** 이 저장소는 서울대 DDSI Lab의 연구용 데모입니다. 대상 기업 IonQ의 **공개 자료**(SEC 공시, 보도자료, arXiv, 블로그)와 함께
+> **LLM이 생성한 허구의 내부 문서** 50건(`data/corpus/synthetic/`)을 투입합니다. 가상 문서와 그로부터 만들어진 지식베이스·로드맵 안의 내부 수치,
+> 고객명, 공급사명, 의사결정은 모두 실제가 아닙니다. IonQ와는 무관하며, IonQ의 입장이나 계획을 대변하지 않습니다.
+> This is a research demo. Synthetic internal documents and everything derived from them are fictional and unaffiliated with IonQ.
+
 계획: `../연구계획/2026-10-31_구현계획_QuantumKB_Demo.md`
 지식 단위 근거: `../연구계획/2026-10-31_분석_Cambridge양자로드맵_지식단위.md`
 

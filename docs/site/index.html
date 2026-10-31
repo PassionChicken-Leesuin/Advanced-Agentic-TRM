@@ -59,6 +59,10 @@
 </style>
 </head>
 <body>
+<div id="banner" style="display:none; background:#3b2f0f; color:#ffd77a; font-size:12px; padding:4px 14px; border-bottom:1px solid #6b5a1f">
+  연구용 데모 (서울대 DDSI Lab, 이수인). 대상 기업 IonQ의 <b>공개 자료</b>와 LLM이 생성한 <b>가상 내부자료</b>(회의록·메일 등, 전부 허구)를 함께 투입해 만든 지식베이스입니다. 화면의 내부 수치·고객명·공급사명은 실제가 아닙니다.
+  &nbsp;·&nbsp; Research demo: the knowledge base mixes IonQ's public documents with <b>synthetic internal documents</b> (fictional); internal figures, customer and supplier names are not real.
+</div>
 <header>
   <h1>TRM Knowledge Base</h1>
   <label>run <select id="run"></select></label>
@@ -99,6 +103,7 @@ const t = (k, o={}) => (T[k] || k).replace(/\{(\w+)\}/g, (_, n) => o[n] ?? "");
 
 // STATIC 모드: 서버 없이 data/ 폴더의 JSON 파일로 동작 (GitHub Pages 등). export_static.py 가 window.STATIC=true 를 주입.
 const STATIC = !!window.STATIC;
+if (STATIC) { document.getElementById("banner").style.display = "block"; document.querySelector("main").style.height = "calc(100vh - 44px - 46px)"; }
 const getJSON = async (apiPath, staticPath) => (await fetch(STATIC ? staticPath : apiPath, {cache: "no-store"})).json();
 async function loadI18n(lang){ T = await getJSON(`/api/i18n?lang=${lang}`, `data/i18n_${lang}.json`); renderAgents(); renderLegend(); }
 async function loadRuns(){
