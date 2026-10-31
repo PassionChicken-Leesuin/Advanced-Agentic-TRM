@@ -84,29 +84,56 @@ class CostLedger:
 
 
 class LLM:
+    """OpenRouter 클라이언트. 키 N개를 **병렬로** 쓴다:
+    호출마다 라운드로빈으로 다른 키(=다른 클라이언트)를 배정하므로 스레드 M개가 동시에 호출하면
+    키 M개가 동시에 일한다. 429/401/402/403 이 난 키는 cooldown 동안 제외하고 다음 키로 재시도.
+    스레드 안전 (lock 으로 키 선택·원장 기록 보호)."""
+
     def __init__(self, keys: list[str] | None = None, *, max_retries: int = 4,
-                 ledger: CostLedger | None = None, app_title: str = "trmkb"):
+                 ledger: CostLedger | None = None, app_title: str = "trmkb", cooldown_s: float = 20.0):
+        import threading
         self.keys = keys or load_keys()
-        self.key_idx = 0
         self.max_retries = max_retries
         self.ledger = ledger or CostLedger()
+        self.cooldown_s = cooldown_s
         self._headers = {"HTTP-Referer": "https://github.com/local/trmkb", "X-Title": app_title}
-        self._client = self._make_client()
+        self._clients = [OpenAI(base_url=OPENROUTER_BASE, api_key=k, default_headers=self._headers, max_retries=0)
+                         for k in self.keys]
+        self._cooldown_until = [0.0] * len(self.keys)
+        self._rr = 0
+        self._lock = threading.Lock()
+        self.key_idx = 0   # 마지막으로 배정된 키 (진단용)
 
-    def _make_client(self) -> OpenAI:
-        return OpenAI(base_url=OPENROUTER_BASE, api_key=self.keys[self.key_idx],
-                      default_headers=self._headers, max_retries=0)
+    def _pick(self) -> int:
+        """cooldown 중이 아닌 다음 키를 라운드로빈으로 고른다. 전부 cooldown이면 가장 빨리 풀리는 키."""
+        now = time.time()
+        with self._lock:
+            n = len(self.keys)
+            for _ in range(n):
+                i = self._rr % n
+                self._rr += 1
+                if self._cooldown_until[i] <= now:
+                    self.key_idx = i
+                    return i
+            i = min(range(n), key=lambda j: self._cooldown_until[j])
+            self.key_idx = i
+            return i
 
-    def _rotate(self) -> None:
-        self.key_idx = (self.key_idx + 1) % len(self.keys)
-        self._client = self._make_client()
+    def _cool(self, i: int) -> None:
+        with self._lock:
+            self._cooldown_until[i] = time.time() + self.cooldown_s
+
+    def _record(self, rec: CallRecord) -> None:
+        with self._lock:
+            self.ledger.add(rec)
 
     # ------------------------------------------------------------------
     def complete(self, model: str, system: str, user: str, *, purpose: str = "generic",
                  temperature: float = 0.0, max_tokens: int = 4096,
                  json_mode: bool = False) -> str:
         last_err: Exception | None = None
-        for attempt in range(self.max_retries * len(self.keys)):
+        for attempt in range(self.max_retries * max(1, len(self.keys) // 2)):
+            i = self._pick()
             t0 = time.time()
             try:
                 kwargs: dict[str, Any] = dict(
@@ -117,22 +144,22 @@ class LLM:
                 )
                 if json_mode:
                     kwargs["response_format"] = {"type": "json_object"}
-                resp = self._client.chat.completions.create(**kwargs)
+                resp = self._clients[i].chat.completions.create(**kwargs)
                 usage = resp.usage
                 cost = float(getattr(usage, "cost", None) or
                              (usage.model_extra or {}).get("cost", 0.0) if usage else 0.0)
-                self.ledger.add(CallRecord(
+                self._record(CallRecord(
                     model=model, purpose=purpose,
                     prompt_tokens=usage.prompt_tokens if usage else 0,
                     completion_tokens=usage.completion_tokens if usage else 0,
-                    cost_usd=cost, latency_s=time.time() - t0, key_idx=self.key_idx))
+                    cost_usd=cost, latency_s=time.time() - t0, key_idx=i))
                 return resp.choices[0].message.content or ""
             except RateLimitError as e:
-                last_err = e; self._rotate(); time.sleep(1.0)
+                last_err = e; self._cool(i); time.sleep(0.5)
             except APIStatusError as e:
                 last_err = e
                 if e.status_code in (401, 402, 403, 429):
-                    self._rotate(); time.sleep(1.0)
+                    self._cool(i); time.sleep(0.5)
                 elif e.status_code >= 500:
                     time.sleep(2.0 * (attempt + 1))
                 else:
@@ -140,6 +167,13 @@ class LLM:
             except Exception as e:  # 네트워크 등
                 last_err = e; time.sleep(2.0 * (attempt + 1))
         raise RuntimeError(f"LLM call failed after retries: {last_err}")
+
+    def key_usage(self) -> dict[int, int]:
+        """키별 호출 수 (병렬 분산 확인용)."""
+        out: dict[int, int] = {}
+        for r in self.ledger.records:
+            out[r.key_idx] = out.get(r.key_idx, 0) + 1
+        return dict(sorted(out.items()))
 
     def structured(self, model: str, system: str, user: str, schema: type[T], *,
                    purpose: str = "generic", temperature: float = 0.0,

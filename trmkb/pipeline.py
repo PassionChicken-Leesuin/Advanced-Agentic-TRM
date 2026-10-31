@@ -9,9 +9,11 @@ import json
 import re
 import time
 import traceback
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import asdict, dataclass, field
 from datetime import date
 from pathlib import Path
+from typing import Any
 
 from .agents.chunker import chunk_document
 from .agents.critic import Critic
@@ -29,9 +31,12 @@ from .store import KBStore
 
 @dataclass
 class PipelineConfig:
-    name: str = "A"
+    # 기본값 = 파일럿(2026-10-31, 20건 × 설정 A/B/D)에서 선정된 설정 D:
+    #   Reader haiku-5.5(회수율 89%, 수치 주장 최다) / Router·Linker·Summarizer gpt-4.1-mini(JSON 안정, 링크 풍부)
+    #   / Critic claude-sonnet-4.6(엄격). 오류 0, $0.032/문서.
+    name: str = "D"
     model_triage: str | None = "openai/gpt-4.1-nano"
-    model_reader: str = "openai/gpt-4.1-mini"
+    model_reader: str = "anthropic/claude-haiku-5.5"
     model_router: str = "openai/gpt-4.1-mini"
     model_linker: str = "openai/gpt-4.1-mini"
     model_critic: str = "anthropic/claude-sonnet-4.6"
@@ -41,9 +46,12 @@ class PipelineConfig:
     max_proposals_per_chunk: int = 10
     summarizer_rows_per_doc: int = 4
     merge_hi: float = 0.80
-    merge_lo: float = 0.55
+    merge_lo: float = 0.65      # 파일럿 router_log: 0.55–0.65 구간 LLM 병합률 7–9% → 신규 처리
     conflict_check: bool = True
     linker: bool = True
+    reader_workers: int = 8     # 청크 병렬 (키 20개 라운드로빈이므로 키당 부하는 낮음)
+    summarizer_every: int = 3   # N 문서마다 dirty 행 요약 갱신 (마지막 문서는 항상)
+    prefetch: int = 2           # 다음 문서 N건의 Reader 단계를 현재 문서 처리와 겹침
 
     def dump(self, path: Path) -> None:
         path.write_text(json.dumps(asdict(self), indent=1), encoding="utf-8")
@@ -94,22 +102,76 @@ class Pipeline:
 
     def run(self, rel_paths: list[str], *, stop_on_error: bool = False) -> list[EpisodeStats]:
         out = []
+        todo = []
         for rp in rel_paths:
             doc, body, actor = self.load_corpus_doc(rp)
-            if doc.id in self.kb.documents:
-                continue
-            st = self.episode(doc, body, actor)
+            if doc.id not in self.kb.documents:
+                todo.append((doc, body, actor))
+        self._doc_counter = 0
+        # 프리페치: 다음 문서 N건의 Reader 단계(KB 상태를 바꾸지 않음)를 미리 돌린다. Router 이후는 한 문서씩.
+        pool = ThreadPoolExecutor(max_workers=max(1, self.cfg.prefetch)) if self.cfg.prefetch > 0 else None
+        futs: dict[int, Any] = {}
+
+        def _ensure_prefetched(upto: int) -> None:
+            if not pool:
+                return
+            for j in range(upto, min(len(todo), upto + self.cfg.prefetch)):
+                if j not in futs:
+                    d, b, a = todo[j]
+                    futs[j] = pool.submit(self._read_doc, d, b, a)
+
+        for i, (doc, body, actor) in enumerate(todo):
+            _ensure_prefetched(i)
+            read_results = futs.pop(i).result() if i in futs else None
+            _ensure_prefetched(i + 1)
+            self._doc_counter += 1
+            st = self.episode(doc, body, actor, read_results=read_results, force_summary=(i == len(todo) - 1))
             out.append(st)
             with self.stats_path.open("a", encoding="utf-8") as f:
                 f.write(json.dumps(asdict(st), ensure_ascii=False) + "\n")
             if st.error and stop_on_error:
                 break
+        if pool:
+            pool.shutdown(wait=False, cancel_futures=True)
         self.kb.save()
         self.llm.ledger.dump(self.run_dir / "cost.json")
+        (self.run_dir / "key_usage.json").write_text(json.dumps(self.llm.key_usage()), encoding="utf-8")
         return out
 
+    def _read_doc(self, doc: Document, body: str, actor: str) -> list[tuple]:
+        """Reader 단계만 (트리아지 + 추출, 청크 병렬). KB 상태를 바꾸지 않으므로 다른 문서 처리와 겹칠 수 있다.
+        반환: [(None, 청크 수), (chunk, proposals)..., (None, 오류 목록)]"""
+        cfg = self.cfg
+        chunks = chunk_document(body, doc.source_type.value, cfg.chunk_chars, cfg.max_chunks_per_doc)
+
+        def _read(ch):
+            tri = self.reader.triage(ch, doc_date=doc.date, source_type=doc.source_type.value)
+            if not tri.relevant:
+                return ch, []
+            props = self.reader.extract(ch, title=doc.title, doc_date=doc.date, source_type=doc.source_type.value, actor=actor)
+            return ch, props[: cfg.max_proposals_per_chunk]
+
+        results: dict[int, tuple] = {}
+        errors: list[str] = []
+        if cfg.reader_workers > 1 and len(chunks) > 1:
+            with ThreadPoolExecutor(max_workers=cfg.reader_workers) as ex:
+                fmap = {ex.submit(_read, ch): ch.idx for ch in chunks}
+                for f in as_completed(fmap):
+                    try:
+                        ch, props = f.result(); results[ch.idx] = (ch, props)
+                    except Exception as e:  # noqa: BLE001
+                        errors.append(f"reader chunk {fmap[f]}: {e}"[:200])
+        else:
+            for ch in chunks:
+                try:
+                    results[ch.idx] = _read(ch)
+                except Exception as e:  # noqa: BLE001
+                    errors.append(f"reader chunk {ch.idx}: {e}"[:200])
+        return [(None, len(chunks))] + [results[i] for i in sorted(results)] + [(None, errors)]
+
     # ------------------------------------------------------------------
-    def episode(self, doc: Document, body: str, actor: str) -> EpisodeStats:
+    def episode(self, doc: Document, body: str, actor: str, *, read_results: list[tuple] | None = None,
+                force_summary: bool = False) -> EpisodeStats:
         cfg, kb, ev = self.cfg, self.kb, self.kb.events
         st = EpisodeStats(doc_id=doc.id)
         t0 = time.time(); cost0 = self.llm.ledger.total_usd
@@ -119,15 +181,17 @@ class Pipeline:
         touched: dict[str, None] = {}
         excerpts: list[str] = []
         try:
-            chunks = chunk_document(body, doc.source_type.value, cfg.chunk_chars, cfg.max_chunks_per_doc)
-            st.chunks = len(chunks)
-            for ch in chunks:
-                tri = self.reader.triage(ch, doc_date=doc.date, source_type=doc.source_type.value)
-                if not tri.relevant:
+            # Reader(트리아지+추출)는 청크 병렬 + run()의 다음 문서 프리페치. Router 이후는 순차(병합이 상태에 의존).
+            if read_results is None:
+                read_results = self._read_doc(doc, body, actor)
+            st.chunks = read_results[0][1]
+            for msg in read_results[-1][1]:
+                ev.emit(Agent.READER, EventType.ERROR, doc_id=doc.id, msg=msg)
+
+            for ch, props in read_results[1:-1]:
+                if not props:
                     continue
                 st.chunks_relevant += 1
-                props = self.reader.extract(ch, title=doc.title, doc_date=doc.date, source_type=doc.source_type.value, actor=actor)
-                props = props[: cfg.max_proposals_per_chunk]
                 st.proposals += len(props)
                 for p in props:
                     quote, span = locate_quote(ch, p.evidence_quote)
@@ -167,10 +231,15 @@ class Pipeline:
                                 ev.emit(Agent.CRITIC, EventType.CONFLICT_FLAGGED, doc_id=doc.id, node_id=node.id, claim_id=claim.id,
                                         a=claim.text[:60], b=kb.claims[cid].text[:60], reason=reason[:200], other_claim_id=cid)
                     touched[node.id] = None
-            # Linker → Critic
+            # Linker → Critic — 링크 단계 실패는 노드·주장을 살리고 다음 단계로 넘어간다
+            proposals = []
             if cfg.linker and touched:
                 tnodes = [kb.nodes[i] for i in touched]
-                proposals = self.linker.propose(tnodes, doc_id=doc.id, title=doc.title, doc_date=doc.date, excerpts="\n".join(excerpts))
+                try:
+                    proposals = self.linker.propose(tnodes, doc_id=doc.id, title=doc.title, doc_date=doc.date, excerpts="\n".join(excerpts))
+                except Exception as e:  # noqa: BLE001
+                    ev.emit(Agent.LINKER, EventType.ERROR, doc_id=doc.id, msg=f"linker: {e}"[:200])
+                    st.error = f"linker: {type(e).__name__}"
                 st.edges_proposed = len(proposals)
                 for edge, quote in proposals:
                     kb.upsert_edge(edge)
@@ -195,8 +264,11 @@ class Pipeline:
             tr = timing_mod.recompute(kb)
             ev.emit(Agent.TIMING, EventType.TIME_RECOMPUTED, doc_id=doc.id, n=tr["changed"], with_time=tr["with_time"],
                     infeasible=len(tr["infeasible"]))
-            # Summarizer (dirty rows only) — 요약 실패는 에피소드를 실패시키지 않는다 (행은 dirty로 남겨 다음 문서에서 재시도)
-            dirty = set(self.router.dirty_rows); self.router.dirty_rows.clear()
+            # Summarizer (dirty rows only, N 문서마다) — 요약 실패는 에피소드를 실패시키지 않는다
+            due = force_summary or (getattr(self, "_doc_counter", 1) % max(1, cfg.summarizer_every) == 0)
+            dirty = set(self.router.dirty_rows) if due else set()
+            if due:
+                self.router.dirty_rows.clear()
             try:
                 for s, nb, na in self.summarizer.refresh(dirty, doc_id=doc.id, max_rows=cfg.summarizer_rows_per_doc):
                     ev.emit(Agent.SUMMARIZER, EventType.SUMMARY_UPDATED, doc_id=doc.id, layer=s.key, n_before=nb, n_after=na,

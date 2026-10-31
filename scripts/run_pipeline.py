@@ -18,10 +18,13 @@ from trmkb.corpus import CORPUS_ROOT
 from trmkb.pipeline import Pipeline, PipelineConfig
 
 CONFIGS = {
-    "A": PipelineConfig(name="A"),
+    "A": PipelineConfig(name="A", model_reader="openai/gpt-4.1-mini"),
     "B": PipelineConfig(name="B", model_reader="anthropic/claude-haiku-5.5", model_router="anthropic/claude-haiku-5.5",
                         model_linker="anthropic/claude-haiku-5.5", model_summarizer="anthropic/claude-haiku-5.5",
                         model_critic="openai/gpt-4.1"),
+    "D": PipelineConfig(name="D", model_reader="anthropic/claude-haiku-5.5", model_router="openai/gpt-4.1-mini",
+                        model_linker="openai/gpt-4.1-mini", model_summarizer="openai/gpt-4.1-mini",
+                        model_critic="anthropic/claude-sonnet-4.6"),
     "C": PipelineConfig(name="C", model_reader="anthropic/claude-sonnet-4.6", model_router="openai/gpt-4.1-mini",
                         model_linker="anthropic/claude-sonnet-4.6", model_summarizer="openai/gpt-4.1-mini",
                         model_critic="openai/gpt-4.1"),
@@ -85,7 +88,7 @@ def priority_selection(rows: list[dict], limit: int) -> list[dict]:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--run", required=True)
-    ap.add_argument("--config", default="A", choices=list(CONFIGS))
+    ap.add_argument("--config", default="D", choices=list(CONFIGS))
     ap.add_argument("--pilot", action="store_true")
     ap.add_argument("--select", choices=["priority"], default=None)
     ap.add_argument("--limit", type=int, default=None)
