@@ -67,6 +67,8 @@ def snapshot(run: str) -> dict:
     snap["stats"] = kb.stats()
     snap["documents"] = [{"id": d.id, "title": d.title, "date": d.date.isoformat(), "source_type": d.source_type.value,
                           "is_synthetic": d.is_synthetic} for d in kb.documents.values()]
+    plan = _run_dir(run) / "plan.json"
+    snap["planned_total"] = json.loads(plan.read_text(encoding="utf-8")).get("total") if plan.exists() else None
     return snap
 
 

@@ -108,7 +108,7 @@ async function loadSnapshot(){
   const snap = await (await fetch(`/api/runs/${currentRun}/snapshot`)).json();
   attrs = {}; snap.nodes.forEach(n => attrs[n.id] = n);
   snap.edges.forEach(e => attrs[e.id] = e);
-  state.docsTotal = snap.documents.length;
+  state.docsTotal = snap.planned_total || snap.documents.length;
   return snap;
 }
 

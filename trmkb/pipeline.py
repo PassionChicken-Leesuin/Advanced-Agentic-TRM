@@ -108,6 +108,9 @@ class Pipeline:
             if doc.id not in self.kb.documents:
                 todo.append((doc, body, actor))
         self._doc_counter = 0
+        # 계획된 총 건수 기록 (시각화 진행바 분모)
+        (self.run_dir / "plan.json").write_text(json.dumps({"total": len(todo) + len(self.kb.documents), "config": self.cfg.name}),
+                                                encoding="utf-8")
         # 프리페치: 다음 문서 N건의 Reader 단계(KB 상태를 바꾸지 않음)를 미리 돌린다. Router 이후는 한 문서씩.
         pool = ThreadPoolExecutor(max_workers=max(1, self.cfg.prefetch)) if self.cfg.prefetch > 0 else None
         futs: dict[int, Any] = {}
