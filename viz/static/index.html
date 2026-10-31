@@ -45,6 +45,10 @@
   .badge { fill:#1f2430; stroke:#5b8def; } .badge text { fill:#9db8ff; font-size:9px; }
   #tip { position:absolute; pointer-events:none; background:#1f2430; border:1px solid var(--line); padding:6px 8px; border-radius:6px; font-size:12px; max-width:360px; display:none; }
   .rm-bar { rx:3; } .rm-bar.prior { fill:#4a5061; } .rm-bar.kb { fill:#3b9ddd; } .rm-bar.infeasible { stroke:var(--reject); stroke-width:2; }
+  .rm-bar.d-new { fill:#2e9e6a; } .rm-bar.d-refined { fill:#3b9ddd; stroke:#9fd3ff; stroke-width:1.5; }
+  .rm-bar.d-same { fill:#4a5061; } .rm-bar.d-generalized { fill:#6c7a99; stroke-dasharray:4 2; stroke:#aab4c8; }
+  .rm-bar.d-dropped { fill:none; stroke:#6b7280; stroke-dasharray:3 3; } .rm-bar.d-matched { fill:#4a5061; opacity:.7; }
+  .rm-legend { font-size:11px; fill:#8b93a7; }
   .rm-label { font-size:11px; fill:#e6e8ee; pointer-events:none; }
   .rm-edge { fill:none; stroke:#6b7280; stroke-width:1; opacity:.6; }
   .legend { position:absolute; right:12px; top:6px; font-size:11px; color:var(--muted); display:flex; gap:12px; }
@@ -222,11 +226,21 @@ async function showRoadmap(){
   if (!conds.length) { svg.append("text").attr("x",40).attr("y",60).attr("fill","#8b93a7").text("이 run에는 roadmap_*.json 이 없습니다. scripts/gen_roadmap.py initial --run runs/<run>"); return; }
   const box = $("#canvas").getBoundingClientRect(); W = box.width; H = box.height;
   const colW = W / conds.length;
-  conds.forEach((c, i) => drawRoadmap(roadmaps[c], i*colW, colW, c));
+  const diffCat = {};
+  if (roadmaps.diff) roadmaps.diff.pairs.forEach(p => { if (p.advanced_id) diffCat[p.advanced_id] = p.category; if (p.initial_id) diffCat[p.initial_id] = p.category === "dropped" ? "dropped" : "matched"; });
+  conds.forEach((c, i) => drawRoadmap(roadmaps[c], i*colW, colW, c, diffCat));
+  $("#legend").style.display = "none";
+  if (roadmaps.diff) {
+    const cnt = roadmaps.diff.counts; const lg = svg.append("g").attr("transform", `translate(${W-640}, 36)`);
+    const items = [["d-new","신규 "+(cnt.new||0)],["d-refined","세분화 "+(cnt.refined||0)],["d-same","동일 "+(cnt.same||0)],["d-generalized","일반화 "+(cnt.generalized||0)],["d-dropped","탈락 "+(cnt.dropped||0)]];
+    items.forEach(([cls, label], i) => { lg.append("rect").attr("class","rm-bar "+cls).attr("x", i*95).attr("y",-10).attr("width",14).attr("height",10); lg.append("text").attr("class","rm-legend").attr("x", i*95+18).attr("y",-1).text(label); });
+    lg.append("text").attr("class","rm-legend").attr("x", 5*95+10).attr("y",-1).text(`근거 있는 신규 ${roadmaps.diff.new_with_evidence}/${cnt.new||0}`);
+  }
 }
-function drawRoadmap(rm, x0, w, cond){
+function drawRoadmap(rm, x0, w, cond, diffCat){
+  diffCat = diffCat || {};
   const gg = svg.append("g").attr("transform",`translate(${x0},0)`);
-  gg.append("text").attr("x",14).attr("y",20).attr("fill","#e6e8ee").style("font-weight",600).text(t("ui.roadmap."+cond) + `  · ${rm.model} · ${rm.nodes.length} nodes`);
+  gg.append("text").attr("x",14).attr("y",20).attr("fill","#e6e8ee").style("font-weight",600).text(t("ui.roadmap."+cond) + `  · ${rm.model} · ${rm.nodes.length} nodes` + (rm.summary ? ` · 근거 ${rm.summary.with_evidence}` : ""));
   const x = d3.scaleLinear().domain(rm.horizon).range([120, w-20]);
   const lanes = ["why","what","how","resource"];
   const byLayer = {}; lanes.forEach(l => byLayer[l] = rm.nodes.filter(n => n.layer===l));
@@ -244,7 +258,8 @@ function drawRoadmap(rm, x0, w, cond){
   const pos = {};
   rm.nodes.forEach(n => { const li = laneInfo[n.layer]; const r = li.cats.indexOf(n.category || "—"); const yy = li.y0 + 8 + rowH*(r+1) - 8; pos[n.id] = {x:(x(n.start)+x(n.end))/2, y: yy+8};
     const kb = n.produced_by && n.produced_by.some(o => o !== "llm_prior");
-    gg.append("rect").attr("class", "rm-bar " + (kb? "kb":"prior") + (n.flags.includes("infeasible")? " infeasible":"")).attr("x", x(n.start)).attr("y", yy).attr("width", Math.max(6, x(n.end)-x(n.start))).attr("height", 16)
+    const dc = diffCat[n.id] ? " d-" + diffCat[n.id] : "";
+    gg.append("rect").attr("class", "rm-bar " + (kb? "kb":"prior") + dc + (n.flags.includes("infeasible")? " infeasible":"")).attr("x", x(n.start)).attr("y", yy).attr("width", Math.max(6, x(n.end)-x(n.start))).attr("height", 16)
       .on("mousemove", ev => tip(ev, `<b>${n.label}</b><br>${n.description||""}<br>${n.start}–${n.end} · ${(n.produced_by||[]).join(", ")}${n.evidence_ids.length? " · 근거 "+n.evidence_ids.length:""}${n.flags.length? " · "+n.flags.join(","):""}`)).on("mouseleave", hideTip);
     gg.append("text").attr("class","rm-label").attr("x", x(n.start)+4).attr("y", yy+12).text(n.label.length>34? n.label.slice(0,33)+"…": n.label);
     if (n.evidence_ids.length) { gg.append("circle").attr("class","badge").attr("cx", x(n.end)).attr("cy", yy).attr("r", 7); gg.append("text").attr("x", x(n.end)).attr("y", yy+3).attr("text-anchor","middle").style("font-size","9px").attr("fill","#9db8ff").text(n.evidence_ids.length); }
@@ -259,7 +274,7 @@ $("#reset").onclick = async () => { await resetAll(); };
 $("#run").onchange = async e => { currentRun = e.target.value; if (view==="kb") await resetAll(); else showRoadmap(); };
 $("#lang").onchange = async e => { await loadI18n(e.target.value); if (view==="kb") { setupSvg(); redraw(); } else showRoadmap(); };
 $("#viewKb").onclick = () => switchView("kb"); $("#viewRm").onclick = () => switchView("rm");
-async function switchView(v){ view = v; $("#viewKb").classList.toggle("active", v==="kb"); $("#viewRm").classList.toggle("active", v==="rm"); if (v==="kb") await resetAll(); else showRoadmap(); }
+async function switchView(v){ view = v; $("#viewKb").classList.toggle("active", v==="kb"); $("#viewRm").classList.toggle("active", v==="rm"); $("#legend").style.display = v==="kb" ? "flex" : "none"; if (v==="kb") await resetAll(); else showRoadmap(); }
 window.addEventListener("resize", () => { if (view==="kb") { setupSvg(); redraw(); } else showRoadmap(); });
 // URL 파라미터: ?run=demo&view=kb|rm&autoplay=1&speed=0&lang=en  (스크린샷·발표용)
 (async () => {

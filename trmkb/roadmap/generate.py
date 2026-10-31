@@ -73,6 +73,9 @@ Requirements:
    needs it; flag "conflict" if sources disagree about it.
 5. Be specific to {company}: use its actual product names, metrics and partners where known; do not invent
    named partners or numbers that are not in the brief or context.
+6. Include only items of roadmap significance (drivers, needs, products, milestones, technologies, enabling
+   resources). Exclude routine operations (audits, checklists, procedures, staffing minutiae) unless they gate a
+   roadmap item.
 
 Company brief (as of 2024-12-31):
 {brief}
