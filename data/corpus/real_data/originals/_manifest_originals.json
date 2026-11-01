@@ -6731,9 +6731,11 @@
    },
    {
     "path": "ionq_web/pub_ionq_blog_2024-12-19_q_day_and_the_impact_of_breaking_rsa2048/page.pdf",
-    "sha256": "f8d2d97b5551f92a4263d4cc0659b92630df1c9cb9cfb556a57fa9e46a7af225",
-    "bytes": 475250,
-    "content_type": "application/pdf"
+    "sha256": "4f7ec7a514673660fc006c9b0fd013a1a1b60f7970420aa26d994afc9b7c0417",
+    "bytes": 265899,
+    "content_type": "application/pdf",
+    "url": "https://ionq.com/blog/q-day-and-the-impact-of-breaking-rsa2048 (Chrome DevTools print)",
+    "text_chars": 16418
    }
   ],
   "status": "ok",
@@ -6794,9 +6796,11 @@
    },
    {
     "path": "ionq_web/pub_ionq_resources_2023-03-03_ionq_forte_first_configurable_quantum_co/page.pdf",
-    "sha256": "7d1899aaa9fbe1b27e6b8dc4dfd20072516d7f0c5f7266b5b01ae2ea52c82c2d",
-    "bytes": 1707721,
-    "content_type": "application/pdf"
+    "sha256": "47f881a6ef388f4815f6b885a67130ec22e86d1f2a0f9da98d3c471f123ad0f6",
+    "bytes": 1479347,
+    "content_type": "application/pdf",
+    "url": "https://ionq.com/resources/ionq-forte-first-configurable-quantum-computer (Chrome DevTools print)",
+    "text_chars": 16319
    }
   ],
   "status": "ok",
@@ -6845,9 +6849,11 @@
    },
    {
     "path": "ionq_web/pub_ionq_resources_2024-01-31_get_started_with_google_cloud_and_ionq/page.pdf",
-    "sha256": "e45243e4241fd82cfe8b7696703abef4ed5c755a910ff63f7bd758ce8f97635e",
-    "bytes": 1047073,
-    "content_type": "application/pdf"
+    "sha256": "2e86c8246f38596a82c3cdce6e891c61304614c0eefe83c52f1561f90878044d",
+    "bytes": 863298,
+    "content_type": "application/pdf",
+    "url": "https://ionq.com/resources/get-started-with-google-cloud-and-ionq (Chrome DevTools print)",
+    "text_chars": 3078
    }
   ],
   "status": "ok",
@@ -6872,9 +6878,11 @@
    },
    {
     "path": "ionq_web/pub_ionq_resources_2024-01-31_get_started_with_projectq_on_ionq_hardwa/page.pdf",
-    "sha256": "eb33cd3c491c81d2c4455437254fba48f4bb7d46ee5d73a462319dd9bc868f0d",
-    "bytes": 397312,
-    "content_type": "application/pdf"
+    "sha256": "242a461f4f040ebe0d19d90e5e5e0b2e49c6e777e86035ea88855cec85d28cad",
+    "bytes": 191086,
+    "content_type": "application/pdf",
+    "url": "https://ionq.com/resources/get-started-with-projectq-on-ionq-hardware (Chrome DevTools print)",
+    "text_chars": 8162
    }
   ],
   "status": "ok",
@@ -6899,9 +6907,11 @@
    },
    {
     "path": "ionq_web/pub_ionq_resources_2024-01-31_using_native_gates_with_pennylane/page.pdf",
-    "sha256": "7bb4df8123a3629fee54a9b2b67f2ca6f2f672263848b70f851a1f7bc403ffcc",
-    "bytes": 343052,
-    "content_type": "application/pdf"
+    "sha256": "0de6903c98661e498a05d741dcaeb59ae7e1205655d7d4a3adc3f5d44632a405",
+    "bytes": 166388,
+    "content_type": "application/pdf",
+    "url": "https://ionq.com/resources/using-native-gates-with-pennylane (Chrome DevTools print)",
+    "text_chars": 4408
    }
   ],
   "status": "ok",

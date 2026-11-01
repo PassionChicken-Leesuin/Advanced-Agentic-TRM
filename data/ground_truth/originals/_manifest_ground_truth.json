@@ -28,11 +28,11 @@
    },
    {
     "path": "2020-12_roadmap/ionq_blog_current/page.pdf",
-    "url": "https://ionq.com/blog/december-09-2020-scaling-quantum-computer-roadmap (Chrome print)",
-    "sha256": "99fa3bf996882b658b98f3abb823b1dafdf6e6f076b009e008dc2c250578aa5c",
-    "bytes": 433681,
+    "sha256": "b062195e2b4bfb968e3afffae6f016a05077a94550bfc53b9cd3f527291513f3",
+    "bytes": 244298,
     "content_type": "application/pdf",
-    "retrieved_at": "2026-11-01T05:14:57.616563+00:00"
+    "url": "https://ionq.com/blog/december-09-2020-scaling-quantum-computer-roadmap (Chrome DevTools print)",
+    "text_chars": 5802
    }
   ]
  },
@@ -57,11 +57,11 @@
    },
    {
     "path": "2020-12_roadmap/ionq_blog_wayback_2020/page.pdf",
-    "url": "https://web.archive.org/web/20201209232241/ionq.com/posts/december-09-2020-scaling-quantum-computer-roadmap (Chrome print)",
-    "sha256": "40329e7c32f7e70d9bb8c750a5017d9cb15c9e61fc657a372dc98a4fc8af1bda",
-    "bytes": 794745,
+    "sha256": "94b2ac5b7ecbec52ae1bfa7650cb7037910d55664fd7aedbe685b8999e2c9e1a",
+    "bytes": 775118,
     "content_type": "application/pdf",
-    "retrieved_at": "2026-11-01T05:15:13.386528+00:00"
+    "url": "https://web.archive.org/web/20201209232241/ionq.com/posts/december-09-2020-scaling-quantum-computer-roadmap (Chrome DevTools print)",
+    "text_chars": 6004
    }
   ]
  },
@@ -515,11 +515,11 @@
    },
    {
     "path": "2025-06_roadmap/ionq_blog_2025-06-13/page.pdf",
-    "url": "https://ionq.com/blog/ionqs-accelerated-roadmap-turning-quantum-ambition-into-reality (Chrome print)",
-    "sha256": "3a7476fe77c68dc72e0577d264a5502e9614375118730c09fec978542ef80736",
-    "bytes": 1808511,
+    "sha256": "7a00fb95792b264bddae65e96c740b09429fb47d61a26415dfd2d2675110f94b",
+    "bytes": 1593684,
     "content_type": "application/pdf",
-    "retrieved_at": "2026-11-01T05:15:47.096994+00:00"
+    "url": "https://ionq.com/blog/ionqs-accelerated-roadmap-turning-quantum-ambition-into-reality (Chrome DevTools print)",
+    "text_chars": 11176
    }
   ]
  },
@@ -628,11 +628,11 @@
    },
    {
     "path": "2025-06_roadmap/ionq_roadmap_page_current/page.pdf",
-    "url": "https://ionq.com/roadmap (Chrome print)",
-    "sha256": "24f7b8386817b567d766729121595e34c2bcf6d54c99d72bfbad9d01b114ebde",
-    "bytes": 4357416,
+    "sha256": "18d6db0a234900db5ff2ce09d1621342156b0f9ed42c0b9146b8dcbe0faffac5",
+    "bytes": 4773375,
     "content_type": "application/pdf",
-    "retrieved_at": "2026-11-01T05:16:13.925094+00:00"
+    "url": "https://ionq.com/roadmap (Chrome DevTools print)",
+    "text_chars": 6693
    }
   ]
  },
@@ -694,11 +694,11 @@
    },
    {
     "path": "2025-06_roadmap/ionq_blog_2025-10-13_aq64/page.pdf",
-    "url": "https://ionq.com/blog/ionq-hits-aq-64-milestone-ahead-of-schedule-and-sets-its-sights-even-higher (Chrome print)",
-    "sha256": "af15003eeb6c1f3a5cc87d09fd0f0e6a62d7e250c26693aa05e6ddaf07cd7288",
-    "bytes": 1917569,
+    "sha256": "5bacc50c5d82a90c5302b56e9c87baf2fafc3e244567e439ee1181fcaa575ec8",
+    "bytes": 1714922,
     "content_type": "application/pdf",
-    "retrieved_at": "2026-11-01T05:16:21.507987+00:00"
+    "url": "https://ionq.com/blog/ionq-hits-aq-64-milestone-ahead-of-schedule-and-sets-its-sights-even-higher (Chrome DevTools print)",
+    "text_chars": 8485
    }
   ]
  },
@@ -731,11 +731,11 @@
    },
    {
     "path": "2025-06_roadmap/ionq_blog_2025-06-13_wayback_2025-06/page.pdf",
-    "url": "https://web.archive.org/web/20250617073547/https://www.ionq.com/blog/ionqs-accelerated-roadmap-turning-quantum-ambition-into-reality (Chrome print)",
-    "sha256": "d1d663ac88ddcf80ff02c9370d14cc6ff4d3f26f8540ef85dcc4295bfe3aba47",
-    "bytes": 682390,
+    "sha256": "daaad56d0941bf0842a5a992956287e194baf1acb7ec7f8ed3589a5deea28c02",
+    "bytes": 677313,
     "content_type": "application/pdf",
-    "retrieved_at": "2026-11-01T05:18:18.394921+00:00"
+    "url": "https://web.archive.org/web/20250617073547/https://www.ionq.com/blog/ionqs-accelerated-roadmap-turning-quantum-ambition-into-reality (Chrome DevTools print)",
+    "text_chars": 10445
    }
   ]
  }
