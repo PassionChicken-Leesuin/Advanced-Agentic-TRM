@@ -1,102 +1,102 @@
 [
  {
-  "id": "syn_customer_email_2024-02-14_02",
-  "date": "2024-02-14",
-  "type": "syn_customer_email",
-  "facts": [
-   "pf23",
-   "pf12"
-  ],
-  "missing_self_report": [],
-  "chars": 3530
- },
- {
-  "id": "syn_meeting_2024-02-26_02",
-  "date": "2024-02-26",
+  "id": "syn_meeting_2024-06-03_04",
+  "date": "2024-06-03",
   "type": "syn_meeting",
   "facts": [
-   "pf11",
-   "pf13"
+   "pf22",
+   "pf26"
   ],
   "missing_self_report": [],
-  "chars": 5455
+  "chars": 4993
  },
  {
-  "id": "syn_supplier_email_2024-04-22_02",
-  "date": "2024-04-22",
-  "type": "syn_supplier_email",
-  "facts": [
-   "pf20",
-   "pf07"
-  ],
-  "missing_self_report": [],
-  "chars": 3495
- },
- {
-  "id": "syn_customer_email_2024-05-11_05",
-  "date": "2024-05-11",
-  "type": "syn_customer_email",
-  "facts": [
-   "pf15",
-   "pf39"
-  ],
-  "missing_self_report": [],
-  "chars": 3628
- },
- {
-  "id": "syn_tech_assessment_2024-06-09_02",
-  "date": "2024-06-09",
-  "type": "syn_tech_assessment",
-  "facts": [
-   "pf18",
-   "pf33"
-  ],
-  "missing_self_report": [],
-  "chars": 6173
- },
- {
-  "id": "syn_rd_report_2024-07-01_05",
-  "date": "2024-07-01",
+  "id": "syn_rd_report_2024-06-16_04",
+  "date": "2024-06-16",
   "type": "syn_rd_report",
   "facts": [
-   "pf02",
+   "pf34",
+   "pf32"
+  ],
+  "missing_self_report": [],
+  "chars": 4351
+ },
+ {
+  "id": "syn_meeting_2024-06-30_05",
+  "date": "2024-06-30",
+  "type": "syn_meeting",
+  "facts": [
+   "pf18",
+   "pf22"
+  ],
+  "missing_self_report": [],
+  "chars": 5089
+ },
+ {
+  "id": "syn_tech_assessment_2024-08-09_05",
+  "date": "2024-08-09",
+  "type": "syn_tech_assessment",
+  "facts": [
+   "pf04",
+   "pf26"
+  ],
+  "missing_self_report": [],
+  "chars": 6667
+ },
+ {
+  "id": "syn_meeting_2024-08-10_06",
+  "date": "2024-08-10",
+  "type": "syn_meeting",
+  "facts": [
+   "pf04",
+   "pf05"
+  ],
+  "missing_self_report": [],
+  "chars": 5387
+ },
+ {
+  "id": "syn_rd_report_2024-08-24_07",
+  "date": "2024-08-24",
+  "type": "syn_rd_report",
+  "facts": [
+   "pf04",
+   "pf06"
+  ],
+  "missing_self_report": [],
+  "chars": 4890
+ },
+ {
+  "id": "syn_meeting_2024-08-28_07",
+  "date": "2024-08-28",
+  "type": "syn_meeting",
+  "facts": [
+   "pf16",
+   "pf32"
+  ],
+  "missing_self_report": [],
+  "chars": 5035
+ },
+ {
+  "id": "syn_tech_assessment_2024-09-26_06",
+  "date": "2024-09-26",
+  "type": "syn_tech_assessment",
+  "facts": [
+   "pf29",
+   "pf05"
+  ],
+  "missing_self_report": [],
+  "chars": 6240
+ },
+ {
+  "id": "syn_rd_report_2024-10-02_10",
+  "date": "2024-10-02",
+  "type": "syn_rd_report",
+  "facts": [
+   "pf19",
    "pf09"
   ],
   "missing_self_report": [],
-  "chars": 4657
- },
- {
-  "id": "syn_tech_assessment_2024-07-05_03",
-  "date": "2024-07-05",
-  "type": "syn_tech_assessment",
-  "facts": [
-   "pf41",
-   "pf25"
-  ],
-  "missing_self_report": [],
-  "chars": 6216
- },
- {
-  "id": "syn_rd_report_2024-07-16_06",
-  "date": "2024-07-16",
-  "type": "syn_rd_report",
-  "facts": [
-   "pf41",
-   "pf10"
-  ],
-  "missing_self_report": [],
-  "chars": 4701
- },
- {
-  "id": "syn_supplier_email_2024-08-13_03",
-  "date": "2024-08-13",
-  "type": "syn_supplier_email",
-  "facts": [
-   "pf28",
-   "pf31"
-  ],
-  "missing_self_report": [],
-  "chars": 3474
+  "chars": 4289
  },
  {
   "id": "syn_rd_report_2024-10-06_11",
@@ -107,17 +107,73 @@
    "pf02"
   ],
   "missing_self_report": [],
-  "chars": 4486
+  "chars": 4788
  },
  {
-  "id": "syn_rd_report_2024-12-20_14",
-  "date": "2024-12-20",
+  "id": "syn_meeting_2024-10-22_10",
+  "date": "2024-10-22",
+  "type": "syn_meeting",
+  "facts": [
+   "pf19",
+   "pf40"
+  ],
+  "missing_self_report": [],
+  "chars": 5287
+ },
+ {
+  "id": "syn_tech_assessment_2024-10-28_07",
+  "date": "2024-10-28",
+  "type": "syn_tech_assessment",
+  "facts": [
+   "pf36",
+   "pf17"
+  ],
+  "missing_self_report": [],
+  "chars": 6786
+ },
+ {
+  "id": "syn_supplier_email_2024-10-30_06",
+  "date": "2024-10-30",
+  "type": "syn_supplier_email",
+  "facts": [
+   "pf19",
+   "pf38"
+  ],
+  "missing_self_report": [],
+  "chars": 4627
+ },
+ {
+  "id": "syn_meeting_2024-11-08_11",
+  "date": "2024-11-08",
+  "type": "syn_meeting",
+  "facts": [
+   "pf36",
+   "pf37",
+   "pf39"
+  ],
+  "missing_self_report": [],
+  "chars": 5605
+ },
+ {
+  "id": "syn_meeting_2024-11-10_12",
+  "date": "2024-11-10",
+  "type": "syn_meeting",
+  "facts": [
+   "pf36",
+   "pf22"
+  ],
+  "missing_self_report": [],
+  "chars": 4902
+ },
+ {
+  "id": "syn_rd_report_2024-12-05_13",
+  "date": "2024-12-05",
   "type": "syn_rd_report",
   "facts": [
    "pf08",
-   "pf01"
+   "pf05"
   ],
   "missing_self_report": [],
-  "chars": 4812
+  "chars": 4819
  }
 ]

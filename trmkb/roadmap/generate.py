@@ -31,8 +31,7 @@ BRIEF = (
     "commercial systems include Forte and Forte Enterprise, with the next-generation Tempo system in "
     "development. It reports performance in algorithmic qubits (#AQ), reached #AQ 36 on Forte in 2024, and "
     "is targeting #AQ 64. It is developing photonic interconnects for modular, networked quantum computers and "
-    "has announced acquisitions in quantum networking (Entangled Networks, Qubitekk, and an agreement to acquire "
-    "ID Quantique). Its systems are offered through AWS Braket, Azure Quantum and Google Cloud and are also sold "
+    "has announced acquisitions in quantum networking (Entangled Networks and Qubitekk). Its systems are offered through AWS Braket, Azure Quantum and Google Cloud and are also sold "
     "on-premise to government and enterprise customers."
 )
 

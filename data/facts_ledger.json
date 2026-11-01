@@ -1,5 +1,5 @@
 {
- "_about": "가상 내부자료에 심는 사실 원장. 모두 허구이며 모델이 알 수 없는 세부 사항. 공개 사실과 충돌하지 않도록 설계. 2023-10 ~ 2024-12 시점. contradicts 쌍은 Critic이 잡아야 할 모순. not_before/not_after: 그 사실이 문서에 등장할 수 있는 날짜 창(시점 정합성). 2026-11-01: 원장 작성자가 2025 공식 로드맵을 알고 있어 일부 사실(post_cutoff_leak 표시 7건)에 기준일 이후 정보가 반영됨 → 사전 예측 평가 시 가상 자료 제외 또는 이 사실 제외.",
+ "_about": "가상 내부자료에 심는 사실 원장. 모두 허구이며 모델이 알 수 없는 세부 사항. 공개 사실과 충돌하지 않도록 설계. 2023-10 ~ 2024-12 시점. contradicts 쌍은 Critic이 잡아야 할 모순. not_before/not_after: 그 사실이 문서에 등장할 수 있는 날짜 창(시점 정합성). 2026-11-01: 원장 작성자가 2025 공식 로드맵을 알고 있어 일부 사실(post_cutoff_leak 표시 7건)에 기준일 이후 정보가 반영됨 → 사전 예측 평가 시 가상 자료 제외 또는 이 사실 제외. 2026-11-01 수정: post_cutoff_leak 7건을 기준일 이전 정보만으로 다시 씀(원문은 replaced_text_2026_11_01), 해당 가상 문서 재생성.",
  "_company": "IonQ (실존 기업, 내부 사항은 허구)",
  "facts": [
   {
@@ -52,14 +52,15 @@
    "issue_kind": "open_question",
    "expected_claim_type": null,
    "modality": "planned",
-   "text": "Open question in the Q3 2024 technology assessment: build electronic (RF/microwave) gate control in-house, or obtain it through licensing or acquisition.",
+   "text": "Open question in the Q3 2024 technology assessment: keep free-space laser beam delivery for the next system generation, or move to integrated photonic beam delivery on the trap chip.",
    "not_before": "2024-08-01",
    "planted_in_doc_ids": [
     "syn_meeting_2024-08-10_06",
     "syn_rd_report_2024-08-24_07",
     "syn_tech_assessment_2024-08-09_05"
    ],
-   "post_cutoff_leak": "전자식 제어 확보를 인수로 → 2025 Oxford Ionics 인수"
+   "replaced_text_2026_11_01": "Open question in the Q3 2024 technology assessment: build electronic (RF/microwave) gate control in-house, or obtain it through licensing or acquisition.",
+   "leak_fixed": "전자식 제어 확보를 인수로 → 2025 Oxford Ionics 인수"
   },
   {
    "id": "pf05",
@@ -68,14 +69,15 @@
    "issue_kind": "assumption",
    "expected_claim_type": "comparison",
    "modality": "forecast",
-   "text": "Engineering estimates an in-house electronic-control program would take at least four years, whereas an acquisition path could deliver it in roughly eighteen months.",
+   "text": "Engineering estimates integrated photonic beam delivery would take about three years to reach production readiness, versus about one year to upgrade the existing acousto-optic modulator system.",
    "not_before": "2024-08-01",
    "planted_in_doc_ids": [
     "syn_meeting_2024-08-10_06",
     "syn_rd_report_2024-12-05_13",
     "syn_tech_assessment_2024-09-26_06"
    ],
-   "post_cutoff_leak": "인수 경로 18개월 → Oxford Ionics"
+   "replaced_text_2026_11_01": "Engineering estimates an in-house electronic-control program would take at least four years, whereas an acquisition path could deliver it in roughly eighteen months.",
+   "leak_fixed": "인수 경로 18개월 → Oxford Ionics"
   },
   {
    "id": "pf06",
@@ -260,14 +262,15 @@
    "issue_kind": "decision",
    "expected_claim_type": null,
    "modality": "planned",
-   "text": "Marketing proposed retiring the #AQ metric after the AQ 64 milestone and moving to physical and logical qubit counts in 2025, anticipating that the industry will converge on logical-qubit metrics.",
+   "text": "Marketing proposed keeping #AQ as the headline performance metric through 2025 and publishing the full #AQ benchmark circuits and raw results for every new system.",
    "not_before": "2024-10-01",
    "planted_in_doc_ids": [
     "syn_meeting_2024-10-22_10",
     "syn_rd_report_2024-10-02_10",
     "syn_supplier_email_2024-10-30_06"
    ],
-   "post_cutoff_leak": "#AQ 폐기·물리/논리 큐비트 전환 → 2025-10 지표 변경"
+   "replaced_text_2026_11_01": "Marketing proposed retiring the #AQ metric after the AQ 64 milestone and moving to physical and logical qubit counts in 2025, anticipating that the industry will converge on logical-qubit metrics.",
+   "leak_fixed": "#AQ 폐기·물리/논리 큐비트 전환 → 2025-10 지표 변경"
   },
   {
    "id": "pf20",
@@ -304,14 +307,15 @@
    "expected_node_type": "opportunity",
    "expected_claim_type": null,
    "modality": "planned",
-   "text": "A 'quantum networking starter kit' product combining QKD hardware and a quantum memory node is targeted for 2026.",
+   "text": "A 'quantum networking starter kit' product combining QKD hardware and an ion-photon entanglement node is targeted for 2026.",
    "not_before": "2024-06-01",
    "planted_in_doc_ids": [
     "syn_meeting_2024-06-03_04",
     "syn_meeting_2024-06-30_05",
     "syn_meeting_2024-11-10_12"
    ],
-   "post_cutoff_leak": "양자 메모리 노드 → 2025 Lightsynq 인수"
+   "replaced_text_2026_11_01": "A 'quantum networking starter kit' product combining QKD hardware and a quantum memory node is targeted for 2026.",
+   "leak_fixed": "양자 메모리 노드 → 2025 Lightsynq 인수"
   },
   {
    "id": "pf23",
@@ -448,13 +452,14 @@
    "issue_kind": "assumption",
    "expected_claim_type": null,
    "modality": "forecast",
-   "text": "Planning assumes a physical-to-logical qubit ratio of about 12.5 to 1 using QLDPC codes by 2027.",
+   "text": "Planning assumes error-corrected logical qubits will use 16:1 to 32:1 encodings, consistent with the 2020 public roadmap.",
    "not_before": "2024-05-01",
    "planted_in_doc_ids": [
     "syn_meeting_2024-08-28_07",
     "syn_rd_report_2024-06-16_04"
    ],
-   "post_cutoff_leak": "12.5:1 (2027) → 2025 로드맵 10,000/800"
+   "replaced_text_2026_11_01": "Planning assumes a physical-to-logical qubit ratio of about 12.5 to 1 using QLDPC codes by 2027.",
+   "leak_fixed": "12.5:1 (2027) → 2025 로드맵 10,000/800"
   },
   {
    "id": "pf33",
@@ -504,14 +509,15 @@
    "expected_node_type": "actor",
    "expected_claim_type": null,
    "modality": "planned",
-   "text": "The Q4 2024 screening shortlisted three acquisition candidates for electronic qubit control, including a UK-based startup referred to as Candidate B.",
+   "text": "The Q4 2024 vendor screening shortlisted three suppliers of multi-channel acousto-optic modulators, including a German supplier referred to as Vendor B.",
    "not_before": "2024-10-14",
    "planted_in_doc_ids": [
     "syn_meeting_2024-11-08_11",
     "syn_meeting_2024-11-10_12",
     "syn_tech_assessment_2024-10-28_07"
    ],
-   "post_cutoff_leak": "영국 스타트업 인수 후보 → Oxford Ionics"
+   "replaced_text_2026_11_01": "The Q4 2024 screening shortlisted three acquisition candidates for electronic qubit control, including a UK-based startup referred to as Candidate B.",
+   "leak_fixed": "영국 스타트업 인수 후보 → Oxford Ionics"
   },
   {
    "id": "pf37",
@@ -534,13 +540,14 @@
    "issue_kind": "barrier",
    "expected_claim_type": "action",
    "modality": "planned",
-   "text": "Action: engage NIST on an #AQ-to-logical-qubit benchmark crosswalk white paper by Q1 2025.",
+   "text": "Action: publish the #AQ 36 benchmark methodology and raw data for Forte Enterprise by Q1 2025 to answer customer questions about reproducibility.",
    "not_before": "2024-10-01",
    "planted_in_doc_ids": [
     "syn_rd_report_2024-10-06_11",
     "syn_supplier_email_2024-10-30_06"
    ],
-   "post_cutoff_leak": "#AQ→논리 큐비트 기준 전환 → 2025 지표 변경"
+   "replaced_text_2026_11_01": "Action: engage NIST on an #AQ-to-logical-qubit benchmark crosswalk white paper by Q1 2025.",
+   "leak_fixed": "#AQ→논리 큐비트 기준 전환 → 2025 지표 변경"
   },
   {
    "id": "pf39",
