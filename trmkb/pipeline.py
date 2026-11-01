@@ -23,7 +23,7 @@ from .agents.reader import Reader, locate_quote
 from .agents.router import Router, build_claim, row_key
 from .agents.summarizer import Summarizer
 from .agents import timing as timing_mod
-from .corpus.common import CORPUS_ROOT, read_doc
+from .corpus.common import CORPUS_ROOT, read_doc, resolve_path
 from .llm import LLM
 from .schema import Agent, CriticStatus, Document, EventType, Evidence, NODE_LAYER, NodeType, SourceType
 from .store import KBStore
@@ -93,7 +93,7 @@ class Pipeline:
 
     # ------------------------------------------------------------------
     def load_corpus_doc(self, rel_path: str) -> tuple[Document, str]:
-        fm, body = read_doc(self.corpus_root / rel_path)
+        fm, body = read_doc(resolve_path(rel_path, self.corpus_root))
         doc = Document(id=fm["id"], title=fm["title"], source_type=SourceType(fm["source_type"]),
                        date=date.fromisoformat(str(fm["date"])), path=rel_path, url=fm.get("url"),
                        is_synthetic=bool(fm.get("is_synthetic")), planted_fact_ids=fm.get("planted_fact_ids") or [],

@@ -39,7 +39,7 @@ def main() -> None:
     llm = LLM()
     docs = generate(specs, ledger, llm, args.model, overwrite=args.overwrite)
     rebuild_index()
-    llm.ledger.dump("data/corpus/synthetic/_cost_synth.json")
+    llm.ledger.dump("data/corpus/synthetic_data/_cost_synth.json")
     print(f"\ngenerated {len(docs)} docs | cost ${llm.ledger.total_usd:.4f} | coverage {coverage(load_ledger())}")
 
 

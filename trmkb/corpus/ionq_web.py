@@ -107,7 +107,7 @@ def collect(cutoff: date = CUTOFF, root: Path = CORPUS_ROOT, sections: tuple[str
             docs.append(doc)
             manifest.append({"id": doc_id, "date": d.isoformat(), "title": title, "url": url, "chars": len(body)})
             log(f"[ionq_web] {doc_id} ({len(body):,} chars)")
-    save_json(root / "public" / "_manifest_ionq_web.json", {"collected": manifest, "skipped": skipped})
+    save_json(root / "real_data" / "_manifest_ionq_web.json", {"collected": manifest, "skipped": skipped})
     return docs
 
 

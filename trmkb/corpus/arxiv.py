@@ -104,7 +104,7 @@ def collect(cutoff: date = CUTOFF, root: Path = CORPUS_ROOT, query: str = "all:I
         manifest.append({"id": doc_id, "arxiv_id": h["arxiv_id"], "date": h["published"].isoformat(),
                          "title": h["title"], "chars": len(doc.body)})
         log(f"[arxiv] {doc_id} ({len(doc.body):,} chars)")
-    save_json(root / "public" / "_manifest_arxiv.json", manifest)
+    save_json(root / "real_data" / "_manifest_arxiv.json", manifest)
     return docs
 
 

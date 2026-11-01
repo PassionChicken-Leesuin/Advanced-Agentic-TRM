@@ -3,9 +3,13 @@ runs/
 __pycache__/
 *.pyc
 .pytest_cache/
-data/corpus/public/*.pdf
-data/corpus/public/*.html
 *.tmp
-# 공개 코퍼스 원문은 재수집 가능하므로 제외 (manifest만 추적)
-data/corpus/public/*.md
+# 공개 자료(real_data) 원문·원본 파일은 저작권·용량 때문에 공개 저장소에 올리지 않음 (manifest·sha256만 추적).
+# 로컬 OneDrive 폴더에는 전부 보관됨. 재현: scripts/collect_public.py + scripts/fetch_originals.py
+data/corpus/real_data/text/*.md
+data/corpus/real_data/originals/**
+!data/corpus/real_data/originals/_manifest_originals.json
+data/ground_truth/originals/**
+!data/ground_truth/originals/_manifest_ground_truth.json
+runs/_chrome_profile/
 data/corpus/index.jsonl

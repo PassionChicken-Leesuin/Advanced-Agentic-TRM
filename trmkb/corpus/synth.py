@@ -8,7 +8,7 @@ trmkb.corpus.synth — 가상 내부자료 생성기 (심은 사실 원장 기�
        결정·열린질문→기술평가서·회의록, 역량·구성요소→R&D 주간보고·기술평가서.
   2. 문서마다 LLM이 유형에 맞는 영어 문서를 작성. 심은 사실은 의미를 보존해 자연스럽게 녹이고,
      주변은 그럴듯한 일상 내용으로 채운다. 출력 JSON: {title, body, facts_included:[{id, sentence}]}.
-  3. data/corpus/synthetic/<id>.md 저장 (frontmatter에 planted_fact_ids), 원장에 planted_in_doc_ids 역기록.
+  3. data/corpus/synthetic_data/text/<id>.md 저장 (frontmatter에 planted_fact_ids), 원장에 planted_in_doc_ids 역기록.
 
 모델 선택은 CLI 인자. 기본 anthropic/claude-sonnet-4.6 (OpenRouter 가격 기준 50건 ≈ $1).
 """
@@ -188,7 +188,7 @@ def generate(specs: list[SynthSpec], ledger: dict, llm: LLM, model: str, *, root
     docs: list[CorpusDoc] = []
     manifest = []
     for s in specs:
-        out_path = root / "synthetic" / f"{s.doc_id}.md"
+        out_path = root / "synthetic_data" / "text" / f"{s.doc_id}.md"
         if out_path.exists() and not overwrite:
             log(f"[synth] skip existing {s.doc_id}"); continue
         cfg = DOC_TYPES[s.doc_type]
@@ -213,7 +213,7 @@ def generate(specs: list[SynthSpec], ledger: dict, llm: LLM, model: str, *, root
                          "missing_self_report": missing, "chars": len(out.body)})
         log(f"[synth] {s.doc_id} facts={s.fact_ids} missing={missing} ({len(out.body):,} chars)")
     LEDGER_PATH.write_text(json.dumps(ledger, ensure_ascii=False, indent=1), encoding="utf-8")
-    save_json(root / "synthetic" / "_manifest_synth.json", manifest)
+    save_json(root / "synthetic_data" / "_manifest_synth.json", manifest)
     return docs
 
 

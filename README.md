@@ -1,7 +1,7 @@
 # trmkb — TRM 특화 KB 자율구축 에이전트 시스템 (IonQ 데모)
 
 > **주의 / Disclaimer.** 이 저장소는 서울대 DDSI Lab의 연구용 데모입니다. 대상 기업 IonQ의 **공개 자료**(SEC 공시, 보도자료, arXiv, 블로그)와 함께
-> **LLM이 생성한 허구의 내부 문서** 50건(`data/corpus/synthetic/`)을 투입합니다. 가상 문서와 그로부터 만들어진 지식베이스·로드맵 안의 내부 수치,
+> **LLM이 생성한 허구의 내부 문서** 50건(`data/corpus/synthetic_data/text/`)을 투입합니다. 가상 문서와 그로부터 만들어진 지식베이스·로드맵 안의 내부 수치,
 > 고객명, 공급사명, 의사결정은 모두 실제가 아닙니다. IonQ와는 무관하며, IonQ의 입장이나 계획을 대변하지 않습니다.
 > This is a research demo. Synthetic internal documents and everything derived from them are fictional and unaffiliated with IonQ.
 
@@ -22,7 +22,9 @@ trmkb/
   pipeline.py   (P4) 문서 1건 = 1 에피소드 오케스트레이션, 재개 가능, events.jsonl 기록
   roadmap/      (P3·P6) generate, retrieve(연산 ①~⑤), diff
   eval/         (P7) recovery(심은 사실 회수율·모순 탐지율)
-data/corpus/{public,synthetic}/   문서 md
+data/corpus/real_data/            공개 자료 259건: originals/(원본 파일, 로컬 전용) + text/(정규화 md) — real_data/README.md
+data/corpus/synthetic_data/       가상 내부자료 50건: text/(생성 원문 그 자체) — synthetic_data/README.md
+data/ground_truth/                공식 로드맵 정답표 + originals/(2020-12·2025-06 로드맵 1차 원본) — ground_truth/README.md
 data/facts_ledger.json            가상 자료의 심은 사실
 runs/<run_id>/                    kb/, events.jsonl, router_log.jsonl, roadmap_*.json
 viz/                              (P5) FastAPI SSE + D3
@@ -45,7 +47,7 @@ python scripts/gen_synthetic.py plan            # 심은 사실 → 문서 배�
 python scripts/gen_synthetic.py gen             # 가상 내부자료 50건 생성 (기본 anthropic/claude-sonnet-4.6, 약 $1)
 ```
 
-- 문서는 `data/corpus/{public,synthetic}/<id>.md` + YAML frontmatter, 색인은 `data/corpus/index.jsonl`.
+- 문서는 `data/corpus/real_data/text/<id>.md`, `data/corpus/synthetic_data/text/<id>.md` + YAML frontmatter, 색인은 `data/corpus/index.jsonl`. 원본 파일은 `python scripts/fetch_originals.py` → `real_data/originals/`.
 - 심은 사실 원장 `data/facts_ledger.json`: 42건, `not_before/not_after` 날짜 창, `contradicts` 모순 쌍 3개(pf07↔pf08, pf20↔pf21, pf02↔pf41), 생성 후 `planted_in_doc_ids` 역기록.
 - 공개 코퍼스 원본(md)은 용량 때문에 git에 넣지 않는다. 재현은 위 명령으로.
 

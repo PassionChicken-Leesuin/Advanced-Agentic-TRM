@@ -15,7 +15,7 @@ def test_frontmatter_roundtrip(tmp_path: Path):
                   date=date(2024, 5, 1), url=None, body="Line 1\n\nLine 2 with 한글", is_synthetic=True,
                   planted_fact_ids=["pf01"], extra={"doc_type": "syn_meeting"})
     p = d.write(root)
-    assert p == root / "synthetic" / "syn_meeting_2024-05-01_01.md"
+    assert p == root / "synthetic_data" / "text" / "syn_meeting_2024-05-01_01.md"
     fm, body = read_doc(p)
     assert fm["planted_fact_ids"] == ["pf01"] and fm["is_synthetic"] is True and body.strip().endswith("한글")
     idx = rebuild_index(root)

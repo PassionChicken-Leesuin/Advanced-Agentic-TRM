@@ -80,13 +80,17 @@ def _claim_line(c) -> str:
 #   S2  엔티티 그래프만: 노드+링크+근거, 층 타입·시간 없음
 #   S3  합집합: 네 구조를 서로 참조 없이 나열 (청크 / 요약 / 그래프 / 시간 인덱스)
 #   S4  제안 구조 (공통 뼈대 위 통합)      S4a 층 타입 제거 / S4b 시간 제거 / S4c 요약 제거 / S4d 근거 제거
-CONDITIONS = ("S0", "S1", "S2", "S3", "S4", "S4a", "S4b", "S4c", "S4d")
+#   S0raw 진짜 naive RAG: 원문 문서를 청크로 잘라 전부 임베딩 → 고정 질의로 top-k (에이전트 개입 없음)
+#   S0    평면 검색이되 풀이 Reader가 뽑은 근거 문장 (= Reader 선별이 섞인 기준선; S0raw 와 구분해 보고)
+CONDITIONS = ("S0raw", "S0", "S1", "S2", "S3", "S4", "S4a", "S4b", "S4c", "S4d")
 
 
 def build_context(kb: KBStore, *, condition: str = "S4", per_layer: dict[Layer, int] | None = None,
                   max_claims_per_node: int = 3, max_evidence_per_node: int = 1, max_rows: int = 30,
                   max_chars: int = 70_000, summary_chars: int = 300) -> Context:
     assert condition in CONDITIONS, condition
+    if condition == "S0raw":
+        return _context_raw_rag(kb, max_chars=max_chars)
     if condition == "S0":
         return _context_flat(kb, max_chars=max_chars)
     if condition == "S1":
@@ -222,6 +226,44 @@ def _claim_line_notime(c) -> str:
     return f"{c.modality.value}{extra}: {c.text[:200]}"
 
 
+RAG_QUERY = ("IonQ technology roadmap 2025-2030: market drivers, customer needs, products, milestones, targets, "
+             "technologies, components, funding, facilities, partnerships, risks")
+
+
+def _context_raw_rag(kb: KBStore, *, max_chars: int, chunk_chars: int = 1200) -> Context:
+    """S0raw: 처리된 문서 원문을 청크로 잘라 전부 임베딩하고 고정 질의로 top-k. KB 구조·Reader 선별 없음."""
+    from ..agents.chunker import chunk_document
+    from ..agents.embed import embed
+    from ..corpus.common import resolve_path, read_doc
+    import numpy as np
+    ctx = Context(text="")
+    chunks = []  # (id, text)
+    for d in kb.documents.values():
+        p = resolve_path(d.path)
+        if not p.exists():
+            continue
+        _, body = read_doc(p)
+        for ch in chunk_document(body, d.source_type.value, chunk_chars, None):
+            chunks.append((f"chunk_{d.id[:30]}_{ch.idx}", ch.text))
+    if not chunks:
+        ctx.text = "(no documents)"; return ctx
+    vecs = embed([t[:800] for _, t in chunks])
+    q = embed([RAG_QUERY])[0]
+    order = np.argsort(-(vecs @ q))
+    parts = ["(context condition S0raw: naive RAG over raw document chunks)", "## Retrieved chunks (id: text)"]
+    size = len("\n".join(parts)); n = 0
+    for i in order:
+        cid, text = chunks[int(i)]
+        line = f"- {cid}: \"{text[:900]}\""
+        if size + len(line) > max_chars:
+            break
+        parts.append(line); size += len(line) + 1; n += 1
+        ctx.tag(cid, RoadmapOp.GROUNDING)
+    ctx.text = "\n".join(parts)
+    ctx.stats = {"condition": "S0raw", "chunks_total": len(chunks), "chunks_used": n, "chars": len(ctx.text)}
+    return ctx
+
+
 def _context_flat(kb: KBStore, *, max_chars: int) -> Context:
     """S0: 근거 청크 top-k (쿼리 = 기업 로드맵 질문). 구조 없음. S4 와 같은 글자 예산까지 채운다."""
     from ..agents.embed import embed
@@ -231,10 +273,9 @@ def _context_flat(kb: KBStore, *, max_chars: int) -> Context:
     if not evs:
         ctx.text = "(no evidence)"; return ctx
     vecs = embed([e.text[:600] for e in evs])
-    q = embed(["IonQ technology roadmap 2025-2030: market drivers, customer needs, products, milestones, targets, "
-               "technologies, components, funding, facilities, partnerships, risks"])[0]
+    q = embed([RAG_QUERY])[0]
     order = np.argsort(-(vecs @ q))
-    parts = ["(context condition S0: retrieved passages)", "## Retrieved passages (id: text)"]
+    parts = ["(context condition S0: flat retrieval over Reader-selected evidence sentences)", "## Retrieved passages (id: text)"]
     seen_text: set[str] = set(); n = 0; size = len("\n".join(parts))
     for i in order:
         e = evs[int(i)]

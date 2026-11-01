@@ -35,6 +35,27 @@ from ..schema import Document, SourceType
 
 CORPUS_ROOT = Path(__file__).resolve().parent.parent.parent / "data" / "corpus"
 CUTOFF = date(2024, 12, 31)
+
+# 폴더 구조 (2026-11-01 재편):
+#   data/corpus/real_data/text/<id>.md                 공개 자료 259건 정규화 텍스트
+#   data/corpus/real_data/originals/<source>/<id>.*    내려받은 원본 파일(HTML/PDF/이미지) + _manifest_originals.json
+#   data/corpus/synthetic_data/text/<id>.md            가상 내부자료 50건 (생성 원문 그 자체)
+# 예전 경로("public/x.md", "synthetic/x.md")가 run 기록에 남아 있으므로 resolve_path 로 호환한다.
+SUBDIR = {"public": "real_data/text", "synthetic": "synthetic_data/text"}
+LEGACY = {"public/": "real_data/text/", "synthetic/": "synthetic_data/text/"}
+
+
+def resolve_path(rel: str, root: Path = CORPUS_ROOT) -> Path:
+    """index·run 에 기록된 상대 경로를 실제 파일로. 예전 경로도 받아들인다."""
+    p = root / rel
+    if p.exists():
+        return p
+    for old, new in LEGACY.items():
+        if rel.startswith(old):
+            q = root / (new + rel[len(old):])
+            if q.exists():
+                return q
+    return p
 UA = "Suin Lee leesuin9209@gmail.com (academic research, SNU DDSI Lab)"
 
 
@@ -66,7 +87,7 @@ class CorpusDoc:
 
     @property
     def subdir(self) -> str:
-        return "synthetic" if self.is_synthetic else "public"
+        return SUBDIR["synthetic"] if self.is_synthetic else SUBDIR["public"]
 
     def path(self, root: Path = CORPUS_ROOT) -> Path:
         return root / self.subdir / f"{self.id}.md"
@@ -104,8 +125,10 @@ def read_doc(path: Path) -> tuple[dict[str, Any], str]:
 
 
 def iter_docs(root: Path = CORPUS_ROOT, subdir: str | None = None) -> Iterator[tuple[Path, dict[str, Any], str]]:
-    dirs = [root / subdir] if subdir else [root / "public", root / "synthetic"]
+    dirs = [root / SUBDIR.get(subdir, subdir)] if subdir else [root / SUBDIR["public"], root / SUBDIR["synthetic"]]
     for d in dirs:
+        if not d.exists():
+            continue
         for p in sorted(d.glob("*.md")):
             fm, body = read_doc(p)
             yield p, fm, body

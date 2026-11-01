@@ -171,7 +171,7 @@ def collect(cutoff: date = CUTOFF, root: Path = CORPUS_ROOT, forms: set[str] | N
             manifest.append({"id": doc_id, "form": f["form"], "date": f["date"].isoformat(),
                              "url": url, "chars": len(text), "truncated": truncated})
             log(f"[edgar] {doc_id} ({len(text):,} chars{', truncated' if truncated else ''})")
-    save_json(root / "public" / "_manifest_edgar.json", manifest)
+    save_json(root / "real_data" / "_manifest_edgar.json", manifest)
     return docs
 
 

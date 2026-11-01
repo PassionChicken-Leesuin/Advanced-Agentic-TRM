@@ -1,0 +1,742 @@
+{
+ "2020-12_roadmap/ionq_blog_current": {
+  "status": "ok",
+  "files": [
+   {
+    "path": "2020-12_roadmap/ionq_blog_current/page.html",
+    "url": "https://ionq.com/blog/december-09-2020-scaling-quantum-computer-roadmap",
+    "sha256": "5cf61ab55f2d176f7f4d83f6e884c31cfb5b0c7a6bcab4e3b776c818b0c7c1fa",
+    "bytes": 149844,
+    "content_type": "text/html; charset=utf-8",
+    "retrieved_at": "2026-11-01T05:14:53.333929+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/ionq_blog_current/68a3355ff08e75d1c0adcb12_Group.svg",
+    "url": "https://cdn.prod.website-files.com/68836cf9cff21bf9efa61419/68a3355ff08e75d1c0adcb12_Group.svg",
+    "sha256": "ace4d26b92412c04188b7bb6da38360f94d38d57365a9acf98221f054fc1a617",
+    "bytes": 20798,
+    "content_type": "image/svg+xml",
+    "retrieved_at": "2026-11-01T05:14:54.411105+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/ionq_blog_current/68a331f085912017cec6488e_IonQ-roadmap-20201208_20_1_.jpeg",
+    "url": "https://cdn.prod.website-files.com/68836d4838193cb461ebc7d2/68a331f085912017cec6488e_IonQ-roadmap-20201208%20(1).jpeg",
+    "sha256": "d13f038f432cf780d4cb9d011842a723b33217ac71f6b4f14555ffee3c6ec654",
+    "bytes": 139870,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:14:55.521548+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/ionq_blog_current/page.pdf",
+    "url": "https://ionq.com/blog/december-09-2020-scaling-quantum-computer-roadmap (Chrome print)",
+    "sha256": "99fa3bf996882b658b98f3abb823b1dafdf6e6f076b009e008dc2c250578aa5c",
+    "bytes": 433681,
+    "content_type": "application/pdf",
+    "retrieved_at": "2026-11-01T05:14:57.616563+00:00"
+   }
+  ]
+ },
+ "2020-12_roadmap/ionq_blog_wayback_2020": {
+  "status": "ok",
+  "files": [
+   {
+    "path": "2020-12_roadmap/ionq_blog_wayback_2020/page.html",
+    "url": "https://web.archive.org/web/20201209232241id_/ionq.com/posts/december-09-2020-scaling-quantum-computer-roadmap",
+    "sha256": "9f235ac7ef65c5885a34c9153b8e88aaba84d315bccbc941b9fcfff4b4e7e62b",
+    "bytes": 17979,
+    "content_type": "text/html",
+    "retrieved_at": "2026-11-01T05:15:03.738761+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/ionq_blog_wayback_2020/IonQ-roadmap-20201208.jpg",
+    "url": "https://web.archive.org/web/20201209232241id_//images/IonQ-roadmap-20201208.jpg",
+    "sha256": "e66fda7dc4f794707e46f74d05be2dde29a178b6ee83d9ca154263786f9ce8f6",
+    "bytes": 145565,
+    "content_type": "text/html",
+    "retrieved_at": "2026-11-01T05:15:06.800674+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/ionq_blog_wayback_2020/page.pdf",
+    "url": "https://web.archive.org/web/20201209232241/ionq.com/posts/december-09-2020-scaling-quantum-computer-roadmap (Chrome print)",
+    "sha256": "40329e7c32f7e70d9bb8c750a5017d9cb15c9e61fc657a372dc98a4fc8af1bda",
+    "bytes": 794745,
+    "content_type": "application/pdf",
+    "retrieved_at": "2026-11-01T05:15:13.386528+00:00"
+   }
+  ]
+ },
+ "2020-12_roadmap/edgar_2021-03-08_8k": {
+  "status": "ok",
+  "files": [
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/d142872d8k.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/d142872d8k.htm",
+    "sha256": "9db4618243ff2dfe02c909cd8b684bc3d7dd26680b141c762c223d9d6c8ad4c5",
+    "bytes": 62512,
+    "content_type": "text/html",
+    "retrieved_at": "2026-11-01T05:15:13.752621+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/d142872dex991.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/d142872dex991.htm",
+    "sha256": "5d2ea5a3500c290ac4a4bec842685c85ef50c62c50e88ce8a26a5673efd8359f",
+    "bytes": 22528,
+    "content_type": "text/html",
+    "retrieved_at": "2026-11-01T05:15:14.058235+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/d142872dex992.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/d142872dex992.htm",
+    "sha256": "608a45ca68dd1549794dc48808424a12830ccd94dab2f800dd64449cf38cfaeb",
+    "bytes": 132749,
+    "content_type": "text/html",
+    "retrieved_at": "2026-11-01T05:15:14.687970+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p1g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p1g1.jpg",
+    "sha256": "fe79d9b3074b5d8514b88013677d0261dd3aeca22428882bf81703847208d0d0",
+    "bytes": 214798,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:15.294808+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p2g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p2g1.jpg",
+    "sha256": "bad28645d4888a719277c93ad536609503717bf20040a08353cfd8c556263390",
+    "bytes": 475293,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:16.162531+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p3g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p3g1.jpg",
+    "sha256": "aaf8fde3f84c8c027cf6d16a8d938a96882e963a787731144cc9abe59b01caa1",
+    "bytes": 434830,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:16.667193+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p4g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p4g1.jpg",
+    "sha256": "da17c51f1623584a7ae1f72a3c13b4d002c012dfaa2cde849e1fc1202a8ea926",
+    "bytes": 381813,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:17.178066+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p5g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p5g1.jpg",
+    "sha256": "99c7c1e8c7743a03c5c50357fd1b5c852732a76a4e7bba83b0e60d61f2b6f47b",
+    "bytes": 272848,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:17.938811+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p6g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p6g1.jpg",
+    "sha256": "d44b9e9f06953388ccf2935591695b26b51ffb68400d2e789bb64eeeb041d0f4",
+    "bytes": 222111,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:18.615243+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p7g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p7g1.jpg",
+    "sha256": "65af4e778da3bdd80d0622d2cdcc1f3da4b622427cff881308e1a819a2f2e54b",
+    "bytes": 432161,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:19.130221+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p8g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p8g1.jpg",
+    "sha256": "922a3b02a2cbf1309cca18b9a6079716f3f0f669fdb4d5d65c4e3557f2ddcdb5",
+    "bytes": 296826,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:19.574543+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p9g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p9g1.jpg",
+    "sha256": "38afddd6eb7c12182481e216b1e0127ff3658bf05c84b7a24fc6355aa0b797ee",
+    "bytes": 289607,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:20.107002+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p10g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p10g1.jpg",
+    "sha256": "2625736334011d95aa4dac211dc6c4e88dfd3beb63efa8550b38412405dd9357",
+    "bytes": 271779,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:20.796597+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p11g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p11g1.jpg",
+    "sha256": "5b72381aea890797de297849c1e90572d28770c511b5b54fe3f4bafb1f632844",
+    "bytes": 203329,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:21.240394+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p12g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p12g1.jpg",
+    "sha256": "58766dc48ffe44722f02bb7f880022391c95d008c0128eb557fd6b5d3e0b9240",
+    "bytes": 247251,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:21.713656+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p13g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p13g1.jpg",
+    "sha256": "db8af13baae9d7e82c9e18f177be49d8d597ad2dd54d2e36daa68b16e94afd5c",
+    "bytes": 272662,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:22.185116+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p14g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p14g1.jpg",
+    "sha256": "36a6f9e81d3d1d2eaa8947d78b8e9c7b9a1fe2a14229ab7d5d1174630d724083",
+    "bytes": 357933,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:22.646025+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p15g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p15g1.jpg",
+    "sha256": "ac40ea3bb8d77dfb68a16d1c3a89bc754e5fe7000536a577902832429a3810fc",
+    "bytes": 407181,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:23.226844+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p16g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p16g1.jpg",
+    "sha256": "94c958fc3e133ecf69e5bf22110b01b31d3e2a4be8f5e90ff4c4bf6db9cea026",
+    "bytes": 393271,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:23.668112+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p17g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p17g1.jpg",
+    "sha256": "db4a075fbe850cfa68648dcdf7d35e4c5e5aa64f9db13f5e06199f79ba1b37f5",
+    "bytes": 191633,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:24.129498+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p18g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p18g1.jpg",
+    "sha256": "17ecfed9aef79eea64053732f020edb822f138f982542c00c9a35d50cdd80cd0",
+    "bytes": 241257,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:25.701875+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p19g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p19g1.jpg",
+    "sha256": "ffb08a1417f9fbc25284b6d2fe69272bc229ccd343a33ad8d1874b253dbd8d9f",
+    "bytes": 176389,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:26.268296+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p20g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p20g1.jpg",
+    "sha256": "1633690353b367556b3334314f6981b4a916b343d5cd6ac680a5450bcad956ea",
+    "bytes": 185074,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:26.743560+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p21g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p21g1.jpg",
+    "sha256": "40a078c7bc0208663ec1e01c098d779b8cb5b432e5f15cbe80a2a9c43fef84d4",
+    "bytes": 147658,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:27.235065+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p22g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p22g1.jpg",
+    "sha256": "efefd08c57f63b36c928edb3d8cc5e0d4e83ea7f3ccf68a764b73d085eccce23",
+    "bytes": 259127,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:27.749489+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p23g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p23g1.jpg",
+    "sha256": "1c008e41457d319a36d687ebdf18dad3018dbd484a51c517fdd7698852cebe00",
+    "bytes": 414466,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:28.299364+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p24g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p24g1.jpg",
+    "sha256": "0ec53fded17266c889af9ad085a635ed9700bb16daabfee329a6f9b5dcaf051b",
+    "bytes": 215030,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:28.842064+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p25g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p25g1.jpg",
+    "sha256": "6f12ef5a90f83b57ed02dd8f205b95e761292a96302557d486eb8d95dae5410d",
+    "bytes": 178188,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:29.306704+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p26g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p26g1.jpg",
+    "sha256": "6a7127ad9073400fe55ac2ec263a129623a274b12f5ae48d7fcc1d79635996af",
+    "bytes": 194624,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:29.787462+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p27g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p27g1.jpg",
+    "sha256": "e01d1463641f9629e5d47ac9df8b0b7c5da5318cec5d8254bd62abc89960abdc",
+    "bytes": 159428,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:30.372042+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p28g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p28g1.jpg",
+    "sha256": "369d2fce48387d2fbf82a97ad3d8fe309ae355bc30a792821b93c29f69cfb442",
+    "bytes": 215839,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:30.825867+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p29g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p29g1.jpg",
+    "sha256": "a6a4a757a7bcdd7d0eb650264b14c214ea697a8c41c5e7662b077d3f03f01aef",
+    "bytes": 183074,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:31.342454+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p30g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p30g1.jpg",
+    "sha256": "63ef170ad26317e1bbda7fdac65b411547dcfa44fd0fc6df5865e7b0af696674",
+    "bytes": 373102,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:31.836950+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p31g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p31g1.jpg",
+    "sha256": "344feeba773302849a68e63a9cc1431b71491262a894cddd3164506f70a7d640",
+    "bytes": 373109,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:32.483761+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p32g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p32g1.jpg",
+    "sha256": "33f9fb31ef05150bad18b665dc5874f0ff6c12939615c65044efc6f27541722f",
+    "bytes": 159782,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:32.908128+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p33g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p33g1.jpg",
+    "sha256": "f1d6698dcb291e2d24f8ff3f5c790bc78348d4660227ccf1706fd3c3bbc418bc",
+    "bytes": 362949,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:33.397566+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p34g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p34g1.jpg",
+    "sha256": "8eed39c8b07595a7dfe8beb2cd86dfd5a6f043c7d6e179cd77d46b35d71ae5a5",
+    "bytes": 257904,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:33.879402+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p35g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p35g1.jpg",
+    "sha256": "c4fb8e3d0a181bcb91eb2d0e2c2de80867c301363f1cdf11056fef4b3667063a",
+    "bytes": 237314,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:34.371320+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p36g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p36g1.jpg",
+    "sha256": "68db0c27c6235f827119860ecf8c4ec57ca25eb5fadfa939d5844187d0caeb59",
+    "bytes": 212551,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:34.868759+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p37g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p37g1.jpg",
+    "sha256": "68090832fcb1b293b5b352041c82c5a72873f2a1b7d4b242b3405ba102df077b",
+    "bytes": 259289,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:35.412753+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p38g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p38g1.jpg",
+    "sha256": "1efa3568f93dcbfbf83b85e239d76f2a606511c39af83e6922954f22477cc96b",
+    "bytes": 53996,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:35.857499+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p39g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p39g1.jpg",
+    "sha256": "3312bc129a2de936fae886aa35f127e08909e7a2e06c915a3be0e0a3ae94449a",
+    "bytes": 245986,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:36.320217+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p40g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p40g1.jpg",
+    "sha256": "0d80eddb3c03498f63b11525d367dc3fb81a7ae538fe811a48eaf565667c2230",
+    "bytes": 252138,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:36.852942+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p41g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p41g1.jpg",
+    "sha256": "737f7854f916683e187bae5bbd7df6006ffd967d9d63d862a059faa3e764625c",
+    "bytes": 194919,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:37.295472+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p42g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p42g1.jpg",
+    "sha256": "b73f042314d68df7065902db07cca6cc12ba4aef5fe8b31792ea6c49dd966448",
+    "bytes": 175281,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:37.738556+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p43g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p43g1.jpg",
+    "sha256": "4c649d13fe2b9768c75018dca96d7af1a943b8536de324d5290e421150d06e5b",
+    "bytes": 184478,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:38.196168+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p44g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p44g1.jpg",
+    "sha256": "76326babeedc7bccd520f77c1274e2485262f8b29aa0739fdbf7ff10d067e2bd",
+    "bytes": 232517,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:38.688464+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p45g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p45g1.jpg",
+    "sha256": "957dbdaa30278a99a92d92119b1d5b05b3acb34e301a848a715a62ad3d58986d",
+    "bytes": 445481,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:39.167046+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p46g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p46g1.jpg",
+    "sha256": "17bdca942fd5a5657e6c0e6bef8d6fc83ad01a76a497192a66e308432d28892e",
+    "bytes": 367585,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:39.878085+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p47g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p47g1.jpg",
+    "sha256": "e86ce5bec3d3601c7e008c3fda4ca1594461e0b2d01fac811ffaf0eb3baa6c13",
+    "bytes": 347882,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:40.410722+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p48g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p48g1.jpg",
+    "sha256": "a1dd6746f32135cb6f09fe879c8c7e0cb462d83d7920a835bf40e8cecbbbdcb4",
+    "bytes": 319833,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:40.892352+00:00"
+   },
+   {
+    "path": "2020-12_roadmap/edgar_2021-03-08_8k/g142872ex99_2p49g1.jpg",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312521072373/g142872ex99_2p49g1.jpg",
+    "sha256": "699ddebcca34eda88e0e5f2726d1fb2031febb4142cf2963e4723d63ea59deea",
+    "bytes": 431188,
+    "content_type": "image/jpeg",
+    "retrieved_at": "2026-11-01T05:15:41.486261+00:00"
+   }
+  ]
+ },
+ "2025-06_roadmap/ionq_blog_2025-06-13": {
+  "status": "ok",
+  "files": [
+   {
+    "path": "2025-06_roadmap/ionq_blog_2025-06-13/page.html",
+    "url": "https://ionq.com/blog/ionqs-accelerated-roadmap-turning-quantum-ambition-into-reality",
+    "sha256": "6d9f50df5c70cbfdcf50380342820e798fa429b78e38d9121345646cc76bcc3b",
+    "bytes": 155600,
+    "content_type": "text/html; charset=utf-8",
+    "retrieved_at": "2026-11-01T05:15:42.609385+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_blog_2025-06-13/68a3355ff08e75d1c0adcb12_Group.svg",
+    "url": "https://cdn.prod.website-files.com/68836cf9cff21bf9efa61419/68a3355ff08e75d1c0adcb12_Group.svg",
+    "sha256": "ace4d26b92412c04188b7bb6da38360f94d38d57365a9acf98221f054fc1a617",
+    "bytes": 20798,
+    "content_type": "image/svg+xml",
+    "retrieved_at": "2026-11-01T05:15:43.702434+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_blog_2025-06-13/68ae481eee933bc949b533cc_68ae47dde3ace8ed0d454d16_Roadmap_V_2_Light_201.webp",
+    "url": "https://cdn.prod.website-files.com/68836d4838193cb461ebc7d2/68ae481eee933bc949b533cc_68ae47dde3ace8ed0d454d16_Roadmap_V_2_Light%201.webp",
+    "sha256": "391829028bb28d513f4224038bafec307c115c017a8570a66da5e149ad1f81d8",
+    "bytes": 297724,
+    "content_type": "image/webp",
+    "retrieved_at": "2026-11-01T05:15:44.849585+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_blog_2025-06-13/page.pdf",
+    "url": "https://ionq.com/blog/ionqs-accelerated-roadmap-turning-quantum-ambition-into-reality (Chrome print)",
+    "sha256": "3a7476fe77c68dc72e0577d264a5502e9614375118730c09fec978542ef80736",
+    "bytes": 1808511,
+    "content_type": "application/pdf",
+    "retrieved_at": "2026-11-01T05:15:47.096994+00:00"
+   }
+  ]
+ },
+ "2025-06_roadmap/ionq_roadmap_page_wayback_2025-06": {
+  "status": "not found",
+  "files": []
+ },
+ "2025-06_roadmap/ionq_roadmap_page_current": {
+  "status": "ok",
+  "files": [
+   {
+    "path": "2025-06_roadmap/ionq_roadmap_page_current/page.html",
+    "url": "https://ionq.com/roadmap",
+    "sha256": "57e5014562044dde73d5b203a7c9ffa7d888e229c499fd8be7fa76f1e4448819",
+    "bytes": 116267,
+    "content_type": "text/html; charset=utf-8",
+    "retrieved_at": "2026-11-01T05:15:57.118073+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_roadmap_page_current/69129ab06662dac7fc5b854b_svgviewer-output_201_20_2_.svg",
+    "url": "https://cdn.prod.website-files.com/68836cf9cff21bf9efa61419/69129ab06662dac7fc5b854b_svgviewer-output%201%20(2).svg",
+    "sha256": "438da535f0623217c265637ffd7d85a0f31a760c20c0f676f5c2eec4ac2655c4",
+    "bytes": 6634,
+    "content_type": "image/svg+xml",
+    "retrieved_at": "2026-11-01T05:15:58.208205+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_roadmap_page_current/6914c1d0311a184569f68ade_Copy_20of_20IONQ_Roadmap_and_Timeline_250905_20_4_201.avif",
+    "url": "https://cdn.prod.website-files.com/68836cf9cff21bf9efa61419/6914c1d0311a184569f68ade_Copy%20of%20IONQ_Roadmap_and_Timeline_250905%20(4)%201.avif",
+    "sha256": "a549c6d135073e801417dc728b20c1c4ae8833533b809b821a63ac1f9ee25e29",
+    "bytes": 69870,
+    "content_type": "image/avif",
+    "retrieved_at": "2026-11-01T05:15:59.302175+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_roadmap_page_current/6914c481313e426487f69cd4_Frame_202147223966.svg",
+    "url": "https://cdn.prod.website-files.com/68836cf9cff21bf9efa61419/6914c481313e426487f69cd4_Frame%202147223966.svg",
+    "sha256": "fde4dcad7d8b0d36e0617beba783b4f3257a793bbba6bc9ba41f137db8af41ab",
+    "bytes": 2116,
+    "content_type": "image/svg+xml",
+    "retrieved_at": "2026-11-01T05:16:01.459162+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_roadmap_page_current/6914c4827076c8ff324f9462_Frame_202147223966_20_1_.svg",
+    "url": "https://cdn.prod.website-files.com/68836cf9cff21bf9efa61419/6914c4827076c8ff324f9462_Frame%202147223966%20(1).svg",
+    "sha256": "f7044dc8a6c0f3c5bfc82ccaed0f57016eba108c66f905c417ee6fec5f72c7d1",
+    "bytes": 1555,
+    "content_type": "image/svg+xml",
+    "retrieved_at": "2026-11-01T05:16:02.536944+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_roadmap_page_current/69153643906e4cfd11f12891_image_201013.avif",
+    "url": "https://cdn.prod.website-files.com/68836cf9cff21bf9efa61419/69153643906e4cfd11f12891_image%201013.avif",
+    "sha256": "ae2dc9e56cd1247957b9ec0641b21cac29570b3b47270483c4575df647710146",
+    "bytes": 17127,
+    "content_type": "image/avif",
+    "retrieved_at": "2026-11-01T05:16:03.748977+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_roadmap_page_current/6941c589e666bb29ded972a3_drug-development.avif",
+    "url": "https://cdn.prod.website-files.com/68836cf9cff21bf9efa61419/6941c589e666bb29ded972a3_drug-development.avif",
+    "sha256": "8c8aaa58827e4fb4e278b197f11c473dc74bd8939077bb59919e2c6fa31dfb30",
+    "bytes": 21592,
+    "content_type": "image/avif",
+    "retrieved_at": "2026-11-01T05:16:04.816106+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_roadmap_page_current/690fd497ac4ec6a3aa8f61e1_Frame_202147223797_20_4_.avif",
+    "url": "https://cdn.prod.website-files.com/68836cf9cff21bf9efa61419/690fd497ac4ec6a3aa8f61e1_Frame%202147223797%20(4).avif",
+    "sha256": "ccde5629594f80a3fd351a4d0ceaa7a4dbae70fb4ddd3951d17d1f39c73d2109",
+    "bytes": 30310,
+    "content_type": "image/avif",
+    "retrieved_at": "2026-11-01T05:16:05.886180+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_roadmap_page_current/6942d73fc406ec83d8a9c0c5_election_20microscopy.avif",
+    "url": "https://cdn.prod.website-files.com/68836cf9cff21bf9efa61419/6942d73fc406ec83d8a9c0c5_election%20microscopy.avif",
+    "sha256": "34bbb60215cf93899878ac6873f1545a0c35f5ac371a5140112f8936b9c874ce",
+    "bytes": 18551,
+    "content_type": "image/avif",
+    "retrieved_at": "2026-11-01T05:16:06.971283+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_roadmap_page_current/690fd497f11726f32e498267_Frame_202147223797_20_3_.avif",
+    "url": "https://cdn.prod.website-files.com/68836cf9cff21bf9efa61419/690fd497f11726f32e498267_Frame%202147223797%20(3).avif",
+    "sha256": "16c7b8be09b50a12bca2bd92c5459d14b2380d27ef455eb8c3452abe6c9d06a2",
+    "bytes": 29572,
+    "content_type": "image/avif",
+    "retrieved_at": "2026-11-01T05:16:08.069537+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_roadmap_page_current/690fd4973ccf0b33ced79d09_Frame_202147223797_20_2_.avif",
+    "url": "https://cdn.prod.website-files.com/68836cf9cff21bf9efa61419/690fd4973ccf0b33ced79d09_Frame%202147223797%20(2).avif",
+    "sha256": "203498600e1eeb43d96423dcb2cd515214e958a6f06399b4b636555d1921ca6c",
+    "bytes": 27107,
+    "content_type": "image/avif",
+    "retrieved_at": "2026-11-01T05:16:09.156170+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_roadmap_page_current/68d5c880925ae014ff5984d5_Group_20_1_.svg",
+    "url": "https://cdn.prod.website-files.com/68836cf9cff21bf9efa61419/68d5c880925ae014ff5984d5_Group%20(1).svg",
+    "sha256": "aab29f5ec5fdf770cf865c7f0aab214183a827c398579218564af7f4fbdd728c",
+    "bytes": 2567,
+    "content_type": "image/svg+xml",
+    "retrieved_at": "2026-11-01T05:16:10.236791+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_roadmap_page_current/page.pdf",
+    "url": "https://ionq.com/roadmap (Chrome print)",
+    "sha256": "24f7b8386817b567d766729121595e34c2bcf6d54c99d72bfbad9d01b114ebde",
+    "bytes": 4357416,
+    "content_type": "application/pdf",
+    "retrieved_at": "2026-11-01T05:16:13.925094+00:00"
+   }
+  ]
+ },
+ "2025-06_roadmap/edgar_2025-06-09_8k": {
+  "status": "ok",
+  "files": [
+   {
+    "path": "2025-06_roadmap/edgar_2025-06-09_8k/d17095d8k.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312525137398/d17095d8k.htm",
+    "sha256": "f4ad0e389c35fcc911bb88a9702cb9ceb32a906146e993a31f227131b7c60c58",
+    "bytes": 41178,
+    "content_type": "text/html",
+    "retrieved_at": "2026-11-01T05:16:14.304967+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/edgar_2025-06-09_8k/d17095dex991.htm",
+    "url": "https://www.sec.gov/Archives/edgar/data/1824920/000119312525137398/d17095dex991.htm",
+    "sha256": "a8d3fc7bd6db9fc69f7485c33086d84179676131b0d6ac0a181e87e45c566415",
+    "bytes": 20220,
+    "content_type": "text/html",
+    "retrieved_at": "2026-11-01T05:16:14.789093+00:00"
+   }
+  ]
+ },
+ "2025-06_roadmap/ionq_blog_2025-10-13_aq64": {
+  "status": "ok",
+  "files": [
+   {
+    "path": "2025-06_roadmap/ionq_blog_2025-10-13_aq64/page.html",
+    "url": "https://ionq.com/blog/ionq-hits-aq-64-milestone-ahead-of-schedule-and-sets-its-sights-even-higher",
+    "sha256": "f2ba4bb3ab20c1c20e6e9d6fa03cdced2ec1d1f3a672dd78072a44df310c79f6",
+    "bytes": 153359,
+    "content_type": "text/html; charset=utf-8",
+    "retrieved_at": "2026-11-01T05:16:15.896866+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_blog_2025-10-13_aq64/68a3355ff08e75d1c0adcb12_Group.svg",
+    "url": "https://cdn.prod.website-files.com/68836cf9cff21bf9efa61419/68a3355ff08e75d1c0adcb12_Group.svg",
+    "sha256": "ace4d26b92412c04188b7bb6da38360f94d38d57365a9acf98221f054fc1a617",
+    "bytes": 20798,
+    "content_type": "image/svg+xml",
+    "retrieved_at": "2026-11-01T05:16:17.022499+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_blog_2025-10-13_aq64/691a2da0e8de9e31539af534_691a2d5b1665961694045a45_AQ64_Cert_Image_Final.avif",
+    "url": "https://cdn.prod.website-files.com/68836d4838193cb461ebc7d2/691a2da0e8de9e31539af534_691a2d5b1665961694045a45_AQ64_Cert_Image_Final.avif",
+    "sha256": "c038db6d1557c36994e5f95d67630eebc871d0618f8201fa00638285386a7121",
+    "bytes": 71505,
+    "content_type": "image/avif",
+    "retrieved_at": "2026-11-01T05:16:18.233092+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_blog_2025-10-13_aq64/691a2dc42c690da68c8cf74f_691a2d5b517ca432f6bbb54f_AQ64_Roadmap_Chart_Image_Final.avif",
+    "url": "https://cdn.prod.website-files.com/68836d4838193cb461ebc7d2/691a2dc42c690da68c8cf74f_691a2d5b517ca432f6bbb54f_AQ64_Roadmap_Chart_Image_Final.avif",
+    "sha256": "d1889643f53b447205bea271aff6f38a267b6dea644f4b11fbc3b3f388f35f1f",
+    "bytes": 36493,
+    "content_type": "image/avif",
+    "retrieved_at": "2026-11-01T05:16:19.346316+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_blog_2025-10-13_aq64/page.pdf",
+    "url": "https://ionq.com/blog/ionq-hits-aq-64-milestone-ahead-of-schedule-and-sets-its-sights-even-higher (Chrome print)",
+    "sha256": "af15003eeb6c1f3a5cc87d09fd0f0e6a62d7e250c26693aa05e6ddaf07cd7288",
+    "bytes": 1917569,
+    "content_type": "application/pdf",
+    "retrieved_at": "2026-11-01T05:16:21.507987+00:00"
+   }
+  ]
+ },
+ "2025-06_roadmap/ionq_blog_2025-06-13_wayback_2025-06": {
+  "status": "ok",
+  "files": [
+   {
+    "path": "2025-06_roadmap/ionq_blog_2025-06-13_wayback_2025-06/page.html",
+    "url": "https://web.archive.org/web/20250617073547id_/https://www.ionq.com/blog/ionqs-accelerated-roadmap-turning-quantum-ambition-into-reality",
+    "sha256": "a63cb3f1407cb6d5db9e58898790ae1b26f3ff4ae1b2df2567220d4aa9c7629c",
+    "bytes": 1112422,
+    "content_type": "text/html",
+    "retrieved_at": "2026-11-01T05:17:39.468206+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_blog_2025-06-13_wayback_2025-06/Roadmap_V_2_Light.png",
+    "url": "https://web.archive.org/web/20250617073547id_/https://images.ctfassets.net/hqm865gc1xfs/32QGWs4tb45rOCkt2iVqcg/7b97f256f7397aceceebc99c34e86c5f/Roadmap_V_2_Light.png",
+    "sha256": "a17ee319a74198e0136dabad98e743e419a3c3bc1299d2dc13af59b68369a5f8",
+    "bytes": 709769,
+    "content_type": "image/png",
+    "retrieved_at": "2026-11-01T05:17:44.142203+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_blog_2025-06-13_wayback_2025-06/ionq-logo-one-color-586a705c908b7095fd51efa0b63d8d62.svg",
+    "url": "https://web.archive.org/web/20250617073547id_/https://www.ionq.com/static/ionq-logo-one-color-586a705c908b7095fd51efa0b63d8d62.svg",
+    "sha256": "36a5d0dacc5904a4d56f8240b10a318de7fbf1e81ba2239b00f825d98b2f437b",
+    "bytes": 10980,
+    "content_type": "image/svg+xml",
+    "retrieved_at": "2026-11-01T05:17:48.439932+00:00"
+   },
+   {
+    "path": "2025-06_roadmap/ionq_blog_2025-06-13_wayback_2025-06/page.pdf",
+    "url": "https://web.archive.org/web/20250617073547/https://www.ionq.com/blog/ionqs-accelerated-roadmap-turning-quantum-ambition-into-reality (Chrome print)",
+    "sha256": "d1d663ac88ddcf80ff02c9370d14cc6ff4d3f26f8540ef85dcc4295bfe3aba47",
+    "bytes": 682390,
+    "content_type": "application/pdf",
+    "retrieved_at": "2026-11-01T05:18:18.394921+00:00"
+   }
+  ]
+ }
+}
