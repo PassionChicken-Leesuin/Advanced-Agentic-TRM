@@ -1,0 +1,354 @@
+# -*- coding: utf-8 -*-
+"""진행 보고서(2026-11-03) — Cambridge 연구계획 초안(10/23) 이후 첫 보고.
+흐름: 무엇을 만들었고 왜 그렇게 설계했는가 (결과와 논리적 근거 중심). 중간 시행착오의 서술은 두지 않는다.
+  시스템 개요·용어 → 대상 기업·자료 → Cambridge 보고서에서 본 로드맵의 지식 단위 → 설계 원리(다섯 기능·다섯 구조·공통 골격)
+  → 구축 절차와 규칙의 근거 → 6건 시범으로 확인한 것 → 생성기·평가 설계 → 시각화·사이트 → 비용 → 진행 상황.
+자료·용어 절의 문장과 표는 사용자가 다듬은 10/31 초고에서 가져온다.
+python scripts/build_report_1103.py   →  연구계획/이수인_KB구축시스템_진행보고_1103.docx
+"""
+import io, sys, re, os
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+from docx import Document
+from docx.shared import Pt, Emu, Inches
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_COLOR_INDEX
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
+PLAN = os.path.join(ROOT, "연구계획")
+TEMPLATE = os.path.join(PLAN, "이수인_Cambridge 연구계획 초안.docx")
+OLD = os.path.join(PLAN, "이수인_KB구축시스템_진행보고_1031.docx")
+OUT = os.path.join(PLAN, "이수인_KB구축시스템_진행보고_1103.docx")
+SCR = os.path.join(HERE, "..", "docs", "screenshots")
+FIG = {"fw": os.path.join(PLAN, "그림", "Fig_Framework_TRM_KB_v1.png"), "viz5": os.path.join(SCR, "viz_structures_pilot3.png")}
+DATE = "2026. 11. 3"
+
+old = Document(OLD)
+
+
+def op(i: int) -> str:
+    out = []
+    for r in old.paragraphs[i].runs:
+        if r.text:
+            out.append(f"**{r.text}**" if r.bold else r.text)
+    return re.sub(r"\*\*\s*\*\*", "", "".join(out)).replace("****", "")
+
+
+def otable(k: int):
+    rows = [[c.text.strip() for c in r.cells] for r in old.tables[k].rows]
+    return rows[0], rows[1:]
+
+
+doc = Document(TEMPLATE)
+body = doc.element.body
+for child in list(body):
+    if child.tag != qn("w:sectPr"):
+        body.remove(child)
+
+J, C, R = WD_ALIGN_PARAGRAPH.JUSTIFY, WD_ALIGN_PARAGRAPH.CENTER, WD_ALIGN_PARAGRAPH.RIGHT
+BULLET_NUM, CIRCLE_NUM = 5, 8
+EMU = 635
+
+
+def _rich(p, text, size, bold=False, highlight=False):
+    for tok in re.split(r"(\*\*.*?\*\*|__.*?__)", text):
+        if not tok:
+            continue
+        b, u, s = bold, False, tok
+        if tok.startswith("**") and tok.endswith("**"):
+            b, s = True, tok[2:-2]
+        elif tok.startswith("__") and tok.endswith("__"):
+            u, s = True, tok[2:-2]
+            if s.startswith("**") and s.endswith("**"):
+                b, s = True, s[2:-2]
+        r = p.add_run(s); r.font.size = Pt(size); r.bold = b; r.underline = u
+        if highlight:
+            r.font.highlight_color = WD_COLOR_INDEX.YELLOW
+    return p
+
+
+def para(text, size=8, bold=False, align=J, style="Normal", highlight=False, indent=None):
+    p = doc.add_paragraph(style=style); p.alignment = align
+    if indent is not None:
+        p.paragraph_format.left_indent = Emu(indent)
+    return _rich(p, text, size, bold, highlight)
+
+
+def _num(p, num_id, lvl):
+    pPr = p._p.get_or_add_pPr(); numPr = OxmlElement("w:numPr")
+    il = OxmlElement("w:ilvl"); il.set(qn("w:val"), str(lvl)); nid = OxmlElement("w:numId"); nid.set(qn("w:val"), str(num_id))
+    numPr.append(il); numPr.append(nid); pPr.append(numPr)
+
+
+def bullet(text, lvl=0, size=8):
+    p = doc.add_paragraph(style="List Paragraph"); p.alignment = J; _num(p, BULLET_NUM, lvl); return _rich(p, text, size)
+
+
+_circle = [CIRCLE_NUM]
+
+
+def circle_restart():
+    numbering = doc.part.numbering_part.element
+    ids = [int(n.get(qn("w:numId"))) for n in numbering.findall(qn("w:num"))]
+    new_id = max(ids) + 1
+    num = OxmlElement("w:num"); num.set(qn("w:numId"), str(new_id))
+    an = OxmlElement("w:abstractNumId"); an.set(qn("w:val"), "2"); num.append(an)
+    ov = OxmlElement("w:lvlOverride"); ov.set(qn("w:ilvl"), "0")
+    so = OxmlElement("w:startOverride"); so.set(qn("w:val"), "1"); ov.append(so); num.append(ov)
+    numbering.append(num); _circle[0] = new_id
+
+
+def circle(text, size=8):
+    p = doc.add_paragraph(style="List Paragraph"); p.alignment = J; _num(p, _circle[0], 0); return _rich(p, text, size)
+
+
+def h1(text): return para(text, 11, True)
+def h2(text): return para(text, 10, True)
+def arrow(text): return para(("→ " + text) if not text.startswith("→") else text, 8, True, highlight=True, indent=63500)
+def caption(text, align=None, size=10): return para(text, size, align=align if align else WD_ALIGN_PARAGRAPH.LEFT)
+
+
+def _shade(cell, fill):
+    tcPr = cell._tc.get_or_add_tcPr(); shd = OxmlElement("w:shd")
+    shd.set(qn("w:val"), "clear"); shd.set(qn("w:color"), "auto"); shd.set(qn("w:fill"), fill); tcPr.append(shd)
+
+
+def table(cap, header, rows, widths, first_col_shade=True, size=8):
+    caption("<표 %s" % cap)
+    t = doc.add_table(rows=1 + len(rows), cols=len(header)); t.style = doc.styles["Table Grid"]
+    for i, h in enumerate(header):
+        c = t.rows[0].cells[i]; c.width = Emu(widths[i]); _shade(c, "D9D9D9")
+        c.paragraphs[0].text = ""; _rich(c.paragraphs[0], h, size, True); c.paragraphs[0].alignment = C
+    for r in t.rows:
+        trPr = r._tr.get_or_add_trPr(); cs = OxmlElement("w:cantSplit"); trPr.append(cs)
+    for ri, row in enumerate(rows, 1):
+        for ci, val in enumerate(row):
+            c = t.rows[ri].cells[ci]; c.width = Emu(widths[ci]); c.paragraphs[0].text = ""
+            lines = val.split("\n")
+            _rich(c.paragraphs[0], lines[0], size, bold=(ci == 0 and first_col_shade))
+            for ln in lines[1:]:
+                _rich(c.add_paragraph(), ln, size)
+            if ci == 0 and first_col_shade:
+                _shade(c, "FAE2D5")
+    doc.add_paragraph().paragraph_format.space_after = Pt(2)
+    return t
+
+
+def summary_box(paragraphs):
+    t = doc.add_table(rows=1, cols=1); t.style = doc.styles["Table Grid"]
+    cell = t.rows[0].cells[0]; cell.width = Emu(9016 * 635)
+    cell.paragraphs[0].text = ""; _rich(cell.paragraphs[0], "**[요약]**", 8)
+    for txt in paragraphs:
+        p = cell.add_paragraph(); p.alignment = J; _rich(p, txt, 8)
+    doc.add_paragraph().paragraph_format.space_after = Pt(2)
+
+
+def figure(path, cap, width_in=6.3):
+    if os.path.exists(path):
+        p = doc.add_paragraph(); p.alignment = C; p.add_run().add_picture(path, width=Inches(width_in))
+    caption(cap, C, 9)
+
+
+W3 = [2000 * EMU, 4300 * EMU, 2716 * EMU]
+
+# ============================================================== 본문
+para("**[진행 보고] TRM-Specific Knowledge Base 구축 에이전트 시스템 — 다섯 지식 구조의 설계 근거, 구축 절차, 시범 결과**", 14, True, C)
+para(f"DDSI Lab 이수인 ({DATE})", 10, align=R)
+
+summary_box([
+    "10월 23일 Cambridge 연구계획 초안에서 제안한 **TRM-Specific Knowledge Base Construction Agentic AI System**의 설계를 확정하고 구현한 결과를 보고함. 결과물은 지식베이스(Knowledge Base, 에이전트가 읽고 추론할 수 있게 구조를 갖춘 지식 저장소) 자체가 아니라 __그것을 문서로부터 자율적으로 구축하는 에이전트 시스템__이며, 지식베이스와 로드맵은 그 산출물임.",
+    "대상 산업은 양자기술, 대상 기업은 미국 상장사 **IonQ**로 정하고, 2024년 12월 31일 이전 공개 자료와 LLM으로 만든 가상 내부자료를 합쳐 문서 180건을 코퍼스로 구성함(2절). Cambridge IfM 2014 양자기술 로드맵 보고서를 전수 분석해 로드맵이 요구하는 지식 단위를 도출하고, 그 작업 순서(경관 정리 → 기회 투표 → 기회별 토픽 로드맵 → 통합)를 설계의 기준으로 삼음(3절).",
+    "연구 단위는 **지식 구조**(어떤 지식을 어떤 형태로 쌓고 생성기가 어떻게 읽는가의 묶음)임. 로드맵 작성의 다섯 기능(①근거 제시 ②트렌드 종합 ③기회 도출 ④연결 추론 ⑤시점 배치)에 지식 구조를 하나씩 대응시킨 **K1~K5**와, 다섯 구조가 공유하는 어휘층 **K0**를 설계함. 층(why/what/how/resource)은 저장 구조가 아니라 문장에 붙는 태그이고, 모든 구조는 소스 문장과 공유 대상 id를 공유함(4절).",
+    "구축은 Reader(인용 전용) → K0 용어 추출 → Router(문장별 구조 판정) → 구조 전용 추출기 4종 → 마무리 정리(LLM 판단 병합, 체인 재연결) → 트리·그리드 조립의 여섯 단계로 확정함. 세부 규칙 일곱 가지는 6건 시범을 반복하며 근거를 확인해 정함(5절). 시범에서 __같은 문장이 구조마다 다른 단위로 쌓이고 공유 대상 id로 이어지며, 시간 지식그래프에서 목표의 변경 이력이 체인으로 남는 것__을 확인함(6절).",
+    "검증은 조건 11개(지식베이스 없음, 단순 RAG, K1, 전체, 전체−K0…K5, 공개 자료만) × 생성 3회 × 판정 모델 3종으로 설계함(7절). 다섯 구조가 병렬로 자라는 실시간 화면과 **Agentic AI Technology Roadmapping** 서비스 사이트를 구현해 GitHub에 올림(8절). 180건 전체 구축은 보고서 작성 시점에 진행 중임(9·10절).",
+])
+
+# ------------------------------------------------------------------ 1
+h1("1. 시스템 개요와 주요 용어")
+para("이 시스템은 기업 자료가 들어올 때마다 그 내용을 로드맵이 요구하는 지식 구조에 나누어 쌓고, 그렇게 쌓인 지식으로 로드맵을 만드는 시스템임. 핵심 질문은 두 가지임. 첫째, 로드맵을 만들려면 어떤 지식이 어떤 구조로 쌓여야 하는가. 둘째, 그 구조를 생성기는 어떻게 읽어야 하는가. 이 둘을 묶은 것을 ‘지식 구조’라 부르고 연구의 설계 단위로 삼음. 주요 용어는 <표 1>에 정리함. 본문에서 처음 나오는 용어도 괄호 안에 뜻을 씀.")
+hdr, rows = otable(1)
+keep = [r for r in rows if not r[0].startswith(("Initial", "노드 / 링크", "주장(claim)", "근거(evidence)"))]
+rows_new = keep + [
+    ["지식 구조(knowledge structure)", "지식을 쌓는 단위와 형태, 그리고 생성기가 그것을 읽는 규칙의 묶음. 예: 평면 목록, 요약 트리, 그리드, 그래프", "연구의 설계 단위. 다섯 개(K1~K5)를 둠"],
+    ["소스 문장(passage)", "문서에서 그대로 인용한 문장과, 대명사를 풀고 수치·날짜를 보존해 다시 쓴 진술(claim)의 쌍", "모든 구조가 가리키는 바닥 단위. 문장은 한 번만 저장되고 구조는 색인"],
+    ["공유 대상(Entity, subject)", "문장이 말하는 제품·기술·부품·조직·응용·요구·자원을 정규화한 이름과 id", "다섯 구조를 잇는 열쇠. 같은 대상 id로 구조 사이를 오감"],
+    ["층 태그(layer tag)", "why(시장·규제·고객 요구·경쟁·비전) / what(제품·마일스톤·목표) / how(기술·부품·방법) / resource(자금·시설·인력·파트너)", "저장 구조가 아니라 문장에 붙는 메타데이터. 로드맵 층 배치는 생성 시점에 함"],
+    ["Router(분배 에이전트)", "문장마다 저장 여부, 태그, 대상, 보낼 구조와 그 이유를 판단하는 LLM 에이전트", "‘이 정보는 어느 구조에 쌓아야 TRM의 어떤 기능에 쓰이는가’를 결정"],
+    ["K0 용어집(glossary)", "지표·제품·기술·조직·응용·수명 단계·프로그램·약어의 정식 이름, 별칭, 정의, 단위를 모은 어휘층. 문서를 읽으며 자람", "이름이 갈라지는 것을 막고 K5의 속성 어휘를 제공. 산업 이식 시 바뀌는 유일한 파일"],
+    ["RAPTOR / GraphRAG / 이중 시간 KG", "계층 요약 트리(Sarthi 외, 2024) / 개체 관계 그래프(Edge 외, 2024) / 유효 시점과 진술 시점을 따로 둔 지식그래프(Zep, Rasmussen 외, 2025)", "K2 / K4 / K5의 대응 선행 방식"],
+    ["연계 그리드(linkage grid)", "Cambridge 보고서가 우선 기회와 동인·니즈·역량·인에이블러의 연결을 표로 정리한 것(21쪽)", "K3의 원형"],
+    ["작업지(worksheet) · 기회 카드", "생성기가 지식베이스 원본 대신 받는, 코드가 구조마다 뽑은 요약표 · 기회 하나마다 다섯 구조의 관련 내용을 모은 한 장", "구조의 차이가 생성기에 전달되는 경로"],
+    ["제거 실험(ablation) · 외삽(extrapolation)", "구조를 하나씩 빼고 지표를 보는 실험 · 시점 T까지의 사실로 T 이후를 맞추는 과제", "가설 검증 방법 · 2025년판 재현율의 위치"],
+    ["Initial / 조건별 로드맵", "지식베이스 없이 LLM의 사전지식만으로 만든 로드맵 / 지식 구조 조합을 달리한 지식베이스로 만든 로드맵. 지시문·모델은 동일", "둘의 차이가 지식 구조의 효과"],
+]
+table("1> 주요 용어", hdr, rows_new, W3)
+
+# ------------------------------------------------------------------ 2
+h1("2. 분석 대상 기업과 자료")
+h2("2.1 기업 선정")
+for i in (9, 10, 11):
+    bullet(op(i))
+h2("2.2 코퍼스 구성")
+para(op(13))
+hdr, rows = otable(2)
+table("2> 코퍼스 구성 (수집 309건 중 구축에는 공개 130건 + 가상 50건 = 180건 사용)", hdr, rows, [1500 * EMU, 4000 * EMU, 800 * EMU, 2716 * EMU])
+h2("2.3 가상 내부자료와 사전에 정한 사실")
+for i in (17, 18, 19):
+    bullet(op(i))
+arrow(op(20).lstrip("→ ").replace("**", ""))
+
+# ------------------------------------------------------------------ 3
+h1("3. Cambridge 보고서에서 본 로드맵의 지식 단위")
+para("로드맵에 어떤 지식이 필요한지를 정하기 위해 Cambridge IfM(Institute for Manufacturing)이 2014년 영국 양자기술 상용화를 위해 연 로드맵 워크숍의 종합 보고서(Trueman 외, 76쪽)를 전수 분석함. 이 보고서는 전문가들이 로드맵을 만들 때 어떤 정보를 모으고 어떤 순서로 정리하는지를 산출물과 함께 남긴 드문 1차 자료임.")
+h2("3.1 보고서의 산출물과 작업 순서")
+for i in (24, 25):
+    bullet(op(i))
+bullet("작업 순서는 네 단계임. ① 경관 정리(7쪽): 동인·시장, 응용, 기술을 참가자가 모아 벽에 붙임. ② 기회 도출과 투표(19쪽): 응용을 15개 군집으로 묶고 득표로 순위를 매김. 1위 부품 28표, 2위 원자시계 24표, 3위 의료 영상 21표로, **응용 분야와 제품 유형이 한 목록에 섞여 있음**. ③ 기회별 상용화 계획(20·26~27쪽): 상위 기회마다 소그룹이 토픽 로드맵을 그림. 시장 행, 제품 행(시범품 → 첫 상용 제품 → 두 번째 상용 제품), 기술·자원 행에 마일스톤과 연도를 둠. 동인·니즈 연결은 기회별로 직접 받고, 역량·인에이블러 연결은 상용화 계획에서 유도함. ④ 통합(21쪽): 기회별 계획에서 연결을 모아 연계 그리드를 만들고 전체 로드맵으로 합침.")
+h2("3.2 지식 단위: 노드 10종, 주장 8종, 관계 11종")
+hdr, rows = otable(3)
+table("3> 로드맵이 요구하는 지식 단위 (보고서 전수 분석)", hdr, rows, [1600 * EMU, 2400 * EMU, 5016 * EMU])
+arrow("보고서에서 읽히는 두 가지. 첫째, 로드맵의 단위는 ‘기회’이고 기회 안에서만 why·what·how·시점이 한 줄로 만남. 둘째, 참가자가 모으는 지식은 종류마다 형태가 다름 — 추세는 요약으로, 기회는 득표 순위와 연결 표로, 의존은 관계로, 마일스톤은 연도가 붙은 사실로 정리됨. 이 두 가지가 4장 설계의 근거임.")
+
+# ------------------------------------------------------------------ 4
+h1("4. 설계 원리: 로드맵의 다섯 기능과 다섯 지식 구조")
+h2("4.1 기능마다 구조 하나")
+para("10월 21일 연구구상에서 TRM(Technology Roadmapping, 기술 로드맵 작성) 이론(Kostoff & Schaller 2001, Phaal 2004, Kerr & Phaal 2022)으로부터 로드맵 작성이 요구하는 기능을 다섯 가지로 정리했음. 3장에서 본 대로 기능마다 요구하는 지식의 형태가 다르므로 기능마다 구조를 하나씩 둠(<표 4>). 구조마다 ‘쌓는 단위’, ‘형태’, ‘대응하는 선행 방식’, ‘생성기가 이 구조로 정하는 것’, ‘주 평가 지표’를 명시함. 선행 방식은 그대로 쓰지 않고 로드맵 용도에 맞게 바꿈.")
+table("4> 다섯 지식 구조의 정의", ["구조", "TRM 기능", "쌓는 단위 · 형태", "대응 선행 방식", "생성기가 정하는 것 · 주 지표"], [
+    ["K1 근거 저장소", "① 근거 제시", "소스 문장 + 태그 · 평면 목록", "평면 RAG", "항목마다 인용할 근거 · 근거 부착률, 다중 출처율"],
+    ["K2 주제 요약 트리", "② 트렌드 종합", "문장 → 주제 → 영역 → 전체 요약, 연도별 줄 · 계층 요약", "RAPTOR (+시간 축, 수치 근거 추세)", "로드맵이 다룰 영역, why 층의 추세 · 영역 포괄도"],
+    ["K3 기회 연계 그리드", "③ 기회 도출·우선순위", "기회 기록(응용 분야/제품 유형 + 시장 + 제공물 + 동인·요구 + 성숙도) · 열=기회, 행=동인·제공물·역량·인에이블러", "Cambridge 연계 그리드 + 결측 연결 후보", "what 층 중심 항목과 우선순위, 기회별 행 후보 · 마일스톤 회수율"],
+    ["K4 의존 관계 그래프", "④ 연결 추론", "(주체, 관계 12종, 대상) 삼중항 · 타입 그래프", "GraphRAG, HippoRAG", "항목 사이 화살표 · 근거 있는 연결 비율"],
+    ["K5 시간 지식그래프", "⑤ 시점 배치", "(대상, 속성, 값, 유효 시점, 진술 시점, 양태) 사실 · 속성별 체인 + 갱신/충돌 연결", "이중 시간 KG(Zep), TKG 외삽 설정", "항목 시점, 목표 변경 이력 · 연도 오차"],
+], [1500 * EMU, 1250 * EMU, 2700 * EMU, 1650 * EMU, 1916 * EMU])
+h2("4.2 공통 골격: 층은 태그, 대상은 공유, 어휘는 한 곳에")
+bullet("다섯 구조는 소스 문장 id, 공유 대상 id, 층 태그, K0 용어집을 공유함. 문장은 K1에 한 번만 있고 K2~K5는 그 문장 id를 가리키는 색인임. 그래서 그리드의 ‘Forte’, 그래프의 ‘Forte’, 시간 사실의 ‘Forte’가 하나로 이어짐.")
+bullet("**층을 저장 구조로 두지 않는 이유.** 지식베이스가 why/what/how로 미리 나뉘어 있으면 생성기는 그 칸을 로드맵 항목으로 옮기기만 하게 되어 종합이 개입할 자리가 없어짐. 층은 문장에 붙는 태그로 두고, 로드맵의 층 배치는 생성 시점에 정함.")
+bullet("**어휘층 K0를 두는 이유.** 같은 지표가 문서마다 다른 이름으로 불리면(예: #AQ, Algorithmic Qubits, AQ) 시간 지식그래프의 체인이 속성 이름별로 흩어져 이어지지 않고, 그래프의 노드도 갈라짐. 지표·제품·기술·조직·응용·수명 단계·프로그램·약어의 종류는 산업 공통의 틀이고 어휘는 산업 고유라, 어휘를 구조 바깥의 한 파일로 두면 다른 산업으로 옮길 때 바뀌는 것이 이 파일 하나가 됨. 사람은 손대지 않고 문서 2건 이상에서 나오면 자동 확정함. 수명 단계(발표 → 시연 → 조기 접근 → 상용 출시 → 첫 납품 → 세대 교체 → 지원 종료)는 산업 공통의 닫힌 어휘라 미리 심어 둠.")
+h2("4.3 기회의 정의와 기회 카드")
+para("K3의 ‘기회’는 보고서 19쪽의 기회 군집과 같은 수준으로 정함. **기회 = 응용 분야 하나 또는 제품 유형 하나 + 대상 시장.** 시장이 명시된 기회는 A급, 응용·제품 유형만 있는 기회는 B급(열 후보로 두고 같은 문서의 시장을 유추로 붙임), 응용도 제품 유형도 없는 가치 진술과 회사·조직·기술 이름은 기회가 아님. 구체 제품(Forte, Tempo)과 세대·마일스톤은 보고서 26~27쪽의 제품 행에 해당하므로 기회 아래 what 행에 둠. 등급은 열 순서를 정하는 데만 쓰고 생성기에는 보이지 않음.")
+para("로드맵의 단위가 기회이므로 생성기 입력도 구조별 나열이 아니라 **기회 카드**로 조립함. 소그룹이 토픽 로드맵을 그릴 때 쓰는 지식이 다섯 구조와 하나씩 대응함(<표 5>). 카드는 토픽 로드맵을 데이터로 미리 채운 것이고, 생성기는 카드 하나를 로드맵의 세로 한 줄(why → what → how → resource 상자와 화살표)로 옮김. 구조 간 연결이 생성기의 해석이 아니라 코드에 고정되고, 어느 구조가 어느 줄을 댔는지가 그대로 추적됨.")
+table("5> 워크숍 소그룹의 지식과 다섯 구조의 대응 (기회 카드의 줄)", ["워크숍 소그룹이 쓰는 것", "구조", "카드의 줄"], [
+    ["벽에 붙은 동인·시장 추세", "K2 트리 (그 기회의 문장이 속한 주제·영역의 추세와 연도별 비율)", "시장·동인 줄"],
+    ["기회 목록과 득표", "K3 열과 순위(연결 수·지지 문서 수)", "카드 자체와 카드 순서"],
+    ["상용화 계획의 동인·니즈·역량·인에이블러 연결", "K3 칸 + K4 관계(기회·제공물에서 1단계)", "제공물·역량·자원 줄"],
+    ["제품 행의 마일스톤과 연도", "K5 체인(기회·제공물의 속성별 시계열, 갱신·충돌 표시)", "각 줄의 시점"],
+    ["참가자의 기억과 자료", "K1 근거(카드가 가리킨 문장 id)", "인용"],
+], [2900 * EMU, 3800 * EMU, 2316 * EMU])
+h2("4.4 시간 지식그래프의 설계 근거")
+bullet("문서가 시점을 말하는 방식은 ‘언제 그렇다’(목표 시점)와 ‘언제 말했다’(문서 날짜)가 섞여 있음. 로드맵은 앞의 것이, 목표가 바뀌었는지 알려면 뒤의 것이 필요하므로 사실마다 두 시간 축을 둠. 데이터베이스의 이중 시간(bi-temporal) 모델이고, LLM 지식그래프에서는 Zep(Rasmussen 외, 2025)이 같은 방식임. 새 사실이 옛 사실과 다르면 옛 사실을 지우지 않고 update/conflict로 잇는 설계를 따름.")
+bullet("속성은 세 가족으로 나눔. 지표(metric: #AQ, 큐비트 수, 게이트 충실도 등 숫자 값), 수명 단계(lifecycle: 닫힌 어휘), 전략 마일스톤(milestone: 회사·프로그램 차원 목표). 대상은 이미 있는 공유 대상에서만 고르고, 속성은 K0의 확정 지표·단계 용어에서만 고름. 그래야 ‘#AQ 64 목표’ 같은 사건이 대상으로 들어오지 않고 같은 지표의 체인이 이어짐.")
+bullet("문서는 2024년까지이고 비교 대상에 2025년 공개 로드맵이 있으므로, 평가는 시간 지식그래프 연구의 외삽(extrapolation) 설정과 같음. 가져오는 것은 (대상, 관계, 값, 시점) 형식, 이중 시간, 시간 끊기 평가 규약이고, 학습 기반 외삽 모델(RE-NET, xERTE, TLogic 계열)은 회사 하나·사실 수백 개로는 학습이 되지 않아 쓰지 않음. 선행연구가 일어난 사실의 시간을 다루는 데 비해 여기서는 기업의 **미래 진술**(목표·계획)의 시간을 다루고 같은 목표의 변경 이력을 구조로 쌓음.")
+arrow("검증 가설: 구조 하나를 빼면(카드의 그 줄, 작업지, 읽기 규칙이 함께 빠짐) 그 구조가 맡은 기능의 지표만 떨어짐. K5를 빼면 연도 오차가, K4를 빼면 근거 있는 연결 비율이, K3를 빼면 마일스톤 회수율이, K2를 빼면 영역 포괄도가 떨어질 것으로 예상함.")
+
+# ------------------------------------------------------------------ 5
+h1("5. 구축 절차와 규칙의 근거")
+para("문서는 날짜 순으로 한 건씩 처리함. K5의 갱신·충돌(‘나중 문서가 앞 문서의 목표를 바꿨다’)과 K2의 강조 신호(신규·확대·축소)가 앞 문서와의 비교이기 때문임. 단계별 역할과 모델은 <표 6>과 같음.")
+table("6> 구축 단계와 사용 모델", ["단계", "하는 일", "판단·처리 방식", "모델"], [
+    ["① Reader", "로드맵에 쓸 수 있는 문장을 원문 그대로 모두 인용하고, 대명사를 풀고 수치·날짜를 보존한 진술을 한 줄 붙임", "3,000자 청크마다 저가 모델이 관련성을 거른 뒤 인용. 원문에 없는 인용은 코드가 버림. 분류하지 않음(분류는 Router 몫). 청크 상한 없음", "트리아지 gpt-4.1-nano\n인용 claude-haiku-5.5"],
+    ["② K0 용어 추출", "새 용어·별칭·정의를 모음. 제품·기술·조직·응용 용어는 공유 대상에 연결", "120문장씩 병렬. 지표 이름에 숫자 금지(‘#AQ 35’는 값), 벤치마크·알고리즘은 기술로, 사무 항목 제외. 문서 2건 이상이면 자동 확정", "gpt-4.1-mini"],
+    ["③ Router", "문장마다 저장 여부(new/duplicate/irrelevant), 층 태그, 종류, 양태, 대상 1~3개, 보낼 구조(tree/grid/graph/time, 0개 이상)와 이유", "14문장 묶음을 6개 병렬 호출, 반영은 순서대로. 중요도 문턱: 사무 처리·과거 재무·주식은 어느 구조에도 안 보냄. 배정 상한 없음(문서 유형별 비율을 결과로 집계)", "gpt-4.1-mini"],
+    ["④ 추출기 4종", "K2 주제 배정, K3 기회 기록, K4 관계 삼중항, K5 시간 사실", "자기 구조로 온 문장만 받음. 40/30/30/25문장씩 병렬 호출, 저장은 graph → grid → time → tree 순. K5는 저장 사실과 비교해 new/update/conflict/duplicate", "gpt-4.1-mini\nK5만 gpt-4.1"],
+    ["⑤ 마무리 정리", "들어온 순서 때문에 갈라진 대상·주제 병합, K5 체인 재연결", "임베딩은 후보 쌍만 추림(0.72/0.70 이상). 합칠지는 LLM이 이름·별칭·층·대표 문장을 보고 이유와 함께 판단. 포함·부분 관계(part of, component)면 따로 둠. K0 종류가 다르면 후보 제외", "gpt-4.1-mini"],
+    ["⑥ 조립", "K2 트리 요약, K3 그리드 칸 채우기", "트리: 연도별 문서 비율·기울기·강조 신호를 코드가 계산 → LLM이 그 표를 보고 요약·추세. 그리드: 등급·지지 문서 수로 열, 기록과 K4 관계로 direct 칸, 공출현을 LLM이 확인해 derived 칸", "gpt-4.1-mini"],
+], [1300 * EMU, 2500 * EMU, 3700 * EMU, 1516 * EMU])
+para("세부 규칙은 대안을 두고 시범 데이터에서 확인한 근거로 정함(<표 7>).")
+table("7> 구축 세부 규칙과 근거", ["항목", "결정", "근거"], [
+    ["Reader의 역할", "분류 없이 인용만. 분류는 Router", "Reader가 유형을 미리 정하면 구조 판단이 둘로 갈림. 인용은 원문 부분 문자열 검증으로 모델 생성 문장을 막음"],
+    ["용어 확정", "사람 개입 없이 문서 2건 이상이면 확정. 구축에는 후보도 쓰고, 생성기 범례와 K5 속성 어휘에는 확정 용어만", "프레임워크 안에서 사람이 용어집을 고치는 일은 없음"],
+    ["트리 배정 상한", "두지 않음. 문서 유형별 배정 비율을 결과로 집계", "10-K 문장의 과반이 트리로 가는 것은 전략 서술이 많은 문서 성격의 반영. 유형별 분배 차이 자체가 보여줄 결과"],
+    ["중복(duplicate) 문장", "지지 문서 수에는 셈, 구조 추출·작업지에서는 뺌", "여러 문서가 같은 사실을 반복하는 것은 중요도 신호(득표에 해당). 같은 사실을 여러 번 저장하지는 않음"],
+    ["대상·주제 병합", "임베딩 문턱이 아니라 LLM 판단, 포함·부분 관계는 금지", "사소한 차이(제품 대 세대, 시스템 대 부품)가 로드맵에서는 다른 상자임. 임베딩 문턱은 근거 있는 값을 정할 수 없음"],
+    ["출처 가중", "두지 않음. 모든 문서 1.0", "근거 있는 가중값이 없음"],
+    ["K2 추세", "코드가 연도별 문서 비율과 기울기를 계산해 LLM에 넘기고, LLM이 그 수치를 보고 요약·추세를 씀", "문서 수가 해마다 늘어(2020년 10건 → 2024년 76건) 문장 수만 보면 모든 주제가 상승으로 보임"],
+    ["K5 대상·속성", "대상은 기존 공유 대상에서만, 속성은 K0 지표·단계 용어에서만. 값과 시점은 분리", "사건형 대상(‘#AQ 64 목표’)과 속성 이름 분열은 체인을 끊음. 틀은 산업 공통, 어휘는 K0가 맡음"],
+    ["기회 등급 표시", "카드·작업지에 ‘A/B’ 문구를 두지 않음", "생성기가 등급을 품질로 오해할 수 있음. 시장 명시 여부만 사실로 적음"],
+], [1900 * EMU, 3300 * EMU, 3816 * EMU])
+
+# ------------------------------------------------------------------ 6
+h1("6. 시범 구축으로 확인한 것 (문서 6건)")
+para("새 Reader로 읽은 6건(2020-12 로드맵 블로그, 2023-04 네트워킹 블로그, 2024-01 #AQ 35 블로그, 2023년도 10-K, 가상 고객 메일, 가상 기술평가서; 인용 524문장)으로 구축 절차를 끝까지 돌려 설계가 의도대로 작동하는지 확인함. 설계가 바뀌는 작업은 전체 180건 전에 시범으로 확정한다는 원칙을 따름. 비용은 구축 $0.22, 마무리 $0.08.")
+h2("6.1 구조별 결과")
+table("8> 시범 구축 결과 (6건, 524문장)", ["구조", "결과", "확인된 것"], [
+    ["K0 용어", "76개 (지표 14 · 기술 33 · 응용 8 · 제품 8 · 조직 5 · 수명 단계 7 · 프로그램 1)", "#AQ, 큐비트 수, 게이트 충실도 등 지표가 별칭과 함께 하나의 항목으로 모임"],
+    ["K1 문장", "524 (new 512 · duplicate 8 · irrelevant 4), 층 태그 why 205 · what 117 · how 203 · resource 141", "한 문장에 층 태그가 둘 이상 붙는 경우 145건 — 층이 저장 칸이 아니라 태그여야 하는 이유"],
+    ["K2 주제·영역", "주제 19 → 영역 9. 추세: stable 6 · new 3 · rising 1", "계산 추세와 LLM 추세가 전부 일치. 문서 수 증가 편향 없음"],
+    ["K3 기회", "기회 12 (시장 명시 7, 미명시 5). 1위 ‘quantum computing hardware → select customers’. 그리드 열 12, 칸 163", "보고서의 기회 군집과 같은 수준의 열이 세워짐. 회사·기술 이름은 열에 들어오지 않음"],
+    ["K4 관계", "51개 (requires, enables, competes_with, supplies, part_of 등)", "양 끝이 모두 공유 대상이고 문장 id가 붙음"],
+    ["K5 사실", "18개 (지표 6 · 마일스톤 5 · 수명 단계 7). 사건형 대상 0", "#AQ 체인: Aria 25 (2023-04) → Forte 35 (2024-01, 목표 → 달성, update). 2020년 ‘2025년 광범위 양자 우위’ 마일스톤 보존"],
+    ["마무리 병합", "대상 후보 쌍 73 → 14건 병합, 주제 9 → 4건 병합, 체인 재연결 update 1 · duplicate 1", "병합 14건 모두 같은 것의 다른 표기(예: ‘Error Mitigation’ ← ‘Error-Mitigation Strategies’). 부분 관계 병합 없음"],
+], [1400 * EMU, 3600 * EMU, 4016 * EMU])
+h2("6.2 Router의 분배는 문서 성격을 따름")
+para("Router가 문서 유형에 따라 네 구조에 다르게 배정하는 것이 시범에서 보임(<표 9>). 연차보고서(10-K)는 문장의 59%가 트리로, 10%가 그리드로 갔고, 기술 블로그는 그래프 비율이 30%로 10-K의 두 배 가까웠음. 가상 내부 문서(고객 메일, 기술평가서)는 그래프(42~43%)와 시간(25~30%) 비율이 공개 문서보다 높았는데, 요구·일정·의존 관계처럼 공개 문서에 드문 정보를 담기 때문임. 180건에서 보도자료·논문이 더해지면 이 표가 완성됨.")
+table("9> 문서 유형별 Router 배정 비율 (시범 6건)", ["문서 유형", "문장 수", "tree", "grid", "graph", "time"], [
+    ["블로그", "94", "51%", "0%", "30%", "10%"],
+    ["10-K (공시)", "395", "59%", "10%", "19%", "3%"],
+    ["가상 고객 메일", "12", "17%", "25%", "42%", "25%"],
+    ["가상 기술평가서", "23", "22%", "13%", "43%", "30%"],
+], [2200 * EMU, 1200 * EMU, 1400 * EMU, 1400 * EMU, 1400 * EMU, 1416 * EMU])
+h2("6.3 기회 카드의 실제 예")
+para("카드 1은 <표 10>과 같음. 줄마다 어느 구조에서 왔는지 표시되고, 각 항목은 소스 문장 id를 가리킴. 이 카드에 K5 줄이 없는 것은 6건 안에 이 기회의 시점 문장이 없기 때문임.")
+table("10> 기회 카드 1 (시범, 요약)", ["줄", "내용", "출처 구조"], [
+    ["기회", "IonQ Cloud Service · product_type · 1.8 docs · maturity revenue · markets: enterprise accounts", "K3 열"],
+    ["why", "Customer acceptance of quantum computing systems [drives, derived]; Competing Quantum Technologies [drives, derived]", "K3 why 행"],
+    ["trend", "영역 ‘Quantum Software and Access’ (new); 주제 ‘Quantum Computing as a Service’ (new, 2024 문서 비율 25%): 2024년 파트너 생태계로 접근 확대", "K2"],
+    ["what", "Harmony [serves, direct]; Forte platform [serves, direct]; networked computing preview program [serves, direct]", "K3 what 행"],
+    ["how", "Trapped Ion Qubits; Quantum Networking; Photonic Interconnect; Reconfigurable Multi-Core Architectures [enables]", "K3 how 행"],
+    ["resource", "cloud service providers [enables, direct]", "K3 resource 행"],
+    ["link", "Microsoft Azure Quantum —competes_with→ IonQ Cloud Service; QCaaS —requires→ system calibration and cloud maintenance", "K4"],
+    ["evidence", "위 항목이 가리킨 소스 문장 id 전부 (원문 인용 가능)", "K1"],
+], [1300 * EMU, 6200 * EMU, 1516 * EMU])
+arrow("시범으로 확인된 것: 다섯 구조가 같은 문장에서 서로 다른 단위를 뽑아 쌓이고, 공유 대상 id로 이어지며, 기회 카드가 그것을 한 장으로 묶음. 어휘층이 없으면 시간 체인이 이어지지 않으므로 K0는 K5의 성립 조건임. 180건에서 볼 것은 같은 사실이 여러 문서에서 반복될 때 체인과 등급이 어떻게 채워지는가임.")
+
+# ------------------------------------------------------------------ 7
+h1("7. 생성기와 평가 설계")
+h2("7.1 생성기: 한 번 호출, 기회 카드")
+bullet("생성기는 지식베이스 원본을 보지 않고 코드가 만든 작업지를 받음. 작업지의 앞부분은 기회 카드(4.3절), 뒤는 구조별 나머지(K2 전체·영역 요약, 카드에 안 든 K4·K5, K1 근거 문장)와 K0 범례임. 구조별 글자 예산(그리드 14k, 트리 11k, 그래프 11k, 시간 16k, 근거 18k자)을 두어 한 구조가 컨텍스트를 독점하지 못하게 하고, 카드의 글자는 각 줄을 댄 구조의 예산에서 차감함.")
+bullet("지시문·출력 형식·모델(gpt-4.1)·온도(0.2)는 지식베이스 없는 Initial과 같고, 들어온 구조의 작업지와 **읽기 규칙**만 덧붙음. 예: K5 규칙은 ‘시점은 체인의 마지막 진술로 정하고, UPDATE가 있으면 최신 값을 쓰고 revised 표시를 붙여라’. 구조를 빼면 작업지와 읽기 규칙, 카드의 그 줄이 함께 빠지고 글자 예산은 K1로 넘어가 조건 사이 총 글자 수가 같음. 따라서 비교는 ‘구조가 있을 때’와 ‘같은 분량의 평면 근거가 있을 때’의 비교가 됨.")
+bullet("단계별 호출(그리드 → 트리 → 그래프 → 시간 → 근거) 생성기는 구조마다 무엇을 정했는지 출력으로 남는 장점이 있으나, 구조를 빼면 호출 횟수와 흐름이 바뀌어 비교가 섞임. 지식베이스 없는 단계별 기준선과 함께 두 번째 실험으로 둠.")
+h2("7.2 평가 조건과 지표")
+table("11> 비교 조건 (조건마다 생성 3회 × 판정 모델 3종)", ["조건", "내용", "예상"], [
+    ["Initial", "지식베이스 없음", "기준선"],
+    ["S0raw", "원문 청크 벡터 검색 (단순 RAG)", "근거는 붙지만 선택이 무작위에 가까움"],
+    ["K1", "근거 저장소만", "근거 부착률은 높고 시점·연결은 Initial 수준"],
+    ["ALL", "K0 + K1~K5 전부", "모든 지표에서 가장 좋음"],
+    ["ALL − K1 / K2 / K3 / K4 / K5", "구조 하나 제거 (카드 줄·작업지·읽기 규칙, 예산은 K1로)", "그 구조가 맡은 지표만 하락: 근거 부착률 / 영역 포괄도 / 마일스톤 회수율·우선순위 / 근거 있는 연결 / 연도 오차"],
+    ["ALL − K0", "용어집 없이 구축한 지식베이스 (같은 인용문 위에 재구축)", "이름이 갈라져 체인·관계가 끊김 → 연도 오차 증가, 연결 비율 하락"],
+    ["ALL (공개 자료만)", "가상 내부 문서 문장을 빼고 트리·그리드도 다시 만든 것", "내부 자료 인용 0, 나머지는 전체보다 조금 낮음"],
+], [2200 * EMU, 3400 * EMU, 3416 * EMU])
+bullet("비교 기준은 IonQ 공식 로드맵(2020년판·2025년판)에서 역량 단위로 정리한 마일스톤 19건임. 2020년판은 #AQ, 2025년판은 물리·논리 큐비트 수를 지표로 써서 판마다 측정 단위가 다르므로 수치가 아니라 마일스톤 단위로 정렬함. 정렬은 임베딩으로 유사 항목을 찾은 뒤 판정 모델이 일치 / 세분화 / 일반화 / 누락으로 분류함.")
+bullet("판정 모델은 gpt-4.1-mini, claude-haiku-5.5, gemini-2.5-flash 세 종류로, 재현율(엄격/관대), 연도 오차(MAE), 근거 부착률, 다중 출처율, 근거 있는 연결 비율, 영역 포괄도, 내부 자료 인용 비중을 평균±표준편차로 보고함. 단일 생성·단일 판정의 ±10%p 잡음을 줄이기 위함임. 문서는 2024년까지이므로 2025년판 재현율은 사전 예측 지표로 해석함.")
+bullet("ALL − K0는 작업지 단계가 아니라 구축 단계의 제거임. 같은 Reader 인용문 위에 용어집 없이 Router·추출기를 다시 돌려 만듦(구축 비용 약 $2~3 추가).")
+
+# ------------------------------------------------------------------ 8
+h1("8. 시각화와 서비스 사이트")
+h2("8.1 다섯 구조가 자라는 화면")
+para("다섯 패널이 병렬로 자라는 화면을 구현함(<그림 1>). K1은 문장 흐름(층 태그와 보낸 구조 표시), K2는 주제 버블(영역으로 묶임, 추세 색), K3는 그리드(열·행·칸이 채워짐), K4는 힘 배치 그래프, K5는 대상별 가로줄 위의 사실(지표·단계·마일스톤 모양, UPDATE 점선)임. Router가 문장을 보낼 때 K1 문장에서 해당 패널로 빛줄기가 날아가고, 같은 공유 대상이 다른 패널에 이미 있으면 둘을 잇는 선이 그려짐. 오른쪽에는 진행, 구조별 크기, 문서 유형별 배정 비율, Router 판단 이유 로그가 있음. 모든 판단은 사건 기록(events.jsonl)으로 남아 이 화면에서 재생됨.")
+figure(FIG["viz5"], "<그림 1> 다섯 지식 구조 실시간 구축 화면 (시범 6건 재생)")
+h2("8.2 Agentic AI Technology Roadmapping 사이트")
+para("연구 결과를 하나의 서비스 흐름으로 보여 주는 사이트를 별도 저장소(PassionChicken-Leesuin/agentic-trm-site, Next.js 16 + Tailwind + D3 + three.js)에 만듦. 흐름은 랜딩(제목과 등각 3D 로드맵 판) → 문서(업로드 또는 준비된 IonQ 180건) → 구축(8.1의 화면) → 기회 카드 → 로드맵(‘에이전트로 로드맵 만들기’ 버튼, 지식베이스 유/무 비교, 항목 클릭 시 인용 문장)임. 준비된 180건은 기록된 사건을 재생하므로 서버 없이 정적 배포가 가능하고, 사용자 문서 업로드는 에이전트 서버가 있을 때만 켜짐. 전체 프레임워크 그림은 <그림 2>와 같음.")
+figure(FIG["fw"], "<그림 2> 프레임워크: 구축(1단)과 생성·검증(2단)", 6.5)
+
+# ------------------------------------------------------------------ 9
+h1("9. 비용과 처리 시간")
+table("12> 비용 (OpenRouter 실측, 11월 2일 기준)", ["항목", "비용"], [
+    ["가상 내부자료 50건 생성 + 재생성 11건 (claude-sonnet-4.6)", "$1.39"],
+    ["코퍼스 정리본 구축 runs/full_clean (180건, 문서 메타데이터·정답표 기준)", "$0.51"],
+    ["설계 시범 (Reader 시범, 구조 시범, 6건 구축 반복)", "약 $2.00"],
+    ["180건 읽기 (새 Reader, 6,019문장)", "$1.12"],
+    ["180건 구축 2종 (K0 포함 / K0 제외), 진행 중", "예상 $3 + $2"],
+    ["평가 11조건 × 3 × 3 (예정)", "예상 $7~9"],
+], [6500 * EMU, 2516 * EMU])
+bullet("문서당 비용은 읽기 약 $0.006, 구축 약 $0.011로 합쳐 약 $0.017임. Router는 14문장 묶음을 6개 병렬로 호출하고, 추출기는 구조별로 25~40문장씩 잘라 병렬로 호출해 OpenRouter 키 20개를 라운드로빈으로 씀. 10-K 한 건(395문장)은 병렬화 전 약 5분이 걸렸음.")
+
+# ------------------------------------------------------------------ 10
+h1("10. 진행 상황과 다음 단계")
+circle_restart()
+circle("180건 구축: 읽기 완료(6,019문장). K0 포함 구축과 K0 제외 구축이 동시에 진행 중임. 끝나면 용어집 표, 문서 유형별 배정 비율, 기회 카드, K5 체인을 점검해 보고함.")
+circle("평가: 11조건 실행 → 조건별 평균±표준편차 표 → 가설(구조별 지표 하락) 확인.")
+circle("사이트: 180건 데이터로 교체, Vercel 배포, 3D 판을 실제 상위 기회와 K5 시점으로 채움, 업로드 모드 서버 API.")
+circle("한계: (a) 공개 자료는 생성 모델의 사전지식과 겹칠 수 있어 2025년판 재현율은 사전 예측 지표로만 봄. (b) 가상 내부 문서가 지식베이스의 1/3이라 공개 자료만 쓴 조건을 함께 둠. (c) 같은 문장에서 모델 출력이 매번 같지 않아 생성 3회·판정 3종으로 분산을 추정함. (d) 2020년 로드맵 블로그의 연도별 #AQ 목표는 차트 이미지에만 있어 텍스트 Reader로는 잡히지 않음.")
+para("이번 설계는 ‘무엇을 쌓을 것인가’를 로드맵의 기능에서 거꾸로 정하고, 그 정의를 Cambridge 보고서 원문과 시범 데이터로 하나씩 확인한 것입니다. 180건 결과가 나오면 조건별 비교표와 함께 다시 보고드리겠습니다.")
+
+doc.save(OUT)
+print("saved", OUT)

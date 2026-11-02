@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>trmkb — 다섯 지식 구조가 자라는 장면</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --line:#2a2f3a; --fg:#e6e8ee; --muted:#8b93a7;
+          --why:#e05d6f; --what:#3b9ddd; --how:#4cbf7a; --resource:#d9a441;
+          --k0:#b48ead; --k1:#8b93a7; --k2:#4cbf7a; --k3:#d9a441; --k4:#5b8def; --k5:#e05d6f; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:13px/1.4 -apple-system,"Segoe UI","Malgun Gothic",sans-serif; overflow:hidden; }
+  header { display:flex; gap:10px; align-items:center; padding:7px 14px; border-bottom:1px solid var(--line); background:var(--panel); height:42px; }
+  header h1 { font-size:15px; margin:0 10px 0 0; font-weight:600; }
+  header select, header button, header input { background:#0f1115; color:var(--fg); border:1px solid var(--line); border-radius:6px; padding:3px 8px; font-size:12px; }
+  #doc { color:var(--muted); margin-left:auto; font-size:12px; max-width:560px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #doc b { color:var(--fg); }
+  #glossary { height:34px; display:flex; align-items:center; gap:6px; padding:0 14px; border-bottom:1px solid var(--line); overflow:hidden; white-space:nowrap; }
+  #glossary .lbl { color:var(--k0); font-weight:600; font-size:12px; flex:none; }
+  .chip { display:inline-block; border:1px solid var(--line); border-radius:10px; padding:1px 7px; font-size:11px; color:#c9cfdc; background:#1c2029; }
+  .chip.new { border-color:var(--k0); color:#e6d4ee; box-shadow:0 0 8px var(--k0); }
+  .chip small { color:var(--muted); }
+  main { display:grid; grid-template-columns: 0.9fr 0.95fr 1.35fr 290px; grid-template-rows: 1fr 1fr; gap:6px; padding:6px; height: calc(100vh - 42px - 34px); position:relative; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; display:flex; flex-direction:column; overflow:hidden; min-height:0; position:relative; }
+  .panel h2 { margin:0; padding:6px 10px; font-size:12px; font-weight:600; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:8px; }
+  .panel h2 .fn { color:var(--muted); font-weight:400; }
+  .panel h2 .cnt { margin-left:auto; color:var(--muted); font-weight:400; font-variant-numeric:tabular-nums; }
+  .panel h2 i { width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .panel .body { flex:1; min-height:0; position:relative; overflow:hidden; }
+  .panel svg { width:100%; height:100%; display:block; }
+  .panel.flash { box-shadow: 0 0 0 2px var(--c) inset; transition: box-shadow .1s; }
+  #k1 { grid-column:1; grid-row:1; } #k2 { grid-column:2; grid-row:1; } #k3 { grid-column:3; grid-row:1; }
+  #k4 { grid-column:1 / span 2; grid-row:2; } #k5 { grid-column:3; grid-row:2; }
+  aside { grid-column:4; grid-row:1 / span 2; background:var(--panel); border:1px solid var(--line); border-radius:8px; display:flex; flex-direction:column; overflow:hidden; }
+  .sec { padding:8px 12px; border-bottom:1px solid var(--line); }
+  .sec h3 { font-size:11px; margin:0 0 6px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
+  .prog { height:6px; background:#262b36; border-radius:3px; overflow:hidden; margin-top:6px; }
+  .prog i { display:block; height:100%; background:#5b8def; width:0; transition: width .3s; }
+  .stats { display:grid; grid-template-columns:auto 1fr; gap:3px 10px; font-size:12px; color:#c9cfdc; }
+  .stats b { color:var(--fg); font-variant-numeric:tabular-nums; text-align:right; }
+  table.share { font-size:11px; border-collapse:collapse; width:100%; color:#c9cfdc; }
+  table.share td, table.share th { padding:1px 4px; text-align:right; } table.share th { color:var(--muted); font-weight:500; }
+  table.share td:first-child, table.share th:first-child { text-align:left; }
+  #log { flex:1; overflow:auto; font-size:11.5px; padding:6px 12px; }
+  #log div { padding:2px 0; border-bottom:1px dotted #22262f; color:#c9cfdc; }
+  #log .t { color:var(--muted); margin-right:4px; }
+  #log .k2 { color:var(--k2);} #log .k3 { color:var(--k3);} #log .k4 { color:var(--k4);} #log .k5 { color:var(--k5);} #log .k0 { color:var(--k0);} #log .m { color:#ffb454; }
+  /* K1 */
+  #passages { position:absolute; inset:0; overflow:hidden; padding:6px 8px; display:flex; flex-direction:column; gap:4px; justify-content:flex-end; }
+  .ps { background:#1c2029; border:1px solid var(--line); border-radius:6px; padding:4px 7px; font-size:11.5px; color:#c9cfdc; animation: slide .35s ease-out both; }
+  .ps.dup { opacity:.45; } .ps.irr { opacity:.3; text-decoration: line-through; }
+  .ps .meta { display:flex; gap:4px; align-items:center; margin-bottom:2px; }
+  .tag { font-size:10px; padding:0 5px; border-radius:8px; color:#0f1115; font-weight:600; }
+  .tag.why { background:var(--why);} .tag.what { background:var(--what);} .tag.how { background:var(--how);} .tag.resource { background:var(--resource);}
+  .sys { font-size:10px; padding:0 5px; border-radius:3px; border:1px solid; }
+  .sys.tree { color:var(--k2); border-color:var(--k2);} .sys.grid { color:var(--k3); border-color:var(--k3);} .sys.graph { color:var(--k4); border-color:var(--k4);} .sys.time { color:var(--k5); border-color:var(--k5);}
+  .ps .date { color:var(--muted); font-size:10px; margin-left:auto; }
+  .ps .txt { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  @keyframes slide { from { opacity:0; transform: translateY(8px);} to { opacity:1; transform:none; } }
+  /* SVG common */
+  text { fill:#dfe3ec; font-size:11px; pointer-events:none; }
+  .muted { fill:var(--muted); }
+  .hl { filter: drop-shadow(0 0 6px #fff); }
+  .bubble circle { stroke:#0f1115; stroke-width:1; } .bubble.new circle { stroke:#fff; stroke-width:2; }
+  .area-circle { fill:none; stroke:#3a4050; stroke-dasharray:3 3; }
+  .cell { stroke:#0f1115; stroke-width:1; } .cell.derived { stroke:#9db8ff; stroke-dasharray:3 2; }
+  .cell.new { stroke:#fff; stroke-width:2; }
+  .edge { stroke:#6b7280; stroke-opacity:.7; fill:none; } .edge.new { stroke:#fff; stroke-opacity:1; stroke-width:2; }
+  .edge-label { font-size:9px; fill:var(--muted); }
+  .node circle { stroke:#0f1115; stroke-width:1.2; } .node.new circle { stroke:#fff; stroke-width:2.5; }
+  .node text { font-size:10px; paint-order:stroke; stroke:#0f1115; stroke-width:3px; }
+  .fact { stroke:#0f1115; stroke-width:1; } .fact.new { stroke:#fff; stroke-width:2; }
+  .chain { fill:none; stroke:#aab4c8; stroke-opacity:.6; stroke-width:1.2; }
+  .chain.update { stroke:#ffb454; stroke-dasharray:4 3; } .chain.conflict { stroke:var(--why); stroke-dasharray:2 2; }
+  .axis text { fill:var(--muted); font-size:10px; } .axis line, .axis path { stroke:#3a4050; }
+  .rowlbl { font-size:10.5px; } .rowline { stroke:#232833; }
+  #links { position:absolute; inset:0; pointer-events:none; z-index:5; }
+  .beam { fill:none; stroke-width:2; stroke-linecap:round; opacity:.9; }
+  #tip { position:absolute; pointer-events:none; background:#1f2430; border:1px solid var(--line); padding:6px 8px; border-radius:6px; font-size:12px; max-width:380px; display:none; z-index:9; }
+</style>
+</head>
+<body>
+<header>
+  <h1>TRM Knowledge Structures</h1>
+  <label>run <select id="run"></select></label>
+  <button id="play">▶ 재생</button>
+  <button id="pause">⏸</button>
+  <button id="reset">↺ 처음부터</button>
+  <label>속도 <input id="speed" type="number" value="20" min="0" step="5" style="width:56px"></label>
+  <label><input id="follow" type="checkbox"> 실시간 추적</label>
+  <label><input id="beams" type="checkbox" checked> 구조 간 연결 표시</label>
+  <span id="doc">—</span>
+</header>
+<div id="glossary"><span class="lbl">K0 용어집</span><span id="chips"></span></div>
+<main>
+  <section class="panel" id="k1" style="--c:var(--k1)"><h2><i style="background:var(--k1)"></i>K1 근거 저장소 <span class="fn">① 근거 — 모든 저장 문장</span><span class="cnt" id="c1">0</span></h2><div class="body"><div id="passages"></div></div></section>
+  <section class="panel" id="k2" style="--c:var(--k2)"><h2><i style="background:var(--k2)"></i>K2 주제 요약 트리 <span class="fn">② 트렌드 — 문장 → 주제 → 영역</span><span class="cnt" id="c2">0</span></h2><div class="body"><svg id="s2"></svg></div></section>
+  <section class="panel" id="k3" style="--c:var(--k3)"><h2><i style="background:var(--k3)"></i>K3 기회 연계 그리드 <span class="fn">③ 기회·우선순위</span><span class="cnt" id="c3">0</span></h2><div class="body"><svg id="s3"></svg></div></section>
+  <section class="panel" id="k4" style="--c:var(--k4)"><h2><i style="background:var(--k4)"></i>K4 의존 관계 그래프 <span class="fn">④ 연결 — (주체, 관계, 대상)</span><span class="cnt" id="c4">0</span></h2><div class="body"><svg id="s4"></svg></div></section>
+  <section class="panel" id="k5" style="--c:var(--k5)"><h2><i style="background:var(--k5)"></i>K5 시간 지식그래프 <span class="fn">⑤ 시점 — 대상·속성별 체인</span><span class="cnt" id="c5">0</span></h2><div class="body"><svg id="s5"></svg></div></section>
+  <aside>
+    <div class="sec"><h3>진행</h3><div id="progress">—</div><div class="prog"><i id="bar"></i></div></div>
+    <div class="sec"><h3>구조별 크기</h3><div class="stats" id="stats"></div></div>
+    <div class="sec"><h3>문서 유형별 Router 배정 비율</h3><table class="share" id="share"></table></div>
+    <div class="sec"><h3>Router 판단 · 구조 사건</h3></div>
+    <div id="log"></div>
+  </aside>
+  <svg id="links"></svg>
+  <div id="tip"></div>
+</main>
+<script>
+const $ = s => document.querySelector(s);
+const LAYERS = ["why","what","how","resource"];
+const LCOL = {why:"#e05d6f", what:"#3b9ddd", how:"#4cbf7a", resource:"#d9a441"};
+const SCOL = {tree:"#4cbf7a", grid:"#d9a441", graph:"#5b8def", time:"#e05d6f", evidence:"#8b93a7", glossary:"#b48ead"};
+const SYS_PANEL = {tree:"#k2", grid:"#k3", graph:"#k4", time:"#k5"};
+const MODCOL = {achieved:"#4cbf7a", current:"#8b93a7", planned:"#3b9ddd", forecast:"#9db8ff", required:"#d9a441", vision:"#b48ead"};
+let es = null, currentRun = null, meta = null, lastSeq = 0, S = null, flashT = {};
+const beamsOn = () => $("#beams").checked;
+
+function resetState(){
+  S = { ents:new Map(), terms:[], passages:0, byStatus:{}, docsDone:0, docsTotal:0, curDoc:null,
+        themes:new Map(), areas:new Map(), themeArea:new Map(),
+        opps:new Map(), cells:new Map(), rows:new Map(),
+        gnodes:new Map(), gedges:new Map(),
+        facts:new Map(), subjects:new Map(),
+        share:{} };
+  lastSeq = 0; $("#log").innerHTML = ""; $("#chips").innerHTML = ""; $("#passages").innerHTML = "";
+  d3.select("#s2").selectAll("*").remove(); d3.select("#s3").selectAll("*").remove(); d3.select("#s4").selectAll("*").remove(); d3.select("#s5").selectAll("*").remove();
+  initGraph(); renderStats();
+}
+const ename = id => (S.ents.get(id)?.name) || (meta?.entities?.[id]?.name) || id;
+function ent(id, name){ let e = S.ents.get(id); if(!e){ e = {id, name: name || meta?.entities?.[id]?.name || id, layers:{}, where:new Set()}; S.ents.set(id, e); } else if(name && (e.name===id)) e.name = name; return e; }
+const dominant = e => { const l = Object.entries(e.layers||{}).sort((a,b)=>b[1]-a[1])[0]; return l ? l[0] : null; };
+
+// ------------------------------------------------------------ runs / meta
+async function loadRuns(){
+  const runs = await (await fetch("/api/v2/runs")).json();
+  const sel = $("#run"); sel.innerHTML = "";
+  runs.forEach(r => { const o = document.createElement("option"); o.value = r.run; o.textContent = `${r.run} (${r.events} ev${r.finished ? ", finished" : ""})`; sel.appendChild(o); });
+  const pref = runs.find(r => r.run === "pilot3") || runs[runs.length-1];
+  if (pref) { currentRun = pref.run; sel.value = currentRun; }
+}
+async function loadMeta(){
+  meta = await (await fetch(`/api/v2/runs/${currentRun}/meta`)).json();
+  S.docsTotal = meta.planned_total || meta.documents.filter(d => d.read).length || meta.documents.length;
+  if (meta.tree) meta.tree.areas.forEach(a => a.theme_ids.forEach(t => S.themeArea.set(t, a.name)));
+}
+
+// ------------------------------------------------------------ playback
+function stop(){ if (es) { es.close(); es = null; } }
+function play(){
+  stop();
+  const speed = +$("#speed").value, follow = $("#follow").checked;
+  es = new EventSource(`/api/v2/runs/${currentRun}/stream?speed=${speed}&start=${lastSeq}&follow=${follow}`);
+  es.addEventListener("kb", e => handle(JSON.parse(e.data)));
+  es.addEventListener("done", () => { stop(); log("m", "재생 끝"); });
+}
+$("#play").onclick = play; $("#pause").onclick = stop;
+$("#reset").onclick = async () => { stop(); resetState(); await loadMeta(); };
+$("#run").onchange = async e => { stop(); currentRun = e.target.value; resetState(); await loadMeta(); };
+
+// ------------------------------------------------------------ event handling
+function handle(ev){
+  lastSeq = ev.seq;
+  switch (ev.type) {
+    case "doc.started": S.curDoc = ev; $("#doc").innerHTML = `<b>${ev.date}</b> · ${ev.source_type}${ev.synthetic ? " · internal" : ""} · ${esc(ev.title)} · ${ev.n} passages`; break;
+    case "doc.finished": S.docsDone++; renderProgress(); break;
+    case "glossary.term": onTerm(ev); break;
+    case "glossary.confirmed": { const c = $(`#chips [data-tid="${ev.tid}"]`); if (c) c.style.borderColor = "#b48ead"; log("k0", `용어 확정: ${ev.name}`); break; }
+    case "entity.created": case "entity.linked": { const e = ent(ev.eid, ev.name); (ev.layers||[]).forEach(l => e.layers[l] = (e.layers[l]||0)+1); break; }
+    case "passage.routed": onPassage(ev); break;
+    case "tree.theme_created": { S.themes.set(ev.tid, {id:ev.tid, name:ev.name, count:0, fresh:true}); log("k2", `새 주제: ${ev.name}`); break; }
+    case "tree.assigned": onAssigned(ev); break;
+    case "grid.opportunity": onOpportunity(ev); break;
+    case "graph.relation": onRelation(ev); break;
+    case "time.fact": onFact(ev); break;
+    case "entity.merged": onMerged(ev); break;
+    case "tree.theme_merged": log("k2", `주제 병합 → ${ev.name} (+${ev.merged}) — ${ev.reason||""}`); break;
+    case "tree.theme_summarized": { const t = S.themes.get(ev.tid); if (t) t.trend = ev.trend; break; }
+    case "tree.area_built": S.areas.set(ev.name, ev); log("k2", `영역: ${ev.name} (${ev.themes} themes, ${ev.trend})`); flash("#k2"); renderTree(); break;
+    case "tree.built": log("k2", `트리 완성: 영역 ${ev.areas}, 주제 ${ev.themes}`); renderTree(); break;
+    case "grid.started": log("k3", `그리드 조립 시작: 열 ${ev.columns.length}`); ev.columns.forEach(c => { const o = S.opps.get(c.eid) || {eid:c.eid, name:c.name, n:0, customers:new Set(), offerings:new Set()}; o.tier = c.tier; o.support = c.support; S.opps.set(c.eid, o); }); renderGrid(); break;
+    case "grid.cell": onCell(ev); break;
+    case "grid.built": log("k3", `그리드 완성: 칸 ${ev.n_cells}`); break;
+    case "time.relinked": log("k5", `체인 재연결: update ${ev.update}, duplicate ${ev.duplicate}, conflict ${ev.conflict}`); break;
+    case "error": log("m", `오류 ${ev.structure||""}: ${ev.msg}`); break;
+  }
+  renderStats();
+}
+const esc = s => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;");
+function log(cls, msg){ const d = document.createElement("div"); d.innerHTML = `<span class="t">${lastSeq}</span><span class="${cls}">${esc(msg)}</span>`; const L = $("#log"); L.prepend(d); while (L.children.length > 300) L.lastChild.remove(); }
+function flash(sel){ const el = $(sel); el.classList.add("flash"); clearTimeout(flashT[sel]); flashT[sel] = setTimeout(() => el.classList.remove("flash"), 500); }
+
+// ------------------------------------------------------------ K0
+function onTerm(ev){
+  S.terms.push(ev);
+  const c = document.createElement("span"); c.className = "chip new"; c.dataset.tid = ev.tid;
+  c.innerHTML = `${esc(ev.name)} <small>${ev.term_type}${ev.unit ? " · " + esc(ev.unit) : ""}</small>`;
+  const box = $("#chips"); box.prepend(c); setTimeout(() => c.classList.remove("new"), 1500);
+  while (box.children.length > 40) box.lastChild.remove();
+  log("k0", `K0 용어 +${ev.term_type}: ${ev.name}${ev.aliases?.length ? " (" + ev.aliases.slice(0,2).join(", ") + ")" : ""}`);
+}
+
+// ------------------------------------------------------------ K1
+function onPassage(ev){
+  S.passages++; S.byStatus[ev.status] = (S.byStatus[ev.status]||0) + 1;
+  const st = S.curDoc?.source_type || "?";
+  const sh = S.share[st] || (S.share[st] = {n:0, tree:0, grid:0, graph:0, time:0}); sh.n++; (ev.systems||[]).forEach(s => sh[s]++);
+  (ev.entities||[]).forEach(id => { const e = ent(id); (ev.layers||[]).forEach(l => e.layers[l] = (e.layers[l]||0)+1); });
+  const row = document.createElement("div"); row.className = "ps" + (ev.status === "duplicate" ? " dup" : ev.status === "irrelevant" ? " irr" : ""); row.dataset.pid = ev.pid;
+  row.innerHTML = `<div class="meta">${(ev.layers||[]).map(l => `<span class="tag ${l}">${l}</span>`).join("")}${(ev.systems||[]).map(s => `<span class="sys ${s}">${s}</span>`).join("")}<span class="date">${ev.status}${ev.synthetic ? " · internal" : ""}</span></div><div class="txt" title="${esc(ev.text)}">${esc(ev.text)}</div>`;
+  const box = $("#passages"); box.appendChild(row); while (box.children.length > 11) box.firstChild.remove();
+  if (ev.systems?.length) {
+    const why = Object.entries(ev.reasons||{}).map(([s, r]) => `${s}: ${r}`).join(" | ");
+    log("k1", `→ ${ev.systems.join("+")} · ${why}`);
+    if (beamsOn()) ev.systems.forEach(s => beam(row, $(SYS_PANEL[s] + " h2"), SCOL[s]));
+  }
+}
+
+// ------------------------------------------------------------ K2 bubble tree
+let treeTimer = null;
+function onAssigned(ev){
+  let t = S.themes.get(ev.tid); if (!t) { t = {id:ev.tid, name:ev.theme, count:0}; S.themes.set(ev.tid, t); }
+  t.count++; t.fresh = true; t.emph = ev.emphasis;
+  flash("#k2"); scheduleTree();
+}
+function scheduleTree(){ clearTimeout(treeTimer); treeTimer = setTimeout(renderTree, 120); }
+function renderTree(){
+  const svg = d3.select("#s2"), box = svg.node().getBoundingClientRect(), W = box.width, H = box.height;
+  if (!W || !S.themes.size) return;
+  const groups = new Map();
+  S.themes.forEach(t => { const a = S.themeArea.get(t.id) || (S.areas.size ? "—" : null); const k = a || "all"; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(t); });
+  const root = d3.hierarchy({children: [...groups.entries()].map(([k, ts]) => ({name:k, children:ts}))}).sum(d => d.count ? Math.sqrt(d.count) + 0.6 : 0);
+  d3.pack().size([W, H]).padding(d => d.depth === 0 ? 6 : 2)(root);
+  const areas = svg.selectAll("circle.area-circle").data(groups.size > 1 ? root.children : [], d => d.data.name);
+  areas.join(enter => enter.append("circle").attr("class", "area-circle"), u => u, ex => ex.remove())
+       .transition().duration(300).attr("cx", d => d.x).attr("cy", d => d.y).attr("r", d => d.r);
+  const alab = svg.selectAll("text.area-lbl").data(groups.size > 1 ? root.children : [], d => d.data.name);
+  alab.join("text").attr("class", "area-lbl muted").attr("text-anchor", "middle").text(d => d.data.name.slice(0, 28))
+      .transition().duration(300).attr("x", d => d.x).attr("y", d => d.y - d.r + 11);
+  const leaves = root.leaves().filter(d => d.data.count);
+  const g = svg.selectAll("g.bubble").data(leaves, d => d.data.id);
+  const ge = g.enter().append("g").attr("class", "bubble").attr("transform", d => `translate(${d.x},${d.y})`);
+  ge.append("circle").attr("r", 0); ge.append("text").attr("text-anchor", "middle").attr("dy", 3);
+  const all = ge.merge(g);
+  all.classed("new", d => d.data.fresh).attr("data-tid", d => d.data.id)
+     .on("mousemove", (e, d) => tip(e, `<b>${esc(d.data.name)}</b><br>${d.data.count} passages${d.data.trend ? " · " + d.data.trend : ""}${S.themeArea.get(d.data.id) ? "<br>area: " + esc(S.themeArea.get(d.data.id)) : ""}`)).on("mouseleave", hideTip);
+  all.transition().duration(300).attr("transform", d => `translate(${d.x},${d.y})`);
+  all.select("circle").transition().duration(300).attr("r", d => d.r).attr("fill", d => trendColor(d.data.trend, d.data.emph));
+  all.select("text").text(d => d.r > 18 ? d.data.name.slice(0, Math.max(4, d.r / 3.2)) : "").attr("font-size", d => Math.min(11, Math.max(8, d.r / 3)));
+  g.exit().remove();
+  S.themes.forEach(t => t.fresh = false);
+  $("#c2").textContent = `${S.themes.size} themes${S.areas.size ? " · " + S.areas.size + " areas" : ""}`;
+}
+function trendColor(tr, emph){ if (tr === "rising") return "#2e9e6a"; if (tr === "declining") return "#b4574a"; if (tr === "new") return "#5b8def"; if (tr === "stable") return "#4a6a5a"; if (emph === "expanding") return "#3f8a62"; if (emph === "declining") return "#8a4a42"; return "#36604a"; }
+
+// ------------------------------------------------------------ K3 grid
+let gridTimer = null;
+function onOpportunity(ev){
+  let o = S.opps.get(ev.eid); if (!o) { o = {eid:ev.eid, name:ev.name, n:0, customers:new Set(), offerings:new Set(), kind:ev.kind}; S.opps.set(ev.eid, o); }
+  o.n++; o.fresh = true; if (ev.customer) o.customers.add(ev.customer); if (ev.offering) o.offerings.add(ev.offering); o.maturity = ev.maturity;
+  ent(ev.eid, ev.name).where.add("k3");
+  log("k3", `기회 기록: ${ev.name}${ev.customer ? " ← " + ev.customer : ""}${ev.offering ? " · " + ev.offering : ""} (${ev.maturity})`);
+  flash("#k3"); clearTimeout(gridTimer); gridTimer = setTimeout(() => { renderGrid(); crossLink(ev.eid, "#k3"); }, 100);
+}
+function onCell(ev){
+  const key = ev.row + "|" + ev.col; S.cells.set(key, {...ev, fresh:true});
+  if (!S.rows.has(ev.row)) S.rows.set(ev.row, {eid:ev.row, name:ev.row_name, layer:ev.layer, n:0});
+  S.rows.get(ev.row).n++; ent(ev.row, ev.row_name).where.add("k3");
+  clearTimeout(gridTimer); gridTimer = setTimeout(renderGrid, 60);
+}
+function renderGrid(){
+  const svg = d3.select("#s3"), box = svg.node().getBoundingClientRect(), W = box.width, H = box.height;
+  if (!W || !S.opps.size) return;
+  const maxCols = Math.max(3, Math.min(10, Math.floor((W - 158) / 64)));
+  const cols = [...S.opps.values()].sort((a, b) => ((a.tier||"B") < (b.tier||"B") ? -1 : (a.tier||"B") > (b.tier||"B") ? 1 : (b.support||b.n) - (a.support||a.n))).slice(0, maxCols);
+  const colIdx = new Map(cols.map((c, i) => [c.eid, i]));
+  const rows = [...S.rows.values()].filter(r => [...S.cells.values()].some(c => c.row === r.eid && colIdx.has(c.col)))
+      .sort((a, b) => LAYERS.indexOf(a.layer) - LAYERS.indexOf(b.layer) || b.n - a.n).slice(0, 26);
+  const rowIdx = new Map(rows.map((r, i) => [r.eid, i]));
+  const left = 150, top = 66, cw = Math.min(150, (W - left - 8) / Math.max(cols.length, 1)), rh = rows.length ? Math.min(18, (H - top - 6) / rows.length) : 18;
+  svg.selectAll("*").remove();
+  const hc = svg.append("g");
+  hc.selectAll("g").data(cols).join("g").attr("data-eid", d => d.eid).attr("class", d => "colh" + (d.fresh ? " new" : "")).attr("transform", (d, i) => `translate(${left + i * cw + cw / 2},0)`)
+    .each(function(d){ const g = d3.select(this);
+      g.append("rect").attr("x", -cw / 2 + 1).attr("y", 4).attr("width", cw - 2).attr("height", 56).attr("rx", 4).attr("fill", d.tier === "A" ? "#3a3420" : "#23262f").attr("stroke", d.fresh ? "#fff" : "#d9a441").attr("stroke-width", d.fresh ? 2 : 1);
+      const maxc = Math.max(6, Math.floor(cw / 5.2));
+      wrap(g, d.name, cw - 8, 12, cw < 90 ? 9.5 : 10.5).attr("fill", "#f0d9a0");
+      g.append("text").attr("y", 44).attr("text-anchor", "middle").attr("class", "muted").attr("font-size", 9).text(`${d.tier ? d.tier + " · " : ""}${d.n} rec`);
+      g.append("text").attr("y", 55).attr("text-anchor", "middle").attr("class", "muted").attr("font-size", 9).text((d.customers.size ? [...d.customers][0] : d.offerings.size ? [...d.offerings][0] : (d.maturity || "")).slice(0, maxc));
+      g.on("mousemove", e => tip(e, `<b>${esc(d.name)}</b><br>tier ${d.tier||"?"} · ${d.n} records · ${d.maturity||""}<br>markets: ${[...d.customers].join(", ")||"—"}<br>offerings: ${[...d.offerings].join(", ")||"—"}`)).on("mouseleave", hideTip);
+    });
+  const rg = svg.append("g");
+  rg.selectAll("g").data(rows).join("g").attr("transform", (d, i) => `translate(0,${top + i * rh})`).attr("data-eid", d => d.eid)
+    .each(function(d){ const g = d3.select(this);
+      g.append("rect").attr("x", 4).attr("y", 2).attr("width", 6).attr("height", rh - 4).attr("fill", LCOL[d.layer] || "#888");
+      g.append("text").attr("x", 14).attr("y", rh / 2 + 3.5).attr("class", "rowlbl").text(d.name.length > 22 ? d.name.slice(0, 21) + "…" : d.name);
+      g.append("line").attr("class", "rowline").attr("x1", left).attr("x2", W - 4).attr("y1", rh).attr("y2", rh);
+    });
+  const cg = svg.append("g");
+  const cells = [...S.cells.values()].filter(c => colIdx.has(c.col) && rowIdx.has(c.row));
+  cg.selectAll("rect").data(cells, d => d.row + "|" + d.col).join("rect")
+    .attr("class", d => "cell" + (d.derivation === "derived" ? " derived" : "") + (d.fresh ? " new" : ""))
+    .attr("x", d => left + colIdx.get(d.col) * cw + 2).attr("y", d => top + rowIdx.get(d.row) * rh + 2).attr("width", cw - 4).attr("height", rh - 4).attr("rx", 2)
+    .attr("fill", d => LCOL[d.layer] || "#888").attr("fill-opacity", d => 0.25 + 0.25 * Math.min(3, d.strength))
+    .on("mousemove", (e, d) => tip(e, `<b>${esc(d.row_name)}</b> → <b>${esc(d.col_name)}</b><br>${d.relation} · ${d.derivation} · strength ${d.strength}<br>${esc(d.reason||"")}<br><span class="muted">${d.evidence_pid||""}</span>`)).on("mouseleave", hideTip);
+  S.cells.forEach(c => c.fresh = false); S.opps.forEach(o => o.fresh = false);
+  $("#c3").textContent = `${S.opps.size} opportunities · ${S.cells.size} cells`;
+}
+function wrap(g, text, width, y, size){
+  const words = text.split(/\s+/); let line = [], lines = [];
+  words.forEach(w => { line.push(w); if (line.join(" ").length * size * 0.52 > width) { line.pop(); if (line.length) lines.push(line.join(" ")); line = [w]; } });
+  if (line.length) lines.push(line.join(" ")); lines = lines.slice(0, 2);
+  const t = g.append("text").attr("text-anchor", "middle").attr("font-size", size);
+  lines.forEach((l, i) => t.append("tspan").attr("x", 0).attr("y", y + i * (size + 1)).text(l));
+  return t;
+}
+
+// ------------------------------------------------------------ K4 force graph
+let sim, g4;
+function initGraph(){
+  const svg = d3.select("#s4"); svg.selectAll("*").remove();
+  g4 = {edges: svg.append("g"), labels: svg.append("g"), nodes: svg.append("g")};
+  const box = svg.node().getBoundingClientRect();
+  sim = d3.forceSimulation().force("link", d3.forceLink().id(d => d.id).distance(60).strength(0.5)).force("charge", d3.forceManyBody().strength(-90).distanceMax(220))
+          .force("x", d3.forceX(box.width / 2).strength(0.06)).force("y", d3.forceY(box.height / 2).strength(0.1))
+          .force("collide", d3.forceCollide(17)).on("tick", tick4);
+}
+function onRelation(ev){
+  const a = ent(ev.src, ev.src_name), b = ent(ev.dst, ev.dst_name); a.where.add("k4"); b.where.add("k4");
+  [ev.src, ev.dst].forEach(id => { if (!S.gnodes.has(id)) S.gnodes.set(id, {id, deg:0}); S.gnodes.get(id).deg++; S.gnodes.get(id).fresh = true; });
+  S.gedges.set(ev.rid, {id:ev.rid, source:ev.src, target:ev.dst, rel:ev.rel, fresh:true});
+  log("k4", `관계: ${ename(ev.src)} —${ev.rel}→ ${ename(ev.dst)}`);
+  flash("#k4"); renderGraph(); crossLink(ev.src, "#k4"); crossLink(ev.dst, "#k4");
+}
+function onMerged(ev){
+  log("m", `대상 병합 → ${ev.name} ← ${(ev.merged||[]).join(", ")} — ${ev.reason||""}`);
+}
+function renderGraph(){
+  const keep = new Set([...S.gnodes.values()].sort((a, b) => b.deg - a.deg).slice(0, 140).map(n => n.id));
+  const nodes = [...S.gnodes.values()].filter(n => keep.has(n.id));
+  const edges = [...S.gedges.values()].filter(e => keep.has(typeof e.source === "object" ? e.source.id : e.source) && keep.has(typeof e.target === "object" ? e.target.id : e.target));
+  const ns = g4.nodes.selectAll("g.node").data(nodes, d => d.id);
+  const ne = ns.enter().append("g").attr("class", "node").attr("data-eid", d => d.id).call(d3.drag().on("start", (e, d) => { d.fx = d.x; d.fy = d.y; }).on("drag", (e, d) => { d.fx = e.x; d.fy = e.y; sim.alpha(0.3).restart(); }).on("end", (e, d) => { d.fx = d.fy = null; }));
+  ne.append("circle"); ne.append("text").attr("dx", 9).attr("dy", 3);
+  const na = ne.merge(ns);
+  na.classed("new", d => d.fresh).select("circle").attr("r", d => 5 + Math.min(10, Math.sqrt(d.deg) * 2)).attr("fill", d => LCOL[dominant(S.ents.get(d.id) || {})] || "#6b7280");
+  na.select("text").text(d => ename(d.id).slice(0, 26));
+  na.on("mousemove", (e, d) => tip(e, `<b>${esc(ename(d.id))}</b><br>${d.deg} relations · layer ${dominant(S.ents.get(d.id)||{})||"?"}`)).on("mouseleave", hideTip);
+  ns.exit().remove();
+  const esel = g4.edges.selectAll("line").data(edges, d => d.id);
+  esel.enter().append("line").attr("class", "edge").attr("marker-end", "url(#arrow)").merge(esel).classed("new", d => d.fresh);
+  esel.exit().remove();
+  const ls = g4.labels.selectAll("text").data(edges, d => d.id);
+  ls.enter().append("text").attr("class", "edge-label").attr("text-anchor", "middle").text(d => d.rel).merge(ls); ls.exit().remove();
+  const bb = $("#s4").getBoundingClientRect();
+  sim.force("x").x(bb.width / 2); sim.force("y").y(bb.height / 2);
+  nodes.forEach(n => { if (n.x == null || isNaN(n.x)) { n.x = bb.width / 2 + (Math.random() - 0.5) * 60; n.y = bb.height / 2 + (Math.random() - 0.5) * 60; } });
+  sim.nodes(nodes); sim.force("link").links(edges); sim.alpha(0.5).restart();
+  setTimeout(() => { S.gnodes.forEach(n => n.fresh = false); S.gedges.forEach(e => e.fresh = false); g4.nodes.selectAll("g.node").classed("new", false); g4.edges.selectAll("line").classed("new", false); }, 1500);
+  $("#c4").textContent = `${S.gnodes.size} subjects · ${S.gedges.size} relations`;
+}
+function tick4(){
+  const box = $("#s4").getBoundingClientRect(), W = box.width, H = box.height;
+  g4.nodes.selectAll("g.node").attr("transform", d => { d.x = Math.max(10, Math.min(W - 10, d.x)); d.y = Math.max(10, Math.min(H - 10, d.y)); return `translate(${d.x},${d.y})`; });
+  g4.edges.selectAll("line").attr("x1", d => d.source.x).attr("y1", d => d.source.y).attr("x2", d => d.target.x).attr("y2", d => d.target.y);
+  g4.labels.selectAll("text").attr("x", d => (d.source.x + d.target.x) / 2).attr("y", d => (d.source.y + d.target.y) / 2 - 3);
+}
+
+// ------------------------------------------------------------ K5 timeline
+let timeTimer = null;
+function onFact(ev){
+  S.facts.set(ev.fid, {...ev, fresh:true});
+  let s = S.subjects.get(ev.eid); if (!s) { s = {eid:ev.eid, n:0, last:0}; S.subjects.set(ev.eid, s); } s.n++; s.last = ev.seq;
+  ent(ev.eid, ev.name).where.add("k5");
+  log("k5", `시간 사실: ${ev.name} · ${ev.attribute} = ${ev.value}${ev.valid != null ? " @" + (+ev.valid).toFixed(1) : ""} (${ev.modality}${ev.status !== "new" ? ", " + ev.status.toUpperCase() : ""})`);
+  flash("#k5"); clearTimeout(timeTimer); timeTimer = setTimeout(() => { renderTime(); crossLink(ev.eid, "#k5"); }, 80);
+}
+function renderTime(){
+  const svg = d3.select("#s5"), box = svg.node().getBoundingClientRect(), W = box.width, H = box.height;
+  if (!W || !S.facts.size) return;
+  svg.selectAll("*").remove();
+  const subs = [...S.subjects.values()].sort((a, b) => b.n - a.n || b.last - a.last).slice(0, Math.max(3, Math.floor((H - 30) / 22)));
+  const left = 140, top = 8, rh = Math.min(26, (H - 30) / subs.length);
+  const x = d3.scaleLinear().domain([2019.5, 2031]).range([left, W - 10]);
+  svg.append("g").attr("class", "axis").attr("transform", `translate(0,${H - 18})`).call(d3.axisBottom(x).tickValues(d3.range(2020, 2031, 1)).tickFormat(d3.format("d")));
+  svg.append("line").attr("x1", x(2024.9)).attr("x2", x(2024.9)).attr("y1", top).attr("y2", H - 18).attr("stroke", "#3a4050").attr("stroke-dasharray", "3 3");
+  svg.append("text").attr("x", x(2024.9) + 3).attr("y", H - 24).attr("class", "muted").attr("font-size", 9).text("documents end");
+  const rowY = new Map(subs.map((s, i) => [s.eid, top + i * rh + rh / 2]));
+  const rg = svg.append("g");
+  subs.forEach(s => { const y = rowY.get(s.eid);
+    rg.append("line").attr("class", "rowline").attr("x1", left).attr("x2", W - 10).attr("y1", y).attr("y2", y);
+    rg.append("text").attr("x", 6).attr("y", y + 3.5).attr("class", "rowlbl").attr("data-eid", s.eid).text(ename(s.eid).slice(0, 22)); });
+  const facts = [...S.facts.values()].filter(f => rowY.has(f.eid));
+  const pos = f => ({x: x(f.valid != null ? Math.max(2019.6, Math.min(2030.9, +f.valid)) : 2019.7), y: rowY.get(f.eid) + attrOffset(f)});
+  // 체인: 같은 대상·속성을 진술 순으로 잇기
+  const byAttr = d3.group(facts, f => f.eid + "|" + f.attribute);
+  byAttr.forEach(fs => { fs.sort((a, b) => a.seq - b.seq);
+    for (let i = 1; i < fs.length; i++) { const a = pos(fs[i - 1]), b = pos(fs[i]);
+      svg.append("path").attr("class", "chain" + (fs[i].status === "update" ? " update" : fs[i].status === "conflict" ? " conflict" : "")).attr("d", `M${a.x},${a.y} C${(a.x + b.x) / 2},${a.y - 10} ${(a.x + b.x) / 2},${b.y - 10} ${b.x},${b.y}`); } });
+  const fg = svg.append("g");
+  fg.selectAll("path").data(facts, d => d.fid).join("path").attr("class", d => "fact" + (d.fresh ? " new" : "")).attr("data-eid", d => d.eid)
+    .attr("d", d => d3.symbol().type(d.family === "lifecycle" ? d3.symbolSquare : d.family === "milestone" ? d3.symbolDiamond : d3.symbolCircle).size(d.fresh ? 110 : 70)())
+    .attr("transform", d => { const p = pos(d); return `translate(${p.x},${p.y})`; }).attr("fill", d => MODCOL[d.modality] || "#8b93a7").attr("fill-opacity", d => d.valid == null ? 0.35 : 1)
+    .on("mousemove", (e, d) => tip(e, `<b>${esc(d.name)}</b> · ${esc(d.attribute)} (${d.family})<br>value <b>${esc(String(d.value))}</b>${d.valid != null ? " · valid " + (+d.valid).toFixed(2) : " · no time"}<br>stated in ${S.curDocOf?.(d) || ""} · ${d.modality} · ${d.status}${d.related ? " of " + d.related : ""}`)).on("mouseleave", hideTip);
+  const lab = svg.append("g");
+  facts.filter(f => f.fresh || f.family === "metric").forEach(f => { const p = pos(f); lab.append("text").attr("x", p.x + 6).attr("y", p.y - 6).attr("font-size", 9).attr("class", f.fresh ? "" : "muted").text(String(f.value).slice(0, 14)); });
+  S.facts.forEach(f => f.fresh = false);
+  $("#c5").textContent = `${S.subjects.size} subjects · ${S.facts.size} facts`;
+}
+function attrOffset(f){ let h = 0; for (const ch of f.attribute) h = (h * 31 + ch.charCodeAt(0)) % 7; return (h - 3) * 1.6; }
+
+// ------------------------------------------------------------ 구조 간 연결 (공유 대상 id)
+function crossLink(eid, fromPanel){
+  if (!beamsOn() || !eid) return;
+  const from = document.querySelector(`${fromPanel} [data-eid="${eid}"]`);
+  if (!from) return;
+  const targets = ["#k3", "#k4", "#k5"].filter(p => p !== fromPanel).map(p => document.querySelector(`${p} [data-eid="${eid}"]`)).filter(Boolean);
+  targets.slice(0, 3).forEach(t => beam(from, t, "#ffffff", true));
+  if (targets.length) log("m", `공유 대상 연결: ${ename(eid)} ↔ ${targets.length} structure(s)`);
+}
+function beam(fromEl, toEl, color, shared){
+  const main = $("main").getBoundingClientRect(), a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
+  const x1 = a.left + a.width / 2 - main.left, y1 = a.top + a.height / 2 - main.top, x2 = b.left + b.width / 2 - main.left, y2 = b.top + b.height / 2 - main.top;
+  const svg = d3.select("#links");
+  const p = svg.append("path").attr("class", "beam").attr("stroke", color).attr("d", `M${x1},${y1} C${x1},${(y1 + y2) / 2} ${x2},${(y1 + y2) / 2} ${x2},${y2}`);
+  const L = p.node().getTotalLength(); p.attr("stroke-dasharray", L).attr("stroke-dashoffset", L);
+  p.transition().duration(shared ? 500 : 350).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0).transition().delay(shared ? 900 : 500).duration(500).style("opacity", 0).remove();
+}
+
+// ------------------------------------------------------------ side panel
+function renderProgress(){ const t = S.docsTotal || 0; $("#progress").textContent = `${S.docsDone} / ${t} documents`; $("#bar").style.width = t ? (100 * S.docsDone / t) + "%" : "0"; }
+function renderStats(){
+  $("#c1").textContent = `${S.passages} passages`;
+  const rows = [["K0 용어", S.terms.length], ["K1 문장 (new / dup / irr)", `${S.byStatus.new||0} / ${S.byStatus.duplicate||0} / ${S.byStatus.irrelevant||0}`], ["공유 대상", S.ents.size],
+                ["K2 주제 · 영역", `${S.themes.size} · ${S.areas.size}`], ["K3 기회 · 칸", `${S.opps.size} · ${S.cells.size}`], ["K4 관계", S.gedges.size], ["K5 사실", S.facts.size]];
+  $("#stats").innerHTML = rows.map(([k, v]) => `<span>${k}</span><b>${v}</b>`).join("");
+  const sh = Object.entries(S.share);
+  $("#share").innerHTML = `<tr><th>유형</th><th>n</th><th style="color:var(--k2)">tree</th><th style="color:var(--k3)">grid</th><th style="color:var(--k4)">graph</th><th style="color:var(--k5)">time</th></tr>`
+    + sh.map(([k, v]) => `<tr><td>${k}</td><td>${v.n}</td>${["tree","grid","graph","time"].map(s => `<td>${Math.round(100 * v[s] / v.n)}%</td>`).join("")}</tr>`).join("");
+}
+function tip(e, html){ const t = $("#tip"); t.style.display = "block"; t.innerHTML = html; const m = $("main").getBoundingClientRect(); t.style.left = (e.clientX - m.left + 14) + "px"; t.style.top = (e.clientY - m.top + 10) + "px"; }
+function hideTip(){ $("#tip").style.display = "none"; }
+// 공유 대상 강조: 어느 패널에서든 대상에 마우스를 올리면 다른 패널의 같은 대상이 빛남
+document.addEventListener("mouseover", e => { const el = e.target.closest("[data-eid]"); if (!el) return; document.querySelectorAll(`[data-eid="${el.dataset.eid}"]`).forEach(x => x.classList.add("hl")); });
+document.addEventListener("mouseout", e => { const el = e.target.closest("[data-eid]"); if (!el) return; document.querySelectorAll(`[data-eid="${el.dataset.eid}"]`).forEach(x => x.classList.remove("hl")); });
+window.addEventListener("resize", () => { renderTree(); renderGrid(); renderTime(); });
+
+// 화살표 마커
+d3.select("#s4").append("defs").append("marker").attr("id", "arrow").attr("viewBox", "0 -4 8 8").attr("refX", 14).attr("markerWidth", 7).attr("markerHeight", 7).attr("orient", "auto").append("path").attr("d", "M0,-4L8,0L0,4").attr("fill", "#6b7280");
+
+(async () => {
+  await loadRuns(); resetState(); await loadMeta();
+  const q = new URLSearchParams(location.search);
+  if (q.get("run")) { currentRun = q.get("run"); $("#run").value = currentRun; resetState(); await loadMeta(); }
+  if (q.get("speed")) $("#speed").value = q.get("speed");
+  if (q.get("autoplay") === "1") play();
+})();
+</script>
+</body>
+</html>

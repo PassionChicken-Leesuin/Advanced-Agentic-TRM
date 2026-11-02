@@ -87,7 +87,29 @@ CONDITIONS = ("S0raw", "S0", "S1", "S2", "S3", "S4", "S4a", "S4b", "S4c", "S4d")
 
 def build_context(kb: KBStore, *, condition: str = "S4", per_layer: dict[Layer, int] | None = None,
                   max_claims_per_node: int = 3, max_evidence_per_node: int = 1, max_rows: int = 30,
-                  max_chars: int = 70_000, summary_chars: int = 300) -> Context:
+                  max_chars: int = 70_000, summary_chars: int = 300, truncate: bool = False) -> Context:
+    """truncate=False(기본, 2026-11-01~): 상한을 넘으면 층별 노드 수를 줄여 다시 만들어 모든 절이 들어가게 한다.
+    truncate=True 는 예전 동작(뒤를 잘라냄, 링크·선후·공백·이슈 절이 빠질 수 있음) — 이전 결과 재현용."""
+    if condition in ("S0raw", "S0", "S1", "S3") or truncate:
+        return _build_context(kb, condition=condition, per_layer=per_layer, max_claims_per_node=max_claims_per_node,
+                              max_evidence_per_node=max_evidence_per_node, max_rows=max_rows, max_chars=max_chars,
+                              summary_chars=summary_chars)
+    pl = dict(per_layer or {Layer.WHY: 14, Layer.WHAT: 20, Layer.HOW: 24, Layer.RESOURCE: 10, Layer.CROSS: 16})
+    for _ in range(12):
+        ctx = _build_context(kb, condition=condition, per_layer=pl, max_claims_per_node=max_claims_per_node,
+                             max_evidence_per_node=max_evidence_per_node, max_rows=max_rows, max_chars=10**9,
+                             summary_chars=summary_chars)
+        if len(ctx.text) <= max_chars:
+            ctx.stats["per_layer"] = {k.value: v for k, v in pl.items()}
+            return ctx
+        pl = {k: max(3, int(v * 0.88)) for k, v in pl.items()}
+    ctx.text = ctx.text[:max_chars]
+    return ctx
+
+
+def _build_context(kb: KBStore, *, condition: str = "S4", per_layer: dict[Layer, int] | None = None,
+                   max_claims_per_node: int = 3, max_evidence_per_node: int = 1, max_rows: int = 30,
+                   max_chars: int = 70_000, summary_chars: int = 300) -> Context:
     assert condition in CONDITIONS, condition
     if condition == "S0raw":
         return _context_raw_rag(kb, max_chars=max_chars)
