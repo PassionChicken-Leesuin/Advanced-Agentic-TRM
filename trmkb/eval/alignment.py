@@ -48,6 +48,10 @@ def load_gt() -> list[dict]:
     return json.loads(GT_PATH.read_text(encoding="utf-8"))["milestones"]
 
 
+JUDGE_FALLBACK = {"anthropic/claude-haiku-5.5": "anthropic/claude-sonnet-4.6", "google/gemini-2.5-flash": "google/gemini-2.5-pro",
+                  "openai/gpt-4.1-mini": "openai/gpt-4.1"}
+
+
 def align(rm: Roadmap, llm: LLM, *, model: str = "openai/gpt-4.1-mini", k: int = 5, min_sim: float = 0.3,
           include_reported: bool = True) -> dict:
     gt = [g for g in load_gt() if include_reported or g["confidence"] == "primary"]
@@ -65,8 +69,12 @@ def align(rm: Roadmap, llm: LLM, *, model: str = "openai/gpt-4.1-mini", k: int =
             continue
         cands = "\n".join(f"[{i}] \"{nodes[j].label}\" — {nodes[j].description} ({nodes[j].start}–{nodes[j].end}, row {nodes[j].category}, "
                           f"evidence {len(nodes[j].evidence_ids)}) sim={sims[j]:.2f}" for i, j in enumerate(order))
-        out = llm.structured(model, JUDGE_SYSTEM, JUDGE_USER.format(label=g["label"], desc=g["description"], year=g["year"],
-                                                                     cat=g["category"], cands=cands), Judge, purpose="eval_alignment", max_tokens=200)
+        user = JUDGE_USER.format(label=g["label"], desc=g["description"], year=g["year"], cat=g["category"], cands=cands)
+        try:
+            out = llm.structured(model, JUDGE_SYSTEM, user, Judge, purpose="eval_alignment", max_tokens=600)
+        except ValueError:
+            # 일부 판정 모델(haiku)이 긴 입력에서 출력을 끊거나 비워 보내는 일이 있음 → 같은 회사의 상위 모델로 그 항목만 대체
+            out = llm.structured(JUDGE_FALLBACK.get(model, "openai/gpt-4.1"), JUDGE_SYSTEM, user, Judge, purpose="eval_alignment_fallback", max_tokens=600)
         node = nodes[order[out.match]] if out.category != "missed" and out.match is not None and 0 <= out.match < len(order) else None
         rec = {"gt_id": g["id"], "version": g["version"], "category_row": g["category"], "gt_year": g["year"],
                "verdict": out.category if node else "missed", "node_id": node.id if node else None,
