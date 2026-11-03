@@ -1,0 +1,78 @@
+{
+ "_about": "IonQ 공식 로드맵 차트를 연도×지표 표로 옮긴 정답표 (차트 기반 채점용, trmkb/eval/chart.py). ionq_roadmap_milestones.json(문장형 19건, LLM 정렬)과 별개로, 수치·연도·기능 등장 시점을 결정적으로 채점한다. 값은 차트 원본 이미지에서 그대로 옮김. 2026-11-03 작성.",
+ "aq_2020": {
+  "title": "2020-12 로드맵 차트 #AQ 목표 (Original IonQ #AQ Roadmap)",
+  "source_file": "data/ground_truth/originals/2020-12_roadmap/ionq_blog_wayback_2020/IonQ-roadmap-20201208.jpg",
+  "metric": "aq",
+  "by_year": {"2021": 22, "2022": 25, "2023": 29, "2024": 35, "2025": 64, "2026": 256, "2027": 384, "2028": 1024},
+  "note": "2025년 이후는 오류정정 인코딩(2025·2026년 16:1, 2027·2028년 32:1) 전제"
+ },
+ "aq_2025": {
+  "title": "2025-06 가속 로드맵 상단 'Original IonQ #AQ Roadmap'",
+  "source_file": "data/ground_truth/originals/2025-06_roadmap/ionq_blog_2025-06-13_wayback_2025-06/Roadmap_V_2_Light.png",
+  "metric": "aq",
+  "by_year": {"2024": 36, "2025": 64, "2026": 256, "2027": 384, "2028": 1024}
+ },
+ "tech_2025": {
+  "title": "2025-06 가속 로드맵 'Updated Technology Roadmap' (Commercial Quantum Computers)",
+  "source_file": "data/ground_truth/originals/2025-06_roadmap/ionq_blog_2025-06-13_wayback_2025-06/Roadmap_V_2_Light.png",
+  "metrics": {
+   "physical_qubits":     {"2024": 36, "2025": 64, "2026": 256, "2027": 10000, "2028": 20000, "2029": 200000, "2030": 2000000},
+   "physical_fidelity":   {"2024": 99.96, "2025": 99.99, "2026": 99.99, "2027": 99.99, "2028": 99.99, "2029": 99.99, "2030": 99.99},
+   "logical_qubits":      {"2026": 12, "2027": 800, "2028": 1600, "2029": 8000, "2030": 80000},
+   "logical_error_rate":  {"2026": 1e-7, "2027": 1e-7, "2028": 1e-7, "2029": 1e-12, "2030": 1e-12}
+  },
+  "dev_physical_qubits": {"2024": "36+", "2025": "64-100+", "2026": "100-256+"},
+  "features_by_year": {
+   "2024": ["all_to_all", "optical_gate", "1d_array"],
+   "2025": ["all_to_all", "microwave_gate", "2d_array", "mid_circuit_measurement", "parallel_operations"],
+   "2026": ["all_to_all", "microwave_gate", "2d_array", "mid_circuit_measurement", "parallel_operations"],
+   "2027": ["all_to_all", "microwave_gate", "2d_array", "mid_circuit_measurement", "parallel_operations"],
+   "2028": ["all_to_all", "microwave_gate", "2d_array", "mid_circuit_measurement", "photonic_interconnect", "parallel_operations"],
+   "2029": ["all_to_all", "microwave_gate", "2d_array", "mid_circuit_measurement", "photonic_interconnect", "parallel_operations"],
+   "2030": ["all_to_all", "microwave_gate", "2d_array", "mid_circuit_measurement", "photonic_interconnect", "parallel_operations"]
+  }
+ },
+ "features_2025": {
+  "title": "기능 태그의 첫 등장 연도 (채점은 scored=true 만: 2025년 이후 새로 켜지는 기능)",
+  "items": [
+   {"id": "all_to_all",              "label": "All-to-All Connectivity",  "first_year": 2024, "scored": false, "note": "기존 역량(기준선)"},
+   {"id": "optical_gate",            "label": "Optical Gate Operations",  "first_year": 2024, "scored": false, "note": "2024년만, 이후 마이크로파로 대체"},
+   {"id": "1d_array",                "label": "1D Qubit Array",           "first_year": 2024, "scored": false, "note": "2024년만, 이후 2D로 대체"},
+   {"id": "microwave_gate",          "label": "Microwave Gate Operations","first_year": 2025, "scored": true},
+   {"id": "2d_array",                "label": "2D Qubit Array",           "first_year": 2025, "scored": true},
+   {"id": "mid_circuit_measurement", "label": "Mid-Circuit Measurement",  "first_year": 2025, "scored": true},
+   {"id": "parallel_operations",     "label": "Parallel Operations",      "first_year": 2025, "scored": true},
+   {"id": "photonic_interconnect",   "label": "Photonic Interconnect",    "first_year": 2028, "scored": true}
+  ]
+ },
+ "applications_2025": {
+  "title": "2025-06 가속 로드맵 하단 'Examples of Expected Commercialization Opportunities Unlocked' (기회 층 정답, 막대 시작 연도)",
+  "source_file": "data/ground_truth/originals/2025-06_roadmap/ionq_blog_2025-06-13_wayback_2025-06/Roadmap_V_2_Light.png",
+  "items": [
+   {"id": "ap01", "year": 2024, "category": "AI/ML",        "label": "Synthetic Data Generation",                        "scaling": "More Parameters"},
+   {"id": "ap02", "year": 2024, "category": "Optimization", "label": "Structural Analysis in CAE",                       "scaling": "More Mesh Points Modeled"},
+   {"id": "ap03", "year": 2024, "category": "Simulation",   "label": "Chemical Reaction Modeling",                       "scaling": "More Orbitals"},
+   {"id": "ap04", "year": 2025, "category": "AI/ML",        "label": "LLM Fine-Tuning",                                  "scaling": "Higher Accuracy"},
+   {"id": "ap05", "year": 2025, "category": "Optimization", "label": "Unit Commitment in Electric Grids",                "scaling": "More Variables"},
+   {"id": "ap06", "year": 2025, "category": "Simulation",   "label": "Protein Folding for Drug Discovery",               "scaling": "Larger Peptides"},
+   {"id": "ap07", "year": 2026, "category": "AI/ML",        "label": "Image Change Detection",                           "scaling": "Higher Accuracy"},
+   {"id": "ap08", "year": 2026, "category": "Optimization", "label": "Vehicle Routing",                                  "scaling": "More Variables"},
+   {"id": "ap09", "year": 2026, "category": "Simulation",   "label": "Laminar Fluid Dynamics",                           "scaling": "More Complex Models"},
+   {"id": "ap10", "year": 2027, "category": "AI/ML",        "label": "AI Agent Assignment",                              "scaling": "More Agents"},
+   {"id": "ap11", "year": 2027, "category": "Optimization", "label": "Fantasy Sports Team Picking",                      "scaling": "More Dimensions Modeled"},
+   {"id": "ap12", "year": 2027, "category": "Simulation",   "label": "Drug-Target Affinity Prediction with Solvent Model","scaling": "Larger Molecules"},
+   {"id": "ap13", "year": 2028, "category": "AI/ML",        "label": "Medical Imaging Analysis",                         "scaling": "Higher Resolution"},
+   {"id": "ap14", "year": 2028, "category": "Simulation",   "label": "Battery Materials Discovery",                      "scaling": "More Complex Models"},
+   {"id": "ap15", "year": 2028, "category": "Simulation",   "label": "Pharma Catalysts Redesign",                        "scaling": "More Orbitals"},
+   {"id": "ap16", "year": 2028, "category": "Optimization", "label": "Institutional Portfolio Rebalancing",              "scaling": "More Assets"},
+   {"id": "ap17", "year": 2029, "category": "AI/ML",        "label": "Training Robotic AI Models",                       "scaling": "More Parameters"},
+   {"id": "ap18", "year": 2029, "category": "AI/ML",        "label": "Quantum Federated Learning",                       "scaling": "More Parameters"},
+   {"id": "ap19", "year": 2029, "category": "Optimization", "label": "Optimization of AI Agent Action Planning",         "scaling": "More Actions"},
+   {"id": "ap20", "year": 2029, "category": "Simulation",   "label": "Materials Discovery for Advanced Medical Equipment","scaling": "More Complex Models"},
+   {"id": "ap21", "year": 2029, "category": "Simulation",   "label": "Carbon Capture Catalyst Design",                   "scaling": "Larger Molecules"},
+   {"id": "ap22", "year": 2029, "category": "Simulation",   "label": "Polymorph Screening for Drug Discovery",           "scaling": "Larger Molecules"},
+   {"id": "ap23", "year": 2030, "category": "Vision",       "label": "Broad Quantum Advantage",                          "scaling": ""}
+  ]
+ }
+}
