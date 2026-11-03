@@ -114,10 +114,13 @@ def debate_card(llm: LLM, card: dict, card_text: str, models: list[str], *, roun
 
 # 선정 관점(stance): 세 질문의 가중치. 사용자가 "어떤 기회를 위에 두고 싶은가"를 고른다 (2026-11-03). 기본은 동일 가중.
 STANCES = {
-    "balanced": {"w": (1.0, 1.0, 1.0), "label": "Balanced", "desc": "the three questions count equally"},
-    "demand":   {"w": (1.6, 0.7, 0.7), "label": "Demand-led", "desc": "opportunities that customers and the company's own strategy call for most, even if the company is early on them"},
-    "position": {"w": (0.7, 1.6, 0.7), "label": "Build on what we have", "desc": "opportunities where the company already has offerings, customers and capability in place"},
-    "path":     {"w": (0.7, 0.7, 1.6), "label": "Where a path exists", "desc": "opportunities whose gap to the requirement is documented together with a dated plan to close it"},
+    "balanced": {"primary": None, "label": "Balanced", "desc": "the three questions count equally (default)"},
+    "q1": {"primary": "q1", "label": "Why go: strongest demand and intent",
+           "desc": "opportunities that customers and the company's own strategy call for most, with named demand, numbers and deadlines, even if the company is early on them"},
+    "q2": {"primary": "q2", "label": "Where we are: strongest current position",
+           "desc": "opportunities where the company already has offerings, customers, partners and capability metrics in place; the roadmap extends the current business"},
+    "q3": {"primary": "q3", "label": "Can we get there: clearest path",
+           "desc": "opportunities whose gap to the requirement is documented together with a dated plan, milestones or resources to close it"},
 }
 
 
@@ -125,7 +128,7 @@ def rank(records: list[dict], top: int = 10, *, stance: str = "balanced", kinds:
          quota: dict[str, int] | None = None) -> list[dict]:
     """차원별 z-점수의 가중합으로 정렬. kinds(eid→application|product_type)와 quota({'product_type': 3, 'application': 7})가 있으면
     종류별로 나눠 뽑는다 (워크숍의 기회 군집이 응용 범주별이었던 것에 대응). Q1 높고 Q2·Q3 낮은 카드는 path_needed 표시."""
-    w = STANCES[stance]["w"]
+    primary = STANCES[stance]["primary"]
     for q in ("q1", "q2", "q3"):
         xs = [r["profile"][q] for r in records]
         mu, sd = S.mean(xs), (S.pstdev(xs) or 1.0)
@@ -133,11 +136,12 @@ def rank(records: list[dict], top: int = 10, *, stance: str = "balanced", kinds:
             r["profile"][q + "_z"] = round((r["profile"][q] - mu) / sd, 3)
     for r in records:
         p = r["profile"]
-        p["score"] = round(w[0] * p["q1_z"] + w[1] * p["q2_z"] + w[2] * p["q3_z"], 3)
+        p["score"] = round(p["q1_z"] + p["q2_z"] + p["q3_z"], 3)            # 균등 합 (동점 처리와 기본 관점)
+        p["sort_key"] = (p[primary], p["score"]) if primary else (p["score"],)
         p["stance"] = stance
         p["path_needed"] = p["q1"] >= 7 and p["q2"] <= 3 and p["q3"] <= 3
         p["kind"] = (kinds or {}).get(r["eid"], "application")
-    records.sort(key=lambda r: -r["profile"]["score"])
+    records.sort(key=lambda r: tuple(-x for x in r["profile"]["sort_key"]))
     for i, r in enumerate(records, 1):
         r["profile"]["rank"] = i
     if quota and kinds:
@@ -163,7 +167,7 @@ def write_outputs(records: list[dict], out_dir: Path, top: int, support_rank: di
     st = records[0]["profile"].get("stance", "balanced") if records else "balanced"
     (out_dir / ("profiles.json" if st == "balanced" else f"profiles_{st}.json")).write_text(json.dumps(records, ensure_ascii=False, indent=1), encoding="utf-8")
     st = records[0]["profile"].get("stance", "balanced") if records else "balanced"
-    md = [f"# 기회 카드 선정 (토론 프로파일, 상위 {top}, 관점 {st} w={STANCES[st]['w']})", "",
+    md = [f"# 기회 카드 선정 (토론 프로파일, 상위 {top}, 관점 {st}: {STANCES[st]['label']})", "",
           "| 순위 | 기회 | 종류 | q1 | q2 | q3 | 가중합(z) | 모델 편차 r1→final (q1/q2/q3) | 근거 있는 모델 수 | 문서지지 순위 | 비고 |", "|---|---|---|---|---|---|---|---|---|---|---|"]
     for r in records:
         p = r["profile"]

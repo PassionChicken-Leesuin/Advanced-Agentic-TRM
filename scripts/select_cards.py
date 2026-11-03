@@ -30,8 +30,8 @@ def main() -> None:
     ap.add_argument("--rounds", type=int, default=2)
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--force", action="store_true")
-    ap.add_argument("--stances", nargs="*", default=["balanced", "demand", "position", "path"])
-    ap.add_argument("--quota-product", type=int, default=3, help="상위 N 중 제품형 정원 (나머지는 응용형); -1 이면 종류 구분 없음")
+    ap.add_argument("--stances", nargs="*", default=["balanced", "q1", "q2", "q3"])
+    ap.add_argument("--quota-product", type=int, default=-1, help="상위 N 중 제품형 정원 (나머지는 응용형); -1 이면 종류 구분 없음")
     a = ap.parse_args()
     root = Path(a.run) / "cards_v2"
     cards = json.loads((root / "cards.json").read_text(encoding="utf-8"))
