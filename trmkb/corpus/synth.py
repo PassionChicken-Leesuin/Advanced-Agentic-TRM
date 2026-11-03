@@ -92,22 +92,34 @@ def load_ledger(path: Path = LEDGER_PATH) -> dict:
 
 def plan(ledger: dict, *, seed: int = 7, start: date = date(2024, 1, 8), end: date = date(2024, 12, 20),
          facts_per_doc: tuple[int, int] = (1, 4), appearances: tuple[int, int] = (2, 3),
-         late_docs: int = 8, late_window_days: int = 45) -> list[SynthSpec]:
+         late_docs: int = 8, late_window_days: int = 45, year_counts: dict[int, int] | None = None) -> list[SynthSpec]:
+    """year_counts 가 있으면(코퍼스 v2) 연도별 문서 수대로 각 해 1/8~12/20 안에 균등 산포. 없으면 start~end 한 구간(v1)."""
     rng = random.Random(seed)
     facts = {f["id"]: f for f in ledger["facts"]}
-    # 문서 슬롯 생성 (유형별 count, 날짜 균등 산포)
     specs: list[SynthSpec] = []
-    span = (end - start).days
-    # 유형 라벨을 섞어 날짜 슬롯에 배정 → 유형이 기간 전체에 고루 퍼짐
     labels = [dt for dt, cfg in DOC_TYPES.items() for _ in range(cfg["count"])]
     rng.shuffle(labels)
-    # 사실 대부분이 2024 하반기에 생기므로 마지막 late_window_days 안에 late_docs 건을 보장
-    early = rng.sample(range(span - late_window_days), len(labels) - late_docs)
-    late = rng.sample(range(span - late_window_days, span + 1), late_docs)
-    slots = sorted(early + late)
+    if year_counts:
+        assert sum(year_counts.values()) == len(labels), "연도별 문서 수 합이 유형별 count 합과 같아야 함"
+        dates: list[date] = []
+        years = sorted(year_counts)
+        for y in years:
+            y0, y1 = date(y, 1, 8), date(y, 12, 20)
+            span_y = (y1 - y0).days
+            n = year_counts[y]
+            if y == years[-1] and late_docs:        # 마지막 해는 하반기 사실이 많아 끝 구간 보장
+                pick = rng.sample(range(span_y - late_window_days), n - min(late_docs, n)) +                        rng.sample(range(span_y - late_window_days, span_y + 1), min(late_docs, n))
+            else:
+                pick = rng.sample(range(span_y + 1), n)
+            dates += [y0 + timedelta(days=k) for k in sorted(pick)]
+        start, end = dates[0], dates[-1]
+    else:
+        span = (end - start).days
+        early = rng.sample(range(span - late_window_days), len(labels) - late_docs)
+        late = rng.sample(range(span - late_window_days, span + 1), late_docs)
+        dates = [start + timedelta(days=k) for k in sorted(early + late)]
     counters: dict[str, int] = {dt: 0 for dt in DOC_TYPES}
-    for day, dt in zip(slots, labels):
-        d = start + timedelta(days=day)
+    for d, dt in zip(dates, labels):
         counters[dt] += 1
         specs.append(SynthSpec(doc_id=f"syn_{dt[4:]}_{d.isoformat()}_{counters[dt]:02d}", doc_type=dt, date=d,
                                fact_ids=[], fillers=rng.sample(FILLER_TOPICS, 2)))
@@ -129,11 +141,12 @@ def plan(ledger: dict, *, seed: int = 7, start: date = date(2024, 1, 8), end: da
         if not window_ok(f, s):
             return False
         # 모순 쌍은 같은 문서에 두지 않는다 (양방향 검사)
-        c = f.get("contradicts")
-        if c and c in s.fact_ids:
-            return False
-        if any(facts[x].get("contradicts") == f["id"] for x in s.fact_ids):
-            return False
+        for key in ("contradicts", "supersedes"):
+            c = f.get(key)
+            if c and c in s.fact_ids:
+                return False
+            if any(facts[x].get(key) == f["id"] for x in s.fact_ids):
+                return False
         return True
 
     # 사실 배정: 날짜 창이 좁은 사실부터 (배정 실패 방지), 덜 찬 문서·다른 유형 우선

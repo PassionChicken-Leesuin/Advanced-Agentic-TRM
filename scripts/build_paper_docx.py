@@ -7,6 +7,8 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 from docx import Document
 from docx.shared import Pt, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.section import WD_SECTION, WD_ORIENT
+from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -46,6 +48,8 @@ def para(text, align=WD_ALIGN_PARAGRAPH.JUSTIFY, bold=False, size=None, indent=T
 
 def table(header, rows):
     t = doc.add_table(rows=1 + len(rows), cols=len(header)); t.style = doc.styles["Table Grid"]
+    tr_pr = t.rows[0]._tr.get_or_add_trPr()
+    tbl_header = OxmlElement("w:tblHeader"); tbl_header.set(qn("w:val"), "true"); tr_pr.append(tbl_header)
     for i, h in enumerate(header):
         c = t.rows[0].cells[i]; c.paragraphs[0].text = ""; run(c.paragraphs[0], h, True, size=9); c.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
     for ri, row in enumerate(rows, 1):
@@ -74,10 +78,30 @@ while i < len(lines):
                 rows.append(cells)
             i += 1
         table(rows[0], rows[1:]); continue
+    elif ln.startswith("<그림 1>") and os.path.exists(FIG1):
+        # Framework figure is landscape so labels remain readable; keep its caption with it.
+        land = doc.add_section(WD_SECTION.NEW_PAGE)
+        land.orientation = WD_ORIENT.LANDSCAPE
+        land.page_width, land.page_height = Cm(29.7), Cm(21.0)
+        land.left_margin = land.right_margin = Cm(0.85)
+        land.top_margin = land.bottom_margin = Cm(0.5)
+        caption = para(ln, WD_ALIGN_PARAGRAPH.CENTER, False, 9.5, indent=False)
+        caption.paragraph_format.space_before = Pt(0)
+        caption.paragraph_format.space_after = Pt(0)
+        caption.paragraph_format.line_spacing = 1.0
+        p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.paragraph_format.space_before = Pt(0)
+        p.paragraph_format.space_after = Pt(0)
+        p.paragraph_format.line_spacing = 1.0
+        p.add_run().add_picture(FIG1, width=Cm(24.0))
+        # Resume the main manuscript in the standard portrait layout on the next page.
+        portrait = doc.add_section(WD_SECTION.NEW_PAGE)
+        portrait.orientation = WD_ORIENT.PORTRAIT
+        portrait.page_width, portrait.page_height = Cm(21.0), Cm(29.7)
+        portrait.left_margin = portrait.right_margin = Cm(2.5)
+        portrait.top_margin = portrait.bottom_margin = Cm(2.5)
     elif ln.startswith("<표") or ln.startswith("<그림"):
         para(ln, WD_ALIGN_PARAGRAPH.CENTER, False, 9.5, indent=False)
-        if ln.startswith("<그림 1>") and os.path.exists(FIG1):
-            p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER; p.add_run().add_picture(FIG1, width=Cm(15.5))
     elif ln.startswith("---"):
         doc.add_page_break()
     elif ln.startswith("주제어:") or ln.startswith("Key Words"):

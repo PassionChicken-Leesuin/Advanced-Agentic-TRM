@@ -68,9 +68,8 @@ class Card:
         parts = [head]
         for label, lines in (("state", self.state), ("why", self.why), ("trend", self.trend), ("what", self.what), ("when", self.when),
                              ("how", self.how), ("resource", self.resource), ("actors", self.actors), ("issue", self.issue)):
-            if lines:
-                parts.append(f"  {label}:")
-                parts += [f"    - {ln}" for ln in lines]
+            parts.append(f"  {label}:")       # 틀은 모든 카드가 같다: 문서에 없으면 '없음' 을 명시
+            parts += [f"    - {ln}" for ln in lines] if lines else ["    - (none stated in the documents)"]
         return "\n".join(parts)
 
     def digest(self) -> str:
@@ -138,9 +137,19 @@ def build_cards(st: SourceStore, *, real_only: bool = False, min_docs: int = 1, 
     area_of = {tid: a["name"] for a in tree.get("areas", []) for tid in a.get("theme_ids", [])}
 
     # ---- 후보: 기회 기록이 있는 대상 (일반어·조직·기술 이름은 제외), 문서 수 하한
+    # 제품 용어(K0 product 타입)는 kind 와 무관하게 기회 후보에서 뺀다: 구체 제품은 기회가 아니라 제공물(what 줄)로만 둔다 (2026-11-03)
+    # 구체 제품 = 세대 순서가 있는 제품 용어 또는 회사명이 붙은 제품 용어(Aria, Forte, Tempo, IonQ quantum computers ...).
+    # 제품 유형(온프레미스 시스템, 클라우드 접근, 직접 접근 등)은 Cambridge 의 기회 군집처럼 기회로 남긴다.
+    concrete = [t for t in st.terms.values() if t.status == "confirmed" and t.type == "product"
+                and (t.order is not None or t.name.lower().startswith("ionq") or t.name in ("Forte-N", "Harbor chips", "Qiskit", "Azure Quantum"))]
+    product_terms = {t.eid for t in concrete if t.eid} | {t.name.lower().strip() for t in concrete}
+
+    def is_product(eid: str) -> bool:
+        e = st.entities.get(eid)
+        return bool(e) and (eid in product_terms or e.name.lower().strip() in product_terms or e.name.lower().startswith("ionq quantum computer"))
     recs = defaultdict(list)
     for o in st.opps.values():
-        if _ok(st, o.pid, real_only) and o.eid in st.entities and not bad_column(st, o.eid):
+        if _ok(st, o.pid, real_only) and o.eid in st.entities and not bad_column(st, o.eid) and not is_product(o.eid):
             recs[o.eid].append(o)
     # 허브 제공물: 여러 기회에 공통으로 붙는 플랫폼 대상(예: "IonQ quantum computers")은 카드에 이름과 최신 사실만 싣고
     # 그 대상의 문장·체인·관계는 펼치지 않는다 (카드마다 같은 내용이 쏟아져 들어오는 것을 막음)
@@ -182,7 +191,8 @@ def build_cards(st: SourceStore, *, real_only: bool = False, min_docs: int = 1, 
                 customers.append(st.entities[r.src].name)
         customers = list(dict.fromkeys(customers))
         mat = max((o.maturity for o in os), key=lambda m: MATURITY.index(m) if m in MATURITY else -1)
-        c = Card(eid=eid, name=ent.name, kind=os[0].kind, customers=customers, value=next((o.value for o in os if o.value), None),
+        kind = Counter(o.kind for o in os).most_common(1)[0][0]      # 같은 대상의 kind 는 기록 다수결
+        c = Card(eid=eid, name=ent.name, kind=kind, customers=customers, value=next((o.value for o in os if o.value), None),
                  maturity=mat, docs_public=sum(1 for s in docs.values() if not s), docs_internal=sum(1 for s in docs.values() if s),
                  first_date=str(ent.first_date) if ent.first_date else None, last_date=str(ent.last_date) if ent.last_date else None,
                  subjects=subjects)

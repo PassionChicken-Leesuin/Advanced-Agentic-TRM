@@ -89,12 +89,12 @@ line(1174, y1 + h1, 1174, rail_y)
 line(60, rail_y, 1174, rail_y)
 ys, hs = 190, 150
 cols = [(45, 215), (275, 240), (530, 265), (810, 205), (1030, 225)]
-heads = ["K1  Evidence store", "K2  Theme summary tree", "K3  Opportunity linkage grid", "K4  Dependency graph", "K5  Temporal knowledge graph"]
+heads = ["K1  Evidence store", "K2  Theme summary tree", "K3  Opportunity linkage grid", "K4  Relation graph", "K5  Temporal knowledge graph"]
 bodies = [
     ["__① grounding", "every stored passage, with tags", "(layers, kind, modality, subjects)", "flat list; cite by passage id", "", "≈ flat RAG"],
     ["__② trend synthesis", "passage → theme → area → root;", "yearly lines per theme", "trend = share of documents per year", "that touch the theme (code) → LLM text", "≈ RAPTOR + time axis"],
-    ["__③ opportunities & priority", "record = application area or product type", "+ target market (tier A) · offering · drivers,", "needs · maturity", "columns = opportunities, rows = drivers·needs /", "offerings / capabilities / enablers; cells direct | derived", "≈ Cambridge linkage grid (Trueman 2014)"],
-    ["__④ link inference", "(subject, relation, subject) stated", "directly in a passage; 12 relation types", "(requires, enables, drives, part_of,", "supplies, funds, precedes, …)", "≈ GraphRAG"],
+    ["__③ opportunity identification & comparison", "record = application area or product type", "+ stated market · offering · drivers · needs", "15 columns selected by market tier and", "document support; display order by links", "and strength (no vote-based priority)", "rows = drivers·needs / offerings / capabilities / enablers", "≈ Cambridge linkage grid (Trueman 2014)"],
+    ["__④ relation representation & retrieval", "source-stated (subject, relation, subject)", "triples; 12 relation types", "generator retrieves one-hop neighbors;", "no multi-hop path inference", "≈ relation-centric graph retrieval"],
     ["__⑤ timing", "(subject, attribute, value, valid time,", "stated time, modality); families: metric /", "lifecycle stage / milestone", "chains with update · conflict, never overwritten", "≈ bi-temporal KG (Zep)"],
 ]
 for (x, w), hd, bd in zip(cols, heads, bodies):
@@ -124,8 +124,8 @@ text(W / 2, 522, "Stage 2: roadmap generation  →  opportunity cards assemble t
 y2, h2 = 545, 150
 # 카드 도식
 cx, cw = 45, 440
-box(cx, y2, cw, h2, [], title="Opportunity card  (one per K3 column, assembled by code)")
-rows = [("market & drivers  (why)", "← K3 why rows  +  K2 area / theme trend"),
+box(cx, y2, cw, h2, [], title="Opportunity card  (up to 10 K3 anchors)")
+rows = [("market / driver context  (why)", "← K3 driver/need labels  +  K2 trend"),
         ("offerings  (what)", "← K3 what rows  +  K5 timing chains (latest value, revised)"),
         ("capabilities & enablers  (how / resource)", "← K3 how·resource rows  +  K4 relations (1 hop)"),
         ("evidence", "← K1 passage ids cited on the card")]
@@ -137,7 +137,7 @@ for i, (a, b) in enumerate(rows):
     line(cx + 190, ry + i * rh, cx + 190, ry + (i + 1) * rh, sw=0.6)
     text(cx + 10, ry + i * rh + rh / 2, a, 10.5, bold=True, anchor="start")
     text(cx + 200, ry + i * rh + rh / 2, b, 10, anchor="start")
-text(cx + cw / 2, y2 + h2 + 13, "mirrors the per-opportunity topic roadmap (market / product / technology rows) of the Cambridge T-Plan workshop", 10, italic=True)
+text(cx + cw / 2, y2 + h2 + 13, "ALL serialized 9 card sections: the K3-specific budget stopped the 10th header", 10, italic=True)
 
 arrow_r(488, y2 + h2 / 2)
 box(527, y2, 300, h2, ["**Generator  (single call, gpt-4.1, T = 0.2)", "same instructions, output schema and model as Initial (no KB)",
@@ -157,8 +157,8 @@ rows2 = [("Initial", "no knowledge base", "— (baseline)"),
          ("S0raw", "naive RAG over raw chunks", "—"),
          ("ALL", "nothing (K0 + K1–K5)", "— (best)"),
          ("ALL − K2", "theme tree (its card lines, worksheet, reading rule; budget → K1)", "area coverage, trend wording"),
-         ("ALL − K3", "opportunity grid (same removal; cards anchored by support)", "milestone recall, priority"),
-         ("ALL − K4", "dependency graph (same removal)", "grounded edges"),
+         ("ALL − K3", "opportunity linkage matrix (cards also lose K3 rows)", "candidate coverage and linked elements"),
+         ("ALL − K4", "relation graph (same removal)", "relation-level grounding (not captured by current proxy)"),
          ("ALL − K5", "temporal knowledge graph (same removal)", "year error, revision flags"),
          ("ALL − K0", "glossary at build time (KB rebuilt without K0)", "split names → broken chains and edges"),
          ("ALL (public only)", "synthetic internal documents", "internal citations 0; others slightly lower")]
@@ -188,7 +188,7 @@ box(hx, ty, hw, th * 10, ["**Hypothesis",
                           "__K0 vocabulary (metric names, stages, product families) is domain-specific."],
     fill="#FFFFFF", stroke=RED, sw=2.5, size=10.5, lh=15)
 
-text(W / 2, 924, "Five roadmapping functions (grounding, trend synthesis, opportunity generation, link inference, timing) each get one knowledge structure; the Router decides per passage, the cards decide per opportunity.", 10.5, italic=True)
+text(W / 2, 924, "Five functions (grounding, trend synthesis, opportunity identification/selection, relation representation/retrieval, timing) map to five structures; the Router decides per passage, cards assemble by opportunity.", 10.5, italic=True)
 
 out.append("</svg>")
 
