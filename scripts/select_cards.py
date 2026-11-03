@@ -30,6 +30,8 @@ def main() -> None:
     ap.add_argument("--rounds", type=int, default=2)
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--stances", nargs="*", default=["balanced", "demand", "position", "path"])
+    ap.add_argument("--quota-product", type=int, default=3, help="상위 N 중 제품형 정원 (나머지는 응용형); -1 이면 종류 구분 없음")
     a = ap.parse_args()
     root = Path(a.run) / "cards_v2"
     cards = json.loads((root / "cards.json").read_text(encoding="utf-8"))
@@ -59,9 +61,13 @@ def main() -> None:
         records = list(ex.map(job, sel))
     support = sorted(cards, key=lambda c: -(c["docs_public"] + c["docs_internal"]))
     support_rank = {c["eid"]: i for i, c in enumerate(support, 1)}
-    records = rank(records, top=a.top)
-    write_outputs(records, out, a.top, support_rank)
-    print((out / "ranking.md").read_text(encoding="utf-8"))
+    kinds = {c["eid"]: c["kind"] for c in cards}
+    quota = {"product_type": a.quota_product, "application": a.top - a.quota_product} if a.quota_product >= 0 else None
+    for stance in a.stances:
+        recs = rank([dict(r, profile=dict(r["profile"])) for r in records], top=a.top, stance=stance, kinds=kinds, quota=quota)
+        write_outputs(recs, out, a.top, support_rank)
+        sel = [f"{r['name'][:34]} ({r['profile']['kind'][0]})" for r in recs if r["profile"]["selected"]]
+        print(f"[{stance}] " + " | ".join(sel))
     print(f"cost ${llm.ledger.total_usd:.3f}")
 
 
