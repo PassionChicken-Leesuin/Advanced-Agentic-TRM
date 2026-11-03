@@ -31,6 +31,7 @@ from trmkb.roadmap import generate as G
 from trmkb.roadmap import retrieve as R
 from trmkb.schema import Roadmap
 from trmkb.sources import generate as SG
+from trmkb.sources import make as MK
 from trmkb.sources.store import SourceStore
 from trmkb.sources.worksheets import STRUCTS, build_worksheets
 from trmkb.store import KBStore
@@ -42,6 +43,10 @@ CONDS = {
     "ALL-K4": ALL - {"graph"}, "ALL-K5": ALL - {"time"}, "ALL-real": ALL,
     "ALL-K0": ALL,     # 다섯 구조 모두, 단 K0 용어집 없이 구축한 run (--run-nok0) 에서 작업지를 만듦 (구축 단계 제거 실험)
     "ALL-nocards": ALL,  # 다섯 구조 모두, 같은 예산, 기회 카드만 조립하지 않음 (카드 제거 실험)
+    # 카드 v2 파이프라인 (Landscaping → 카드 추출 → 선정 → 제작). runs/<run>/cards_v2/{cards.json, selection/profiles.json} 필요
+    "CARDS-debate": "cards_v2:debate",     # 세 질문 토론으로 고른 상위 10장 전문 + 랜드스케이프
+    "CARDS-support": "cards_v2:support",   # 문서 수 순 상위 10장 (선정 방식 제거 실험)
+    "CARDS-all": "cards_v2:all",           # 62장 전부 전문 (선정 제거 실험)
 }
 JUDGES = ["openai/gpt-4.1-mini", "anthropic/claude-haiku-5.5", "google/gemini-2.5-flash"]
 JTAG = {j: j.split("/")[1].split("-")[0] + "-" + j.split("-")[-1] for j in JUDGES}
@@ -142,6 +147,8 @@ def main() -> None:
             ctxs[c] = None; continue
         if spec == "S0raw":
             ctx = R.build_context(KBStore(args.src), condition="S0raw")
+        elif isinstance(spec, str) and spec.startswith("cards_v2:"):
+            ctx = MK.build_context(stores[c], run / "cards_v2", selection=spec.split(":")[1], top=10, label=c)
         elif c == "ALL-real":
             ctx = build_worksheets(st, spec, tree=tree_real, grid=grid_real, real_only=True, label=c)
         else:
@@ -161,6 +168,8 @@ def main() -> None:
             rm = G.generate(llm, condition="initial")
         elif CONDS[c] == "S0raw":
             rm = G.generate(llm, condition="advanced", context=ctx.text, ops_by_evidence=ctx.ops_by_ref)
+        elif isinstance(CONDS[c], str) and CONDS[c].startswith("cards_v2:"):
+            rm = MK.generate(llm, ctx)
         else:
             rm = SG.generate(llm, ctx)
         p.write_text(rm.model_dump_json(indent=1, exclude_none=True), encoding="utf-8")
