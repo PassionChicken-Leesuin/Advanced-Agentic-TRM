@@ -419,7 +419,8 @@ def glossary_legend(st, max_chars=GLOSSARY_BUDGET) -> str:
 
 
 def build_worksheets(st: SourceStore, structures: set[str], *, tree: dict | None = None, grid: dict | None = None,
-                     real_only: bool = False, label: str = "") -> Context:
+                     real_only: bool = False, label: str = "", cards: bool = True) -> Context:
+    """cards=False 면 기회 카드를 조립하지 않고 구조별 작업지만 넣는다 (카드 제거 실험: 같은 구조·같은 예산, 카드만 없음)."""
     ctx = Context(text="")
     b = budgets(structures)
     grid = grid if grid is not None else st.grid
@@ -437,7 +438,10 @@ def build_worksheets(st: SourceStore, structures: set[str], *, tree: dict | None
     if "evidence" in structures:
         W["evidence"] = _W(ctx, "evidence", b["evidence"], "(source passages quoted from documents, grouped by layer tag; cite them by id; "
                                                            "'internal' marks internal company documents)")
-    card_lines, anchors, used = build_cards(st, ctx, structures, tree, grid, focus, real_only, W)
+    if cards:
+        card_lines, anchors, used = build_cards(st, ctx, structures, tree, grid, focus, real_only, W)
+    else:
+        card_lines, anchors, used = [], set(), set()
     if "grid" in W:
         ws_grid(st, ctx, grid, W["grid"], anchors)
     if "tree" in W:
@@ -451,7 +455,7 @@ def build_worksheets(st: SourceStore, structures: set[str], *, tree: dict | None
         ws_evidence(st, ctx, focus, real_only, W["evidence"], cited)
     order = [s for s in STRUCTS if s in W]
     head = (f"(context condition {label or '+'.join(order)}{' real-only' if real_only else ''}: knowledge structures "
-            f"{', '.join(NAME[s] for s in order)}; {len(anchors)} opportunity cards)")
+            f"{', '.join(NAME[s] for s in order)}; {len(anchors)} opportunity cards" + ("" if cards else ", no cards: structure worksheets only") + ")")
     legend = glossary_legend(st)
     parts = [head] + ([legend] if legend else []) + (["\n".join(card_lines)] if len(card_lines) > 1 else []) + [W[s].text for s in order if W[s].text]
     ctx.text = "\n\n".join(parts)

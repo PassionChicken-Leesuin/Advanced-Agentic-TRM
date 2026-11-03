@@ -17,7 +17,7 @@ from trmkb.eval.chart import score_chart
 from trmkb.llm import LLM
 from trmkb.schema import Roadmap
 
-ORDER = ["Initial", "S0raw", "K1", "ALL", "ALL-K1", "ALL-K2", "ALL-K3", "ALL-K4", "ALL-K5", "ALL-K0", "ALL-real"]
+ORDER = ["Initial", "S0raw", "K1", "ALL", "ALL-K1", "ALL-K2", "ALL-K3", "ALL-K4", "ALL-K5", "ALL-K0", "ALL-real", "ALL-nocards"]
 KEYS = ["n_claims", "aq2020_cell_hit", "aq2020_value_recall", "aq2020_year_mae", "aq2025_cell_hit", "aq2025_value_recall",
         "tech_metric_coverage", "tech_cell_hit", "tech_value_recall", "tech_mag_err", "feature_coverage", "feature_year_mae",
         "app_recall", "app_recall_lenient", "app_year_mae", "max_year_claimed"]

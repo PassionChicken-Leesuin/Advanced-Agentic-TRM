@@ -8,6 +8,7 @@ python scripts/eval_v2.py --run runs/struct5 --src runs/full_clean [--n 3] [--co
   ALL       : 다섯 구조 모두
   ALL-K1..5 : 구조 하나씩 제거 (그 작업지와 읽기 규칙이 빠지고, 글자 예산은 K1 로)
   ALL-real  : 다섯 구조, 실제 공개 자료만 (가상 내부 문서 제외, 트리·그리드도 실제 자료로 다시 만든 것)
+  ALL-nocards: 다섯 구조 모두, 같은 글자 예산, 기회 카드만 없음 (카드 제거 실험)
 산출: runs/struct5/eval/<조건>/{context.txt, context_stats.json, rm_<i>.json, align_<i>_<judge>.json}, eval/summary.{json,md}
 """
 import argparse
@@ -40,6 +41,7 @@ CONDS = {
     "ALL-K1": ALL - {"evidence"}, "ALL-K2": ALL - {"tree"}, "ALL-K3": ALL - {"grid"},
     "ALL-K4": ALL - {"graph"}, "ALL-K5": ALL - {"time"}, "ALL-real": ALL,
     "ALL-K0": ALL,     # 다섯 구조 모두, 단 K0 용어집 없이 구축한 run (--run-nok0) 에서 작업지를 만듦 (구축 단계 제거 실험)
+    "ALL-nocards": ALL,  # 다섯 구조 모두, 같은 예산, 기회 카드만 조립하지 않음 (카드 제거 실험)
 }
 JUDGES = ["openai/gpt-4.1-mini", "anthropic/claude-haiku-5.5", "google/gemini-2.5-flash"]
 JTAG = {j: j.split("/")[1].split("-")[0] + "-" + j.split("-")[-1] for j in JUDGES}
@@ -143,7 +145,7 @@ def main() -> None:
         elif c == "ALL-real":
             ctx = build_worksheets(st, spec, tree=tree_real, grid=grid_real, real_only=True, label=c)
         else:
-            ctx = build_worksheets(stores[c], spec, label=c)
+            ctx = build_worksheets(stores[c], spec, label=c, cards=(c != "ALL-nocards"))
         (d / "context.txt").write_text(ctx.text, encoding="utf-8")
         (d / "context_stats.json").write_text(json.dumps(ctx.stats, ensure_ascii=False, indent=1), encoding="utf-8")
         ctxs[c] = ctx
