@@ -83,16 +83,16 @@ def landscape_text(st: SourceStore, max_chars: int = 9000) -> str:
 
 
 def build_context(st: SourceStore, cards_dir: Path, *, selection: str = "debate", top: int = 10, include_digest: bool = False,
-                  label: str = "") -> Context:
-    """selection: 'debate' (profiles.json 의 순위) | 'support' (문서 수 순) | 'all' (전부 전문, 선정 없음)."""
+                  label: str = "", stance: str = "balanced") -> Context:
+    """selection: 'debate' (토론 프로파일 순위; stance = balanced|q1|q2|q3 → profiles[_stance].json) | 'support' (문서 수 순) | 'all' (전부, 선정 없음)."""
     cards = [_card_from_dict(d) for d in json.loads((cards_dir / "cards.json").read_text(encoding="utf-8"))]
     by = {c.eid: c for c in cards}
     profiles = {}
-    pf = cards_dir / "selection" / "profiles.json"
+    pf = cards_dir / "selection" / ("profiles.json" if stance == "balanced" else f"profiles_{stance}.json")
     if pf.exists():
         profiles = {r["eid"]: r for r in json.loads(pf.read_text(encoding="utf-8"))}
     if selection == "debate":
-        order = [r["eid"] for r in sorted(profiles.values(), key=lambda r: r["profile"]["rank"]) if r["eid"] in by][:top]
+        order = [r["eid"] for r in sorted(profiles.values(), key=lambda r: r["profile"]["rank"]) if r["eid"] in by and r["profile"].get("selected", True)][:top]
     elif selection == "support":
         order = [c.eid for c in sorted(cards, key=lambda c: -(c.docs_public + c.docs_internal))][:top]
     else:
@@ -100,7 +100,8 @@ def build_context(st: SourceStore, cards_dir: Path, *, selection: str = "debate"
     ctx = Context(text="")
     parts = [f"(context condition {label or 'cards_v2-' + selection}: landscape + {len(order)} opportunity cards" + (" + digest of the rest" if include_digest else "") + ")",
              glossary_legend(st), landscape_text(st)]
-    hdr = f"## Opportunity cards ({len(order)} of {len(cards)}; " + ("selected by panel debate on three questions" if selection == "debate"
+    from .select import STANCES
+    hdr = f"## Opportunity cards ({len(order)} of {len(cards)}; " + (f"selected by panel debate on three questions; stance: {STANCES[stance]['label']} ({STANCES[stance]['desc']})" if selection == "debate"
           else "selected by document support" if selection == "support" else "all, no selection") + ")"
     parts.append(hdr)
     for k, eid in enumerate(order, 1):
@@ -135,7 +136,7 @@ def build_context(st: SourceStore, cards_dir: Path, *, selection: str = "debate"
         parts += [c.digest() for c in rest]
     ctx.text = "\n\n".join(parts)
     ctx.selected_node_ids = order
-    ctx.stats = {"condition": label or f"cards_v2-{selection}", "structures": ["evidence", "tree", "graph", "time"], "cards": len(order),
+    ctx.stats = {"condition": label or f"cards_v2-{selection}", "structures": ["evidence", "tree", "graph", "time"], "cards": len(order), "stance": stance,
                  "chars": len(ctx.text), "selection": selection, "top": top, "include_digest": include_digest,
                  "chars_cards": sum(len(by[e].text()) for e in order), "chars_landscape": len(parts[2]), "chars_glossary": len(parts[1])}
     return ctx
