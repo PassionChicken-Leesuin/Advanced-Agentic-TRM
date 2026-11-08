@@ -231,16 +231,17 @@ from trmkb.sources.ingest import ALLOWED, MAX_FILES  # noqa: E402
 
 @app.post("/api/v2/jobs")
 async def create_job(company: str = Form(...), descriptor: str = Form(""), brief: str = Form(""), cutoff: str = Form(""),
-                     internal: str = Form(""), files: list[UploadFile] = File(...)) -> JSONResponse:
-    """multipart: company(필수), descriptor·brief·cutoff(선택), internal(내부 문서로 볼 파일 이름, 줄바꿈 구분), files[]."""
+                     internal: str = Form(""), dry_run: bool = Form(False), files: list[UploadFile] = File(...)) -> JSONResponse:
+    """multipart: company(필수), descriptor·brief·cutoff(선택), internal(내부 문서로 볼 파일 이름, 줄바꿈 구분), files[].
+    dry_run=true (또는 환경 변수 TRMKB_JOB_DRY_RUN=1): 문서 변환·작업 생성까지만 하고 LLM 파이프라인은 띄우지 않음 (시험용)."""
     company = company.strip()
     if not company or len(company) > 80:
         raise HTTPException(400, "company name is required (max 80 chars)")
     if not files or len(files) > MAX_FILES:
         raise HTTPException(400, f"1 to {MAX_FILES} files")
-    bad = [f.filename for f in files if Path(f.filename or "").suffix.lower() not in ALLOWED]
-    if bad:
-        raise HTTPException(400, f"unsupported file type: {', '.join(bad[:5])} (allowed: {', '.join(sorted(ALLOWED))})")
+    if not any(Path(f.filename or "").suffix.lower() in ALLOWED for f in files):
+        raise HTTPException(400, f"no supported files (allowed: {', '.join(sorted(ALLOWED))})")
+    # 지원하지 않는 형식·읽을 수 없는 파일은 거절하지 않고 건너뜀 (job.json 의 skipped 에 이유와 함께 남음)
     if J.busy():
         raise HTTPException(409, f"another job is running ({J.busy()}); try again when it finishes")
     data = [(f.filename or "upload.txt", await f.read()) for f in files]
@@ -249,7 +250,67 @@ async def create_job(company: str = Form(...), descriptor: str = Form(""), brief
                          internal_names={x.strip() for x in internal.splitlines() if x.strip()})
     except ValueError as e:
         raise HTTPException(400, str(e)) from e
+    import os
+    if dry_run or os.environ.get("TRMKB_JOB_DRY_RUN") == "1":
+        job = J.Job(RUNS / state["run"])
+        job.state.update(status="done", stage="ingest", message=f"dry run: {len(state['documents'])} documents converted, pipeline not started")
+        job.save()
+        return JSONResponse(job.state)
+    _budget_check(len(state["documents"]))
     if not J.start(RUNS / state["run"]):
+        raise HTTPException(409, "another job is running; try again when it finishes")
+    return JSONResponse(state)
+
+
+# 공개 운영용 안전장치: 하루 비용 상한 (USD, 환경 변수 TRMKB_DAILY_USD, 기본 40) · 문서당 예상 비용으로 시작 전에 점검
+PER_DOC_USD = 0.06
+
+
+def _budget_check(n_docs: int) -> None:
+    import os
+    cap = float(os.environ.get("TRMKB_DAILY_USD", "40"))
+    spent = J.spent_today(RUNS)
+    need = round(n_docs * PER_DOC_USD, 2)
+    if spent + need > cap:
+        raise HTTPException(429, f"daily budget reached: about ${spent} used today, this run needs about ${need}, limit ${cap:g}. Try fewer documents or tomorrow.")
+
+
+@app.post("/api/v2/jobs/new")
+async def job_new(company: str = Form(...), descriptor: str = Form(""), brief: str = Form(""), cutoff: str = Form("")) -> JSONResponse:
+    """나눠 올리기 1단계: 빈 작업을 연다. 이어서 /files 로 묶음씩, 마지막에 /start."""
+    company = company.strip()
+    if not company or len(company) > 80:
+        raise HTTPException(400, "company name is required (max 80 chars)")
+    if J.busy():
+        raise HTTPException(409, f"another job is running ({J.busy()}); try again when it finishes")
+    return JSONResponse(J.open_job(RUNS, company, descriptor=descriptor, brief=brief, cutoff=cutoff.strip() or None))
+
+
+@app.post("/api/v2/jobs/{run}/files")
+async def job_files(run: str, files: list[UploadFile] = File(...)) -> dict:
+    data = [(f.filename or "upload.txt", await f.read()) for f in files]
+    try:
+        n = J.add_files(_run_dir(run), data, MAX_FILES)
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    return {"run": run, "received": n}
+
+
+@app.post("/api/v2/jobs/{run}/start")
+async def job_start(run: str, internal: str = Form(""), dry_run: bool = Form(False)) -> JSONResponse:
+    import os
+    d = _run_dir(run)
+    try:
+        state = J.finish_ingest(d, internal_names={x.strip() for x in internal.splitlines() if x.strip()})
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    if dry_run or os.environ.get("TRMKB_JOB_DRY_RUN") == "1":
+        job = J.Job(d)
+        job.state.update(status="done", stage="ingest", message=f"dry run: {len(state['documents'])} documents converted, pipeline not started")
+        job.save()
+        return JSONResponse(job.state)
+    _budget_check(len(state["documents"]))
+    if not J.start(d):
         raise HTTPException(409, "another job is running; try again when it finishes")
     return JSONResponse(state)
 

@@ -73,20 +73,76 @@ class Job:
             st.emit("job.stage", stage="error", msg=err[:300])
 
 
-def create(runs_root: Path, company: str, files: list[tuple[str, bytes]], *, descriptor: str = "", brief: str = "",
-           internal_names: set[str] | None = None, cutoff: str | None = None) -> dict:
-    """run 폴더를 만들고 문서를 받아들인 뒤 (LLM 호출 없음) 작업 상태를 돌려준다. 이어서 start() 로 파이프라인을 띄운다."""
-    from .export import export_meta
-    from .ingest import ingest
+def open_job(runs_root: Path, company: str, *, descriptor: str = "", brief: str = "", cutoff: str | None = None) -> dict:
+    """나눠 올리기 1단계: 빈 작업을 연다 (상태 receiving). 파일은 add_files 로 묶음씩 받고 finish_ingest 로 변환한다.
+    요청 하나의 크기 제한(예: Cloudflare 100MB)을 넘는 많은 문서를 올리기 위함."""
     run = runs_root / f"up_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{P.slug(company)}"
     run.mkdir(parents=True, exist_ok=False)
     job = Job(run)
+    job.state.update(status="receiving", stage="upload", company=company, request={"descriptor": descriptor, "brief": brief, "cutoff": cutoff},
+                     received=0, message="waiting for files")
+    job.save()
+    return job.state
+
+
+def add_files(run_dir: Path, files: list[tuple[str, bytes]], max_files: int) -> int:
+    """나눠 올리기 2단계: 받은 파일을 incoming/ 에 그대로 둔다. 반환: 지금까지 받은 파일 수."""
+    from pathlib import Path as _P
+    job = Job(run_dir)
+    if job.state.get("status") != "receiving":
+        raise ValueError("this job is not accepting files")
+    inc = run_dir / "incoming"; inc.mkdir(exist_ok=True)
+    have = len(list(inc.iterdir()))
+    if have + len(files) > max_files:
+        raise ValueError(f"at most {max_files} files per run")
+    for k, (name, data) in enumerate(files):
+        safe = _P(name).name.replace("/", "_").replace("\\", "_") or "upload.txt"
+        (inc / f"{have + k:04d}__{safe}").write_bytes(data)
+    job.state["received"] = have + len(files); job.state["message"] = f"{have + len(files)} files received"
+    job.save()
+    return have + len(files)
+
+
+def finish_ingest(run_dir: Path, *, internal_names: set[str] | None = None) -> dict:
+    """나눠 올리기 3단계: incoming/ 의 파일을 변환해 작업을 만든다 (create 와 같은 결과)."""
+    job = Job(run_dir)
+    inc = run_dir / "incoming"
+    files = [(p.name.split("__", 1)[-1], p.read_bytes()) for p in sorted(inc.iterdir())] if inc.exists() else []
+    if not files:
+        raise ValueError("no files were uploaded")
+    rq = job.state.get("request", {})
+    state = _ingest_into(run_dir, job, job.state.get("company", ""), files, descriptor=rq.get("descriptor", ""), brief=rq.get("brief", ""),
+                         internal_names=internal_names, cutoff=rq.get("cutoff"))
+    import shutil
+    shutil.rmtree(inc, ignore_errors=True)      # 변환본(docs/)이 남으므로 원본 바이트는 지움
+    return state
+
+
+def create(runs_root: Path, company: str, files: list[tuple[str, bytes]], *, descriptor: str = "", brief: str = "",
+           internal_names: set[str] | None = None, cutoff: str | None = None) -> dict:
+    """run 폴더를 만들고 문서를 받아들인 뒤 (LLM 호출 없음) 작업 상태를 돌려준다. 이어서 start() 로 파이프라인을 띄운다."""
+    run = runs_root / f"up_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{P.slug(company)}"
+    run.mkdir(parents=True, exist_ok=False)
+    return _ingest_into(run, Job(run), company, files, descriptor=descriptor, brief=brief, internal_names=internal_names, cutoff=cutoff)
+
+
+def _ingest_into(run: Path, job: "Job", company: str, files: list[tuple[str, bytes]], *, descriptor: str = "", brief: str = "",
+                 internal_names: set[str] | None = None, cutoff: str | None = None) -> dict:
+    from .export import export_meta
+    from .ingest import ingest
+    job.state["status"] = "queued"
     try:
-        docs = ingest(run, files, company=company, internal_names=internal_names)
+        skipped: list = []
+        docs = ingest(run, files, company=company, internal_names=internal_names, skipped=skipped)
+        if not docs:
+            raise ValueError("none of the files could be read: " + "; ".join(f"{s['file']} ({s['reason']})" for s in skipped[:5]))
     except Exception as e:  # noqa: BLE001
         job.fail(None, f"ingest: {e}")
         raise
-    prof = P.for_upload(company, [d["date"] for d in docs], descriptor=descriptor, brief=brief, cutoff=cutoff)
+    job.state["skipped"] = skipped
+    dated = [d["date"] for d in docs if not d.get("date_guessed")] or [d["date"] for d in docs]   # 날짜를 못 찾은 문서는 기준일 계산에서 뺌
+    prof = P.for_upload(company, dated, descriptor=descriptor, brief=brief, cutoff=cutoff)
+    job.state["undated"] = sum(1 for d in docs if d.get("date_guessed"))
     P.save(run, prof)
     st = SourceStore(run)
     for d in docs:
@@ -96,7 +152,7 @@ def create(runs_root: Path, company: str, files: list[tuple[str, bytes]], *, des
     job.state["progress"] = {"done": 0, "total": len(docs)}
     job.state["company"] = company
     job.state["documents"] = [{k: d[k] for k in ("id", "title", "date", "source_type", "is_synthetic", "original_name", "n_chars")} for d in docs]
-    job.stage(st, "ingest", f"{len(docs)} documents converted")
+    job.stage(st, "ingest", f"{len(docs)} documents converted" + (f", {len(skipped)} skipped" if skipped else ""))
     export_meta(st, run / "site")
     return job.state
 
@@ -222,6 +278,18 @@ def start(run_dir: Path, **kw) -> bool:
         _RUNNING[run_dir.name] = t
         t.start()
         return True
+
+
+def spent_today(runs_root: Path) -> float:
+    """오늘(서버 시각) 시작한 업로드 작업들이 쓴 비용 합계 (job.json 의 cost_usd)."""
+    today = datetime.now().strftime("%Y%m%d")
+    total = 0.0
+    for p in runs_root.glob(f"up_{today}_*/job.json"):
+        try:
+            total += float(json.loads(p.read_text(encoding="utf-8")).get("cost_usd") or 0)
+        except (OSError, ValueError):
+            pass
+    return round(total, 2)
 
 
 def busy() -> str | None:

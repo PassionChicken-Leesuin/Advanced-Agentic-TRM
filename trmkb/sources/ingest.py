@@ -21,7 +21,7 @@ from ..corpus.common import clean_text, read_doc, slugify
 
 ALLOWED = {".pdf", ".html", ".htm", ".md", ".markdown", ".txt", ".docx"}
 MAX_BYTES = 25 * 1024 * 1024
-MAX_FILES = 30
+MAX_FILES = 500        # 한 작업에 올릴 수 있는 문서 수 (2026-11-08: 30 → 500)
 MONTHS = {m: i for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], 1)}
 
 
@@ -42,6 +42,40 @@ def _date_in(s: str) -> date | None:
             if d and 2000 <= d.year <= 2100:
                 return d
     return None
+
+
+def _dates_by_position(s: str) -> list[date]:
+    """본문에 나오는 날짜를 나오는 순서대로 (여러 표기 패턴을 합쳐 위치순 정렬). 월 이름은 대소문자 무시 (SEC 공시의 DECEMBER 31, 2023)."""
+    found = []
+    pats = (
+        (r"(20\d{2})[-_./](\d{1,2})[-_./](\d{1,2})", lambda m: date(int(m[1]), int(m[2]), int(m[3]))),
+        (r"\b([A-Za-z]{3,9})\.? (\d{1,2}),? (20\d{2})\b", lambda m: date(int(m[3]), MONTHS[m[1][:3].lower()], int(m[2])) if m[1][:3].lower() in MONTHS else None),
+        (r"\b(\d{1,2}) ([A-Za-z]{3,9}),? (20\d{2})\b", lambda m: date(int(m[3]), MONTHS[m[2][:3].lower()], int(m[1])) if m[2][:3].lower() in MONTHS else None),
+    )
+    for pat, fn in pats:
+        for m in re.finditer(pat, s):
+            try:
+                d = fn(m)
+            except (ValueError, KeyError):
+                continue
+            if d and 2000 <= d.year <= 2100:
+                found.append((m.start(), d))
+    return [d for _, d in sorted(found)]
+
+
+def pick_date(ext: str, stem: str, meta: date | None, body: str, today: date) -> tuple[date | None, bool]:
+    """문서 날짜 고르기 → (날짜, 확실한가). 오늘보다 뒤의 날짜는 쓰지 않는다.
+    순서: 파일 이름 → (PDF 가 아니면) 머리말·HTML 메타 날짜 → 본문에서 오늘 이전인 첫 날짜 → (PDF) 생성일 메타데이터.
+    PDF 생성일은 내려받거나 다시 만든 날일 때가 많아 (예: arXiv) 맨 뒤에 두고 '불확실'로 표시한다 — 기준일 계산에서 빠진다.
+    (2026-11-08 500건 시험에서 확인)"""
+    past = lambda d: d if d and d <= today else None
+    for d in (past(_date_in(stem)), past(meta) if ext != ".pdf" else None,
+              next((x for x in _dates_by_position(body[:6000]) if x <= today), None)):
+        if d:
+            return d, True
+    if ext == ".pdf" and past(meta):
+        return meta, False
+    return None, False
 
 
 def _pdf(data: bytes) -> tuple[str, str | None, date | None]:
@@ -163,8 +197,10 @@ def convert(name: str, data: bytes) -> tuple[str, str | None, date | None, dict]
 
 
 def ingest(run_dir: str | Path, files: list[tuple[str, bytes]], *, company: str, internal_names: set[str] | None = None,
-           upload_date: date | None = None) -> list[dict]:
-    """files = [(원 파일 이름, 바이트)]. runs/<run>/docs/<id>.md 로 저장하고 SourceStore.docs 꼴의 dict 목록을 돌려준다 (날짜순)."""
+           upload_date: date | None = None, skipped: list | None = None) -> list[dict]:
+    """files = [(원 파일 이름, 바이트)]. runs/<run>/docs/<id>.md 로 저장하고 SourceStore.docs 꼴의 dict 목록을 돌려준다 (날짜순).
+    skipped 목록을 주면 읽을 수 없는 파일(형식·크기·글자 없음·변환 오류)은 건너뛰고 (파일 이름, 이유)를 거기에 담는다 —
+    문서가 많을 때 한 파일 때문에 전체 업로드가 실패하지 않게. 주지 않으면 예전처럼 첫 문제에서 ValueError."""
     run_dir = Path(run_dir)
     out_dir = run_dir / "docs"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -172,17 +208,27 @@ def ingest(run_dir: str | Path, files: list[tuple[str, bytes]], *, company: str,
     internal_names = {n.lower() for n in (internal_names or set())}
     docs = []
     seen_ids: set[str] = set()
+    def bad(name: str, why: str):
+        if skipped is None:
+            raise ValueError(f"{why}: {name}")
+        skipped.append({"file": Path(name).name, "reason": why})
+
     for name, data in files:
         ext = Path(name).suffix.lower()
         if ext not in ALLOWED:
-            raise ValueError(f"unsupported file type: {name}")
+            bad(name, "unsupported file type"); continue
         if len(data) > MAX_BYTES:
-            raise ValueError(f"file too large (> {MAX_BYTES // 1024 // 1024} MB): {name}")
-        body, title, d, fm = convert(name, data)
+            bad(name, f"file too large (> {MAX_BYTES // 1024 // 1024} MB)"); continue
+        try:
+            body, title, d, fm = convert(name, data)
+        except Exception as e:  # noqa: BLE001
+            bad(name, f"could not be converted ({e.__class__.__name__})"); continue
         if len(body.strip()) < 200:
-            raise ValueError(f"no readable text in {name} (scanned PDF? images only?)")
+            bad(name, "no readable text (scanned PDF or images only?)"); continue
         stem = Path(name).stem
-        d = _date_in(stem) or d or _date_in(body[:3000]) or today
+        found, sure = pick_date(ext, stem, d, body, today)
+        guessed = not sure                      # 불확실(PDF 생성일) 또는 못 찾음(업로드 날짜) → 기준일 계산에서 뺌
+        d = found or today
         title = (title or next((ln.strip("# ").strip() for ln in body.splitlines() if 8 <= len(ln.strip()) <= 160), None) or stem)[:200]
         is_internal = Path(name).name.lower() in internal_names or any(w in stem.lower() for w in INTERNAL_WORDS) or bool(fm.get("is_synthetic"))
         stype = str(fm.get("source_type") or guess_type(name, body, is_internal))
@@ -197,7 +243,7 @@ def ingest(run_dir: str | Path, files: list[tuple[str, bytes]], *, company: str,
         p = out_dir / f"{did}.md"
         p.write_text("---\n" + yaml.safe_dump(meta, allow_unicode=True, sort_keys=False) + "---\n\n" + body + "\n", encoding="utf-8")
         docs.append({"id": did, "title": title, "date": d.isoformat(), "source_type": stype, "is_synthetic": is_internal,
-                     "path": str(p.resolve()), "original_name": Path(name).name, "n_chars": len(body)})
+                     "path": str(p.resolve()), "original_name": Path(name).name, "n_chars": len(body), "date_guessed": guessed})
     docs.sort(key=lambda x: (x["date"], x["id"]))
     return docs
 

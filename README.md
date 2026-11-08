@@ -89,7 +89,7 @@ python -m uvicorn viz.server:app --port 8765 --host 0.0.0.0   # 같은 네트워
 
 ### 업로드 모드 — 다른 회사 문서로 돌리기 (2026-11-08)
 
-IonQ 180건과 별개로, 사용자가 올린 문서(PDF·HTML·DOCX·Markdown·텍스트, 최대 30건)로 지식베이스 → 기회 카드 → 선정 토론 → 로드맵까지 한 번에 돈다.
+IonQ 180건과 별개로, 사용자가 올린 문서(PDF·HTML·DOCX·Markdown·텍스트, 최대 500건)로 지식베이스 → 기회 카드 → 선정 토론 → 로드맵까지 한 번에 돈다.
 
 ```powershell
 $env:PYTHONUTF8 = "1"
@@ -101,7 +101,7 @@ python -m uvicorn viz.server:app --port 8765          # 에이전트 서버 (업
 - `GET /api/v2/jobs/<run>` 진행 상태(job.json: stage·progress·cost), `GET /api/v2/runs/<run>/stream?follow=true` 사건 SSE(작업이 끝나면 done), `GET /api/v2/runs/<run>/site/<file>` 사이트 데이터(meta·cards_v2·candidates·selection·roadmaps·roadmaps_v2).
 - 회사·기준일·기간·기업 소개는 `runs/<run>/profile.json`(`trmkb/sources/profile.py`)에서 읽는다. 없으면 IonQ 데모 기본값. 모든 프롬프트의 "Company: ..." 와 생성기의 brief 가 여기서 나온다. 기준일 = 가장 늦은 문서 날짜, 기간 = 다음 해부터 5년.
 - 구현: `trmkb/sources/ingest.py`(파일 → md, 날짜·제목·유형 추정) · `build.py`(읽기·구축·마무리 함수, build_v2.py 와 공유) · `jobs.py`(단계 오케스트레이션, job.json) · `export.py`(사이트 데이터, export_site*.py 와 공유).
-- 사이트에서 `/?job=<run>` 으로 만들어 둔 작업을 다시 열 수 있다. 시범: 가상 회사 문서 4건 → 약 4.5분, $0.4~0.5. 30건이면 약 20분, $2~3 예상.
+- 사이트에서 `/?job=<run>` 으로 만들어 둔 작업을 다시 열 수 있다. 시범: 가상 회사 문서 4건 → 약 4.5분, $0.4~0.5. 500건이면 문서 1건씩 구축 기준 약 5시간, $24~28 예상 (영문 소개본 부록 A). 시험용 `dry_run=true` 는 변환·작업 생성까지만 한다.
 - 측정: `python scripts/measure_run.py --run runs/<run> [--build-log runs/<run>_build.log] [--out 표.md]` — 단계별 시간·비용·KB 크기·내재 품질(근거 부착률 등)·정답표 대비 표를 `runs/<run>/measure.json` 과 markdown 으로.
 
 ## 핵심 규약
