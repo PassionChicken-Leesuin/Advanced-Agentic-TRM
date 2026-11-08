@@ -10,8 +10,9 @@ import json
 import sys
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi import FastAPI, File, Form, HTTPException, Query, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -26,6 +27,8 @@ STATIC = Path(__file__).resolve().parent / "static"
 
 app = FastAPI(title="trmkb viz")
 app.mount("/static", StaticFiles(directory=str(STATIC)), name="static")
+# 사이트(Next.js, 다른 포트/도메인)가 업로드 모드에서 이 서버를 부른다
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 
 @app.middleware("http")
@@ -188,6 +191,16 @@ async def v2_stream(run: str, speed: float = Query(10.0, ge=0), start: int = 0, 
     from datetime import datetime
     path = _run_dir(run) / "events.jsonl"
 
+    job_path = _run_dir(run) / "job.json"
+
+    def job_over() -> bool:      # 업로드 작업이 끝났으면(또는 실패) follow 를 끝낸다
+        if not job_path.exists():
+            return False
+        try:
+            return json.loads(job_path.read_text(encoding="utf-8")).get("status") in ("done", "error")
+        except (OSError, ValueError):
+            return False
+
     async def gen():
         seen, prev = start, None
         yield "event: hello\ndata: {}\n\n"
@@ -202,13 +215,65 @@ async def v2_stream(run: str, speed: float = Query(10.0, ge=0), start: int = 0, 
                     await asyncio.sleep(min_gap)
                 prev, seen = ts, ev["seq"]
                 yield f"id: {ev['seq']}\nevent: kb\ndata: {json.dumps(ev, ensure_ascii=False)}\n\n"
-            if not follow:
+            if not follow or (not new and job_over()):
                 yield "event: done\ndata: {}\n\n"
                 return
             await asyncio.sleep(0.5)
 
     return StreamingResponse(gen(), media_type="text/event-stream",
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+
+
+# ---------------------------------------------------------------------------- 업로드 작업 (사용자 문서 → 지식베이스 → 카드 → 로드맵)
+from trmkb.sources import jobs as J  # noqa: E402
+from trmkb.sources.ingest import ALLOWED, MAX_FILES  # noqa: E402
+
+
+@app.post("/api/v2/jobs")
+async def create_job(company: str = Form(...), descriptor: str = Form(""), brief: str = Form(""), cutoff: str = Form(""),
+                     internal: str = Form(""), files: list[UploadFile] = File(...)) -> JSONResponse:
+    """multipart: company(필수), descriptor·brief·cutoff(선택), internal(내부 문서로 볼 파일 이름, 줄바꿈 구분), files[]."""
+    company = company.strip()
+    if not company or len(company) > 80:
+        raise HTTPException(400, "company name is required (max 80 chars)")
+    if not files or len(files) > MAX_FILES:
+        raise HTTPException(400, f"1 to {MAX_FILES} files")
+    bad = [f.filename for f in files if Path(f.filename or "").suffix.lower() not in ALLOWED]
+    if bad:
+        raise HTTPException(400, f"unsupported file type: {', '.join(bad[:5])} (allowed: {', '.join(sorted(ALLOWED))})")
+    if J.busy():
+        raise HTTPException(409, f"another job is running ({J.busy()}); try again when it finishes")
+    data = [(f.filename or "upload.txt", await f.read()) for f in files]
+    try:
+        state = J.create(RUNS, company, data, descriptor=descriptor, brief=brief, cutoff=cutoff.strip() or None,
+                         internal_names={x.strip() for x in internal.splitlines() if x.strip()})
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    if not J.start(RUNS / state["run"]):
+        raise HTTPException(409, "another job is running; try again when it finishes")
+    return JSONResponse(state)
+
+
+@app.get("/api/v2/jobs/{run}")
+def job_status(run: str) -> dict:
+    s = J.status(_run_dir(run))
+    if s is None:
+        raise HTTPException(404, "no job for this run")
+    return s
+
+
+@app.get("/api/v2/runs/{run}/site/{name}")
+def site_file(run: str, name: str) -> FileResponse:
+    """업로드 작업이 내보낸 사이트 데이터 (meta.json, events.jsonl, cards_v2.json, candidates.json, selection.json, roadmaps.json, roadmaps_v2.json)."""
+    if name not in {"meta.json", "events.jsonl", "cards.json", "cards_v2.json", "candidates.json", "selection.json", "roadmaps.json", "roadmaps_v2.json"}:
+        raise HTTPException(404, "unknown file")
+    d = _run_dir(run)
+    p = d / "site" / name
+    if name == "events.jsonl":            # 사건 기록은 항상 run 의 원본 (작업 중에도 최신)
+        p = d / "events.jsonl"
+    if not p.exists():
+        raise HTTPException(404, f"{name} not ready")
+    return FileResponse(p, media_type="application/json" if name.endswith(".json") else "application/x-ndjson")
 
 
 @app.get("/api/i18n")

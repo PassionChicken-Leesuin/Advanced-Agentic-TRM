@@ -43,8 +43,8 @@ def _plines(st: SourceStore, ps: list[Passage]) -> str:
     return "\n".join(out)
 
 
-def _hdr(doc: dict) -> str:
-    return f'Company: IonQ. Document: "{doc["title"][:120]}" ({doc["date"]}, {doc["source_type"]}{", internal (synthetic)" if doc.get("is_synthetic") else ""}).'
+def _hdr(doc: dict, company: str = "IonQ") -> str:
+    return f'Company: {company}. Document: "{doc["title"][:120]}" ({doc["date"]}, {doc["source_type"]}{", internal (synthetic)" if doc.get("is_synthetic") else ""}).'
 
 
 class _Base:
@@ -128,7 +128,7 @@ class TreeExtractor(_Base):
     def call(self, doc: dict, ps: list[Passage]) -> Assigns:
         themes, gl = self._themes(), self.gloss(("application", "technology", "product"), 1200)
         outs = self.chunked(ps, 40, lambda c: self.llm.structured(
-            self.model, TREE_SYS, TREE_USER.format(hdr=_hdr(doc), passages=_plines(self.st, c), themes=themes, glossary=gl),
+            self.model, TREE_SYS, TREE_USER.format(hdr=_hdr(doc, self.st.company), passages=_plines(self.st, c), themes=themes, glossary=gl),
             Assigns, purpose="extract_tree", max_tokens=3000))
         return Assigns(assignments=[a for o in outs for a in o.assignments])
 
@@ -201,7 +201,7 @@ company goal ("quantum advantage"), not the company or an organization, not a te
 ("sales", "contracts", "partnerships"), and not a value statement ("maximum value for customers", "enterprise-grade value").
 For each passage that names or implies such an opportunity, write one record:
 - opportunity: application area or product type (reuse an existing eid when it is the same one). kind: application | product_type
-- offering: the concrete IonQ product or service used for it (eid or name, e.g. "Forte Enterprise"), null if none
+- offering: the concrete product or service of the company used for it (eid or name, e.g. "Forte Enterprise"), null if none
 - customer: the target market, customer, partner or segment as written (e.g. "Hyundai", "pharmaceutical companies",
   "US government agencies"), null if the passage names none. Never the generic word "customers".
 - value: the value signal copied from the passage (market size, contract amount, demand statement), null if none
@@ -234,7 +234,7 @@ class GridExtractor(_Base):
         opps, oids = self._opps()
         gl = self.gloss(("application", "product", "organization"), 1600)
         outs = self.chunked(ps, 30, lambda c: self.llm.structured(
-            self.model, GRID_SYS, GRID_USER.format(hdr=_hdr(doc), passages=_plines(self.st, c), opps=opps, cands=cands, glossary=gl),
+            self.model, GRID_SYS, GRID_USER.format(hdr=_hdr(doc, self.st.company), passages=_plines(self.st, c), opps=opps, cands=cands, glossary=gl),
             OppsOut, purpose="extract_grid", max_tokens=4000))
         return OppsOut(records=[r for o in outs for r in o.records]), allowed | oids
 
@@ -247,7 +247,7 @@ class GridExtractor(_Base):
             if not p:
                 continue
             bad = {"quantum computing era", "quantum computing commercialization", "quantum computing", "quantum advantage",
-                   "broad quantum advantage", "enterprise quantum application value", "customer value", "maximum value", "ionq",
+                   "broad quantum advantage", "enterprise quantum application value", "customer value", "maximum value", "ionq", st.company.lower(),
                    "quantum algorithms", "customer contracts and partnerships", "international sales"}
             on = norm(r.opportunity.name)
             if on in bad or any(w in on for w in ("value", "advantage era", "sales", "contracts", "partnerships")):
@@ -335,7 +335,7 @@ class GraphExtractor(_Base):
         allowed, cands = self.allowed(ps)
         gl = self.gloss(max_chars=1600)
         outs = self.chunked(ps, 30, lambda c: self.llm.structured(
-            self.model, GRAPH_SYS, GRAPH_USER.format(hdr=_hdr(doc), passages=_plines(self.st, c), cands=cands, glossary=gl),
+            self.model, GRAPH_SYS, GRAPH_USER.format(hdr=_hdr(doc, self.st.company), passages=_plines(self.st, c), cands=cands, glossary=gl),
             TriplesOut, purpose="extract_graph", max_tokens=4000))
         return TriplesOut(triples=[t for o in outs for t in o.triples]), allowed
 
@@ -464,7 +464,7 @@ class TimeExtractor(_Base):
         eids, subj = self._subjects(ps, allowed)
         facts, vocab = self._facts(eids), attribute_vocab(self.st)
         outs = self.chunked(ps, 25, lambda c: self.llm.structured(
-            self.model, TIME_SYS, TIME_USER.format(hdr=_hdr(doc), date=doc["date"], passages=_plines(self.st, c), facts=facts, subjects=subj, vocab=vocab),
+            self.model, TIME_SYS, TIME_USER.format(hdr=_hdr(doc, self.st.company), date=doc["date"], passages=_plines(self.st, c), facts=facts, subjects=subj, vocab=vocab),
             FactsOut, purpose="extract_time", max_tokens=5000))
         return FactsOut(facts=[f for o in outs for f in o.facts]), set(eids)
 

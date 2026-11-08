@@ -142,15 +142,20 @@ def build_context(st: SourceStore, cards_dir: Path, *, selection: str = "debate"
     return ctx
 
 
-def build_prompt(ctx: Context) -> str:
-    base = G.INSTRUCTIONS.format(company=G.COMPANY, h0=G.HORIZON[0], h1=G.HORIZON[1], brief=G.BRIEF, **G.LAYER_GUIDE)
-    return base + G.CONTEXT_HEADER + "\n" + RULES + "\n" + ctx.text.strip() + "\n" + G.OUTPUT_SPEC
+def build_prompt(ctx: Context, profile: dict | None = None) -> str:
+    pr = profile or {}
+    h = pr.get("horizon", G.HORIZON)
+    cutoff = str(pr.get("cutoff", G.CUTOFF))
+    base = G.INSTRUCTIONS.format(company=pr.get("company", G.COMPANY), h0=h[0], h1=h[1], brief=pr.get("brief", G.BRIEF), cutoff=cutoff, **G.LAYER_GUIDE)
+    return base + G.context_header(cutoff) + "\n" + RULES + "\n" + ctx.text.strip() + "\n" + G.OUTPUT_SPEC
 
 
-def generate(llm: LLM, ctx: Context, *, model: str = G.DEFAULT_MODEL, temperature: float = 0.2) -> Roadmap:
+def generate(llm: LLM, ctx: Context, *, model: str = G.DEFAULT_MODEL, temperature: float = 0.2, profile: dict | None = None) -> Roadmap:
     before = llm.ledger.total_usd
-    user = build_prompt(ctx)
+    user = build_prompt(ctx, profile)
+    pr = profile or {}
     out = llm.structured(model, G.SYSTEM, user, G.RoadmapOut, purpose="roadmap_cards_v2", temperature=temperature, max_tokens=8000)
-    rm = G.to_roadmap(out, condition="advanced", model=model, ops_by_evidence=ctx.ops_by_ref, cost_usd=llm.ledger.total_usd - before)
+    rm = G.to_roadmap(out, condition="advanced", model=model, company=pr.get("company", G.COMPANY), horizon=tuple(pr.get("horizon", G.HORIZON)),
+                      ops_by_evidence=ctx.ops_by_ref, cost_usd=llm.ledger.total_usd - before)
     rm.prompt_hash = hashlib.sha256((G.SYSTEM + user.replace(ctx.text.strip(), "")).encode("utf-8")).hexdigest()[:16]
     return rm

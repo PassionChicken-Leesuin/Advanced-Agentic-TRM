@@ -22,7 +22,7 @@ SYSTEM = ("You are the Router agent of a knowledge base built so that an AI can 
           "Every stored item is a source passage quoted from a document. You decide, passage by passage, which "
           "knowledge structures the passage must be stored in to serve which roadmapping function. JSON only.")
 
-USER = """Company: IonQ. Document: "{title}" ({date}, {stype}{syn}).
+USER = """Company: {company}. Document: "{title}" ({date}, {stype}{syn}).
 
 Passages (pid | quote | restated claim | reader hint):
 {passages}
@@ -55,7 +55,7 @@ three of them.
   Not administrative dates and not internal work items (report or document deliveries, approvals, reviews, trainings,
   questionnaires, test checkpoints), even when they carry a date. Not historical financial statements (net loss, cash,
   R&D expense, lease obligations, financing) and not generic "we expect losses until..." language: those stay in K1.
-Examples:
+Examples (from a quantum-computing company; apply the same logic to this company's domain):
 - "Tempo, our next system targeting #AQ 64 in 2025, will use barium qubits" -> time (Tempo #AQ 64 target 2025),
   graph (Tempo requires barium qubits), tree (shift to barium-based next generation)
 - "Hyundai is using Forte to simulate battery chemistry" -> grid (battery chemistry opportunity, customer Hyundai),
@@ -121,7 +121,7 @@ class Router:
         pl = "\n".join(f"- {p.id} | \"{p.text[:280]}\" | {p.claim[:220] if p.claim else '-'} | "
                        + ", ".join(f"{h.get('label')} ({h.get('kind')})" for h in p.reader_hints[:2]) for p in chunk)
         res = self.llm.structured(self.model, SYSTEM, USER.format(
-            title=doc["title"][:120], date=doc["date"], stype=doc["source_type"],
+            company=st.company, title=doc["title"][:120], date=doc["date"], stype=doc["source_type"],
             syn=", internal (synthetic)" if doc.get("is_synthetic") else "", passages=pl,
             cands=self.res.cand_block(cand_ids), kinds=", ".join(KINDS),
             glossary=st.glossary_block(("product", "technology", "organization", "application", "program"), max_chars=2500)),
@@ -129,13 +129,20 @@ class Router:
         return cand_ids, res
 
     def route_doc(self, doc: dict, ps: list[Passage]) -> dict:
-        st = self.store
-        out = {"passages": 0, "kept": 0, "routes": {s: 0 for s in SYSTEMS}, "status": {}}
+        return self.apply_doc(doc, ps, self.call_doc(doc, ps))
+
+    def call_doc(self, doc: dict, ps: list[Passage]) -> list:
+        """문서 하나의 LLM 판단 (저장소를 읽기만 함 → 여러 문서를 동시에 불러도 안전). 반영은 apply_doc."""
         chunks = [ps[i:i + self.batch] for i in range(0, len(ps), self.batch)]
         # LLM 호출은 묶음별로 병렬 (키 20개 라운드로빈을 실제로 쓰기 위해), 저장소 반영은 문서 안 순서대로
         with ThreadPoolExecutor(max_workers=min(self.workers, max(1, len(chunks)))) as ex:
             results = list(ex.map(lambda c: self._call(doc, c), chunks))
-        for chunk, (cand_ids, res) in zip(chunks, results):
+        return list(zip(chunks, results))
+
+    def apply_doc(self, doc: dict, ps: list[Passage], called: list) -> dict:
+        st = self.store
+        out = {"passages": 0, "kept": 0, "routes": {s: 0 for s in SYSTEMS}, "status": {}}
+        for chunk, (cand_ids, res) in called:
             byid = {d.pid: d for d in res.decisions}
             allowed = set(cand_ids)
             for p in chunk:

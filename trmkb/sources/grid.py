@@ -64,6 +64,8 @@ GENERIC_COL_EXACT = {"quantum computing", "quantum computers", "quantum computer
 
 def bad_column(st: SourceStore, eid: str) -> bool:
     e = st.entities.get(eid)
+    if e and e.name.lower().strip() == st.company.lower():
+        return True
     if not e:
         return True
     n = e.name.lower().strip()

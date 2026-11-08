@@ -45,7 +45,7 @@ def build_cards_json(st: SourceStore, *, tree: dict | None = None, grid: dict | 
                 pids |= set(st.entities[o].passage_ids)
         for t, area in themes_for(st, tree, pids, k=2):
             card["trend"].append({"area": area["name"] if area else None, "area_trend": area.get("trend") if area else None,
-                                  "theme": t["name"], "theme_trend": t["trend"], "shares": t.get("shares", []),
+                                  "theme": t["name"], "theme_trend": t.get("trend"), "shares": t.get("shares", []),
                                   "summary": t["summary"], "pids": t["pids"][-3:]})
         for subj in [eid] + sorted(offerings):
             if subj not in st.entities:

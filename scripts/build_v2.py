@@ -71,35 +71,7 @@ def seed_docs(src: Path, st: SourceStore) -> None:
     print(f"seeded {len(st.docs)} documents (new reader)")
 
 
-def read_docs(st: SourceStore, llm: LLM, docs: list[dict], workers: int = 4) -> None:
-    from trmkb.sources.reader import QuoteReader
-    reader = QuoteReader(llm)
-    todo = [d for d in docs if not d.get("read")]
-
-    def job(d):
-        try:
-            return d, reader.read(d)
-        except Exception as e:  # noqa: BLE001
-            print("READ ERR", d["id"], e)
-            return d, None
-    with ThreadPoolExecutor(max_workers=workers) as ex:
-        for d, ps in ex.map(job, todo):
-            if ps is None:
-                continue
-            for p in ps:
-                st.passages[p.id] = p
-            st.docs[d["id"]]["read"] = True
-            st.emit("doc.read", doc_id=d["id"], title=d["title"], date=d["date"], n=len(ps))
-            print(f"  read {d['date']} {d['id'][:50]:50s} quotes={len(ps)}", flush=True)
-    st.save()
-
-
-def ensure_company(st: SourceStore) -> None:
-    """회사 자체를 공유 대상으로 둠 (K5 전략 마일스톤의 대상, K4 customer_of 의 끝점)."""
-    from trmkb.sources.resolve import norm
-    if not any(norm(e.name) == "ionq" for e in st.entities.values()):
-        e = Entity(name="IonQ", aliases=["IonQ, Inc.", "the Company"])
-        st.entities[e.id] = e
+from trmkb.sources.build import ensure_company, process, read_docs  # noqa: E402  (구축 함수는 trmkb.sources.build 로 옮김; 업로드 작업과 공유)
 
 
 def copy_passages(src: Path, st: SourceStore) -> None:
@@ -151,6 +123,8 @@ def main() -> None:
     ap.add_argument("--read-only", action="store_true")
     ap.add_argument("--reader", choices=["old", "new"], default="new", help="new = 인용 전용 새 Reader 로 문서를 다시 읽음")
     ap.add_argument("--no-glossary", action="store_true", help="K0 용어집 없이 구축 (ALL-K0 조건용)")
+    ap.add_argument("--read-workers", type=int, default=20, help="동시에 읽는 문서 수 (Reader 는 문서끼리 독립)")
+    ap.add_argument("--batch", type=int, default=1, help="구축 묶음 크기: 1 = 문서 1건씩(기존), 20 = 20건 동시 호출·날짜순 반영")
     ap.add_argument("--passages-from", default=None, help="이미 읽은 run 의 소스 문장을 복사해 시작 (Reader 재실행 없음, 같은 문장 id)")
     args = ap.parse_args()
     st = SourceStore(args.dst)
@@ -200,7 +174,7 @@ def main() -> None:
     if args.only:
         order = [d for d in order if any(d["id"].startswith(x) for x in args.only)]
     if args.reader == "new":
-        read_docs(st, llm, order)
+        read_docs(st, llm, order, workers=args.read_workers)
         if args.read_only:
             llm.ledger.dump(Path(args.dst) / "cost_read.json")
             print(f"read only: {len(st.passages)} passages | cost ${llm.ledger.total_usd:.3f}")
@@ -208,12 +182,21 @@ def main() -> None:
         by_doc = {}
         for p in st.passages.values():
             by_doc.setdefault(p.doc_id, []).append(p)
+    if args.batch > 1:      # 묶음 구축: batch 건씩 LLM 호출을 동시에, 반영은 날짜순 (trmkb.sources.build.build_docs_batched)
+        from trmkb.sources.build import build_docs
+        build_docs(st, llm, order, model=args.model, glossary=not args.no_glossary, limit=args.limit, batch=args.batch)
+        print("stats:", json.dumps(st.stats(), ensure_ascii=False), f"| cost ${llm.ledger.total_usd:.3f}")
+        return
     (Path(args.dst) / "plan.json").write_text(json.dumps({"total": len(order)}), encoding="utf-8")
     done = 0
     with ThreadPoolExecutor(max_workers=4) as pool:
         for d in order:
             ps = by_doc.get(d["id"], [])      # 문서 안 읽은 순서 유지
-            if not ps or all(p.routed for p in ps):
+            if not ps:              # 문장 0건 문서도 처리됨으로 닫음 (진행률이 끝까지 차도록)
+                from trmkb.sources.build import close_doc
+                close_doc(st, d, reason="no roadmap-relevant sentences")
+                continue
+            if all(p.routed for p in ps):
                 continue
             if args.limit and done >= args.limit:
                 break

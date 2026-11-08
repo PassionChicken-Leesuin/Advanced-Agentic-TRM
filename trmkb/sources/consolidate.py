@@ -35,7 +35,7 @@ class Pairs(BaseModel):
     pairs: list[Pair] = Field(default_factory=list)
 
 
-ENT_SYS = "You curate the subject index of a technology-roadmapping knowledge base about IonQ. JSON only."
+ENT_SYS = "You curate the subject index of a technology-roadmapping knowledge base about {company}. JSON only."
 ENT_USER = """Each candidate pair below names two subjects that MAY be the same thing under different names. Decide for each pair
 whether they are the SAME subject (same product, technology, organization, application or requirement), so that their
 statements should be merged, or DIFFERENT (e.g. a product vs its generation, a system vs a component, a company vs its
@@ -47,7 +47,7 @@ different boxes. SAME only for the same thing under another name or spelling. Fo
 
 Return JSON: {{"pairs": [{{"a": id, "b": id, "same": bool, "name": str, "reason": str (under 15 words)}}]}}"""
 
-THEME_SYS = "You curate the theme tree of a technology-roadmapping knowledge base about IonQ. JSON only."
+THEME_SYS = "You curate the theme tree of a technology-roadmapping knowledge base about {company}. JSON only."
 THEME_USER = """Each candidate pair below names two themes that MAY be the same strategic thread. Decide whether they should be ONE
 theme (same thread, split only by wording or by the order documents arrived) or stay SEPARATE (different roadmap rows;
 e.g. "error correction roadmap" vs "error mitigation software", "networking expansion" vs "modular architecture").
@@ -129,7 +129,7 @@ def merge_entities(st: SourceStore, llm: LLM, *, sim: float = 0.72, model: str =
             ttype[t.eid] = t.type
     cands = [(a, b, s) for a, b, s in cands if not (ttype.get(a) and ttype.get(b) and ttype[a] != ttype[b])]
     blocks = [(desc(a), desc(b), (a, b)) for a, b, _ in cands]
-    decisions = _ask(llm, model, ENT_SYS, ENT_USER, blocks) if blocks else {}
+    decisions = _ask(llm, model, ENT_SYS.format(company=st.company), ENT_USER, blocks) if blocks else {}
     uf = _UF()
     names = {}
     # 가드 1) K0 확정 용어가 다른 두 대상은 다른 것 (예: IonQ Aria 와 IonQ Forte 는 둘 다 제품 용어) — 그룹 단위로 검사해
@@ -247,7 +247,7 @@ def merge_themes(st: SourceStore, llm: LLM, *, sim: float = 0.70, model: str = M
     cands = _candidates(ids, texts, sim)
     blocks = [(f"{a} | {st.themes[a].name} | {len(st.themes[a].passage_ids)} passages | {sample(st.themes[a])}",
                f"{b} | {st.themes[b].name} | {len(st.themes[b].passage_ids)} passages | {sample(st.themes[b])}", (a, b)) for a, b, _ in cands]
-    decisions = _ask(llm, model, THEME_SYS, THEME_USER, blocks) if blocks else {}
+    decisions = _ask(llm, model, THEME_SYS.format(company=st.company), THEME_USER, blocks) if blocks else {}
     uf, names = _UF(), {}
     for (a, b), d in decisions.items():
         if d.same:

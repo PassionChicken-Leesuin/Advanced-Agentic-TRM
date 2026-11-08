@@ -215,8 +215,8 @@ def build_cards(st, ctx, structures, tree, grid, focus, real_only, W: dict) -> t
             for t, area in themes_for(st, tree, pids):
                 sh = ", ".join(f"{r['year']} {round(r['share'] * 100)}%" for r in t.get("shares", [])[-4:])
                 ex = t["pids"][-2:]
-                ln = (f"  trend (K2): area \"{area['name'] if area else '-'}\" ({area.get('trend') if area else '-'}); theme \"{t['name']}\" "
-                      f"({t['trend']}, doc share {sh}): {t['summary'][:200]} [{', '.join(ex)}]")
+                ln = (f"  trend (K2): area \"{area['name'] if area else '-'}\"{(' (' + area['trend'] + ')') if area and area.get('trend') else ''}; theme \"{t['name']}\" "
+                      f"({(t['trend'] + ', ') if t.get('trend') else ''}doc share {sh}): {t['summary'][:200]} [{', '.join(ex)}]")
                 if W["tree"].charge(ln, ex):
                     lines.append(ln)
         # what: K3 제공물 행 + K5 체인
@@ -294,7 +294,7 @@ def ws_tree(st, ctx, tree, w):
     tmap = {t["id"]: t for t in tree.get("themes", [])}
     for a in tree.get("areas", []):
         sh = ", ".join(f"{r['year']} {round(r['share'] * 100)}%" for r in a.get("shares", []))
-        if not w.add(f"\n### Area: {a['name']} ({a.get('passages', 0)} passages, {a.get('support', 0)} docs, trend {a.get('trend')}; doc share {sh})"):
+        if not w.add(f"\n### Area: {a['name']} ({a.get('passages', 0)} passages, {a.get('support', 0)} docs{(', trend ' + a['trend']) if a.get('trend') else ''}; doc share {sh})"):
             break
         w.add(a.get("summary", ""))
         per = "; ".join(f"{x['year']}: {x['line']}" for x in a.get("periods", [])[-5:])
@@ -303,7 +303,7 @@ def ws_tree(st, ctx, tree, w):
         ths = sorted((tmap[i] for i in a["theme_ids"] if i in tmap), key=lambda t: -t["support"])[:6]
         for t in ths:
             ex = [p for p in t["pids"][-2:]]
-            w.add(f"- theme {t['name']} ({t['passages']} passages, {t['trend']}): {t['summary'][:220]} [{', '.join(ex)}]", ex)
+            w.add(f"- theme {t['name']} ({t['passages']} passages{(', ' + t['trend']) if t.get('trend') else ''}): {t['summary'][:220]} [{', '.join(ex)}]", ex)
     return w
 
 

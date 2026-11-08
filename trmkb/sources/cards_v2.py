@@ -141,12 +141,12 @@ def build_cards(st: SourceStore, *, real_only: bool = False, min_docs: int = 1, 
     # 구체 제품 = 세대 순서가 있는 제품 용어 또는 회사명이 붙은 제품 용어(Aria, Forte, Tempo, IonQ quantum computers ...).
     # 제품 유형(온프레미스 시스템, 클라우드 접근, 직접 접근 등)은 Cambridge 의 기회 군집처럼 기회로 남긴다.
     concrete = [t for t in st.terms.values() if t.status == "confirmed" and t.type == "product"
-                and (t.order is not None or t.name.lower().startswith("ionq") or t.name in ("Forte-N", "Harbor chips", "Qiskit", "Azure Quantum"))]
+                and (t.order is not None or t.name.lower().startswith(st.company.lower()) or t.name in ("Forte-N", "Harbor chips", "Qiskit", "Azure Quantum"))]
     product_terms = {t.eid for t in concrete if t.eid} | {t.name.lower().strip() for t in concrete}
 
     def is_product(eid: str) -> bool:
         e = st.entities.get(eid)
-        return bool(e) and (eid in product_terms or e.name.lower().strip() in product_terms or e.name.lower().startswith("ionq quantum computer"))
+        return bool(e) and (eid in product_terms or e.name.lower().strip() in product_terms or e.name.lower().startswith(st.company.lower() + " quantum computer"))
     recs = defaultdict(list)
     for o in st.opps.values():
         if _ok(st, o.pid, real_only) and o.eid in st.entities and not bad_column(st, o.eid) and not is_product(o.eid):
@@ -154,7 +154,8 @@ def build_cards(st: SourceStore, *, real_only: bool = False, min_docs: int = 1, 
     # 허브 제공물: 여러 기회에 공통으로 붙는 플랫폼 대상(예: "IonQ quantum computers")은 카드에 이름과 최신 사실만 싣고
     # 그 대상의 문장·체인·관계는 펼치지 않는다 (카드마다 같은 내용이 쏟아져 들어오는 것을 막음)
     off_freq = Counter(o.offering for os in recs.values() for o in {o.offering: o for o in os if o.offering}.values())
-    hub_names = {"ionq quantum computers", "quantum computers", "ionq", "ionq system", "ionq systems", "quantum computing systems", "ionq hardware"}
+    co = st.company.lower()
+    hub_names = {"quantum computers", "quantum computing systems", co, co + " quantum computers", co + " system", co + " systems", co + " hardware", co + " platform", co + " products"}
     def is_hub(x: str) -> bool:
         e = st.entities.get(x)
         return bool(e) and (e.name.lower().strip() in hub_names or off_freq.get(x, 0) >= max(4, round(0.15 * len(recs))))

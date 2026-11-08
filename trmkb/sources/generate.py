@@ -47,7 +47,7 @@ def reading_rules(structures: list[str], *, cards: bool = True, glossary: bool =
 
 
 def build_prompt(ctx: Context) -> str:
-    base = G.INSTRUCTIONS.format(company=G.COMPANY, h0=G.HORIZON[0], h1=G.HORIZON[1], brief=G.BRIEF, **G.LAYER_GUIDE)
+    base = G.INSTRUCTIONS.format(company=G.COMPANY, h0=G.HORIZON[0], h1=G.HORIZON[1], brief=G.BRIEF, cutoff=G.CUTOFF, **G.LAYER_GUIDE)
     return base + G.CONTEXT_HEADER + "\n" + reading_rules(ctx.stats.get("structures", []), cards=bool(ctx.stats.get("cards")),
                                                            glossary=bool(ctx.stats.get("chars_glossary"))) + "\n" + ctx.text.strip() + "\n" + G.OUTPUT_SPEC
 

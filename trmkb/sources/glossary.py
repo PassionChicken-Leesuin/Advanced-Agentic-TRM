@@ -45,7 +45,7 @@ def seed_stages(st: SourceStore) -> int:
 
 SYSTEM = ("You maintain the glossary of a technology-roadmapping knowledge base: the controlled vocabulary that every other "
           "structure must use for names of metrics, products, technologies, organizations, applications and lifecycle stages. JSON only.")
-USER = """Company: IonQ (trapped-ion quantum computing). Document: "{title}" ({date}, {stype}{syn}).
+USER = """Company: {company}{descriptor}. Document: "{title}" ({date}, {stype}{syn}).
 
 Passages from the document:
 {passages}
@@ -72,8 +72,8 @@ Find terms the glossary should know and that are NOT yet in it under any alias. 
 Rules: a metric name never contains a value ("#AQ", not "#AQ 35"); canonical name as the company writes it (2-5 words, no
 dates); aliases = other spellings in the text; skip internal administrative items (trainings, reviews, questionnaires,
 meeting names, document deliverables);
-definition = one sentence in plain words, from the text when the text defines it; scope = company (IonQ-specific term),
-industry (quantum-industry term), general. Also list aliases for EXISTING glossary terms that appear here under a new
+definition = one sentence in plain words, from the text when the text defines it; scope = company ({company}-specific term),
+industry (industry term), general. Also list aliases for EXISTING glossary terms that appear here under a new
 spelling ("existing_aliases"). Skip people, places, legal and accounting terms, and generic words.
 
 Return JSON: {{"terms": [{{"name": str, "type": str, "aliases": [str], "definition": str, "unit": str|null, "direction": str|null,
@@ -124,6 +124,7 @@ class GlossaryExtractor:
         def one(c):
             lines = "\n".join(f"- {p.id} | {p.text[:260]}" for p in c)
             return self.llm.structured(self.model, SYSTEM, USER.format(
+                company=self.st.company, descriptor=(" (" + self.st.profile["descriptor"] + ")") if self.st.profile.get("descriptor") else "",
                 title=doc["title"][:120], date=doc["date"], stype=doc["source_type"],
                 syn=", internal (synthetic)" if doc.get("is_synthetic") else "", passages=lines, glossary=gl),
                 GlossaryOut, purpose="glossary", max_tokens=4000)
@@ -152,7 +153,7 @@ class GlossaryExtractor:
                 continue                                    # "#AQ 35" 는 지표가 아니라 값
             if to.type == "application" and any(w in low for w in ("circuit", "algorithm", "program", "transform", "estimation",
                                                                       "sales", "contract", "partnership", "ionq")):
-                if any(w in low for w in ("sales", "contract", "partnership", "ionq")):
+                if any(w in low for w in ("sales", "contract", "partnership", "ionq", self.st.company.lower())):
                     continue
                 to.type = "technology"
             t = self.lookup(nm)

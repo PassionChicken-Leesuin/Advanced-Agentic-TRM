@@ -35,12 +35,12 @@ class Quotes(BaseModel):
 
 SYSTEM = ("You read company documents for a technology-roadmapping knowledge base. You quote; you do not classify. "
           "JSON only.")
-USER = """Company: IonQ. Document: "{title}" ({date}, {stype}{syn}). Part {i} of {n}.
+USER = """Company: {company}. Document: "{title}" ({date}, {stype}{syn}). Part {i} of {n}.
 
 Text:
 \"\"\"{chunk}\"\"\"
 
-Quote EVERY sentence that carries information a technology roadmap of IonQ could use: markets, customers and their
+Quote EVERY sentence that carries information a technology roadmap of {company} could use: markets, customers and their
 needs, competitors, regulation and policy, products and services, milestones, targets and specifications, technical
 results and methods, components and suppliers, partners, funding, facilities, people and skills, plans, schedules,
 risks and decisions. Include internal details (requirements, lead times, yields, budgets, delays) when they bear on
@@ -63,18 +63,19 @@ def _key(s: str) -> str:
 
 class QuoteReader:
     def __init__(self, llm: LLM, model: str = MODEL, triage_model: str | None = TRIAGE_MODEL, chunk_chars: int = 3000,
-                 workers: int = 6):
+                 workers: int = 6, company: str = "IonQ"):
         self.llm, self.model, self.triage_model, self.chunk_chars, self.workers = llm, model, triage_model, chunk_chars, workers
+        self.company = company
 
     def _chunk(self, doc: dict, ch, i: int, n: int) -> list[tuple[str, str, int]]:
         if self.triage_model:
             tri = self.llm.structured(self.triage_model, TRIAGE_SYSTEM, TRIAGE_USER.format(
-                company="IonQ", doc_date=doc["date"], source_type=doc["source_type"], chunk=ch.text[:4000]),
+                company=self.company, doc_date=doc["date"], source_type=doc["source_type"], chunk=ch.text[:4000]),
                 Triage, purpose="reader2_triage", max_tokens=300)
             if not tri.relevant:
                 return []
         out = self.llm.structured(self.model, SYSTEM, USER.format(
-            title=doc["title"][:120], date=doc["date"], stype=doc["source_type"],
+            company=self.company, title=doc["title"][:120], date=doc["date"], stype=doc["source_type"],
             syn=", internal document" if doc.get("is_synthetic") else "", i=i, n=n, chunk=ch.text),
             Quotes, purpose="reader2_quote", max_tokens=6000)
         res = []

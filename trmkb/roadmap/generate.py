@@ -23,6 +23,7 @@ from ..schema import Layer, RelationType, Roadmap, RoadmapEdge, RoadmapNode, Roa
 DEFAULT_MODEL = "openai/gpt-4.1"   # knowledge cutoff 2024-06 → 2025-06 가속 로드맵을 모름 (사전지식 오염 최소)
 HORIZON = (2025.0, 2030.0)
 COMPANY = "IonQ"
+CUTOFF = "2024-12-31"
 
 # 2024-12-31 시점의 공개 상식 수준 소개. 두 조건에 동일하게 투입.
 BRIEF = (
@@ -76,14 +77,19 @@ Requirements:
    resources). Exclude routine operations (audits, checklists, procedures, staffing minutiae) unless they gate a
    roadmap item.
 
-Company brief (as of 2024-12-31):
+Company brief (as of {cutoff}):
 {brief}
 """
 
-CONTEXT_HEADER = """
-Knowledge base context (structured, derived from documents dated on or before 2024-12-31). Each item carries an
+CONTEXT_HEADER_T = """
+Knowledge base context (structured, derived from documents dated on or before {cutoff}). Each item carries an
 id you may cite in evidence_ids. Prefer this context over your prior knowledge when they disagree.
 """
+CONTEXT_HEADER = CONTEXT_HEADER_T.format(cutoff=CUTOFF)
+
+
+def context_header(cutoff: str = CUTOFF) -> str:
+    return CONTEXT_HEADER_T.format(cutoff=cutoff)
 
 OUTPUT_SPEC = """
 Return JSON: {"nodes": [{"id": "n1", "label": str, "layer": "why|what|how|resource", "category": str,
@@ -114,19 +120,19 @@ class RoadmapOut(BaseModel):
     edges: list[_EdgeOut]
 
 
-def fixed_prompt(company: str = COMPANY, horizon: tuple[float, float] = HORIZON, brief: str = BRIEF) -> str:
-    return INSTRUCTIONS.format(company=company, h0=horizon[0], h1=horizon[1], brief=brief, **LAYER_GUIDE) + OUTPUT_SPEC
+def fixed_prompt(company: str = COMPANY, horizon: tuple[float, float] = HORIZON, brief: str = BRIEF, cutoff: str = CUTOFF) -> str:
+    return INSTRUCTIONS.format(company=company, h0=horizon[0], h1=horizon[1], brief=brief, cutoff=cutoff, **LAYER_GUIDE) + OUTPUT_SPEC
 
 
-def prompt_hash(company: str = COMPANY, horizon: tuple[float, float] = HORIZON, brief: str = BRIEF) -> str:
-    return hashlib.sha256((SYSTEM + fixed_prompt(company, horizon, brief)).encode("utf-8")).hexdigest()[:16]
+def prompt_hash(company: str = COMPANY, horizon: tuple[float, float] = HORIZON, brief: str = BRIEF, cutoff: str = CUTOFF) -> str:
+    return hashlib.sha256((SYSTEM + fixed_prompt(company, horizon, brief, cutoff)).encode("utf-8")).hexdigest()[:16]
 
 
 def build_user_prompt(context: str | None, company: str = COMPANY, horizon: tuple[float, float] = HORIZON,
-                      brief: str = BRIEF) -> str:
-    base = INSTRUCTIONS.format(company=company, h0=horizon[0], h1=horizon[1], brief=brief, **LAYER_GUIDE)
+                      brief: str = BRIEF, cutoff: str = CUTOFF) -> str:
+    base = INSTRUCTIONS.format(company=company, h0=horizon[0], h1=horizon[1], brief=brief, cutoff=cutoff, **LAYER_GUIDE)
     if context:
-        base += CONTEXT_HEADER + "\n" + context.strip() + "\n"
+        base += context_header(cutoff) + "\n" + context.strip() + "\n"
     return base + OUTPUT_SPEC
 
 
@@ -161,14 +167,21 @@ def to_roadmap(out: RoadmapOut, *, condition: Literal["initial", "advanced"], mo
 
 def generate(llm: LLM, *, condition: Literal["initial", "advanced"], context: str | None = None,
              model: str = DEFAULT_MODEL, temperature: float = 0.2,
-             ops_by_evidence: dict[str, list[RoadmapOp]] | None = None) -> Roadmap:
+             ops_by_evidence: dict[str, list[RoadmapOp]] | None = None, profile: dict | None = None) -> Roadmap:
+    """profile: {company, horizon, brief, cutoff} — 없으면 IonQ 데모 기본값."""
     if condition == "initial":
         assert context is None, "initial condition must not receive KB context"
+    pr = profile or {}
+    company, brief, cutoff = pr.get("company", COMPANY), pr.get("brief", BRIEF), str(pr.get("cutoff", CUTOFF))
+    horizon = tuple(pr.get("horizon", HORIZON))
     before = llm.ledger.total_usd
-    out = llm.structured(model, SYSTEM, build_user_prompt(context), RoadmapOut, purpose=f"roadmap_{condition}",
+    out = llm.structured(model, SYSTEM, build_user_prompt(context, company, horizon, brief, cutoff), RoadmapOut, purpose=f"roadmap_{condition}",
                          temperature=temperature, max_tokens=8000)
-    return to_roadmap(out, condition=condition, model=model, ops_by_evidence=ops_by_evidence,
-                      cost_usd=llm.ledger.total_usd - before)
+    rm = to_roadmap(out, condition=condition, model=model, company=company, horizon=horizon, ops_by_evidence=ops_by_evidence,
+                    cost_usd=llm.ledger.total_usd - before)
+    if profile:
+        rm.prompt_hash = prompt_hash(company, horizon, brief, cutoff)
+    return rm
 
 
 def save(rm: Roadmap, run_dir: str | Path) -> Path:

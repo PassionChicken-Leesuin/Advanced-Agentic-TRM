@@ -198,6 +198,12 @@ class SourceStore:
         self.tree: dict = json.loads((self.dir / "tree.json").read_text(encoding="utf-8")) if (self.dir / "tree.json").exists() else {}
         self.terms: dict[str, Term] = {t["id"]: Term.model_validate(t) for t in _r(self.dir / "glossary.jsonl")}
         self._seq = sum(1 for _ in _r(self.dir / "events.jsonl"))
+        from . import profile as _prof
+        self.profile: dict = _prof.load(self.dir)      # 회사·기준일·기간 (업로드 run 은 profile.json, 기본값은 IonQ 데모)
+
+    @property
+    def company(self) -> str:
+        return self.profile["company"]
 
     # ------------------------------------------------------------ K0 용어집
     def terms_by_type(self, *types: str, active_only: bool = True, confirmed_only: bool = False) -> list["Term"]:
