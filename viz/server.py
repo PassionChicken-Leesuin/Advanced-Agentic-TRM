@@ -34,7 +34,12 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 @app.middleware("http")
 async def _no_cache(request, call_next):
     resp = await call_next(request)
-    resp.headers["Cache-Control"] = "no-store"
+    if resp.headers.get("content-type", "").startswith("text/event-stream"):
+        # 실시간 사건(SSE): 프록시(Cloudflare 터널 등)가 압축·버퍼링하지 않도록 no-transform
+        resp.headers["Cache-Control"] = "no-cache, no-transform"
+        resp.headers["X-Accel-Buffering"] = "no"
+    else:
+        resp.headers["Cache-Control"] = "no-store"
     return resp
 
 
@@ -203,9 +208,15 @@ async def v2_stream(run: str, speed: float = Query(10.0, ge=0), start: int = 0, 
 
     async def gen():
         seen, prev = start, None
+        yield ":" + " " * 4096 + "\n\n"          # 프록시 버퍼를 바로 채워 흘려보내게 하는 여백 (SSE 주석 줄)
         yield "event: hello\ndata: {}\n\n"
+        idle = 0
         while True:
             new = [ev for ev in _jsonl(path) if ev.get("seq", 0) > seen]
+            if not new:
+                idle += 1
+                if idle % 10 == 0:
+                    yield ": ping\n\n"               # 연결 유지·버퍼 비우기 신호 (약 5초마다)
             for ev in new:
                 ts = datetime.fromisoformat(ev["ts"]) if ev.get("ts") else None
                 if speed and prev is not None and ts is not None:
