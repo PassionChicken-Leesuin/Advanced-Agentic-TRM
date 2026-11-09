@@ -10,9 +10,9 @@ import json
 import sys
 from pathlib import Path
 
-from fastapi import FastAPI, File, Form, HTTPException, Query, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -50,8 +50,27 @@ def _run_dir(run: str) -> Path:
     return p
 
 
+PUBLIC_SITE = "https://suinlee-trm.com"
+# 공개 주소(api.suinlee-trm.com)로 직접 들어온 사람에게 보이는 안내. 이 주소는 사이트가 부르는 서버 창구일 뿐이다.
+PUBLIC_NOTICE = """<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agentic TRM server</title><style>
+html,body{margin:0;height:100%;background:#000;color:#e8e8e8;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif}
+main{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;box-sizing:border-box}
+h1{font-weight:500;font-size:22px;margin:0 0 18px}a{color:#fff}
+p{font-size:13px;color:#8a8a8a;max-width:520px;line-height:1.6;margin:0}
+</style></head><body><main>
+<h1>Please visit <a href="https://suinlee-trm.com">suinlee-trm.com</a></h1>
+<p>Note: uploaded documents are processed on Suin Lee's personal lab computer. When that computer is off, access may be limited.</p>
+</main></body></html>"""
+
+
 @app.get("/")
-def index() -> FileResponse:
+def index(request: Request):
+    """이 PC 안(localhost)에서는 예전 시각화 화면, 공개 주소로 들어오면 안내 문구만 보여 준다."""
+    from fastapi.responses import HTMLResponse
+    host = (request.headers.get("host") or "").split(":")[0]
+    if host not in ("127.0.0.1", "localhost"):
+        return HTMLResponse(PUBLIC_NOTICE)
     return FileResponse(STATIC / "index.html")
 
 
