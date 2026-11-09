@@ -360,7 +360,7 @@ def _recover_jobs() -> None:
 @app.get("/api/v2/runs/{run}/site/{name}")
 def site_file(run: str, name: str) -> FileResponse:
     """업로드 작업이 내보낸 사이트 데이터 (meta.json, events.jsonl, cards_v2.json, candidates.json, selection.json, roadmaps.json, roadmaps_v2.json)."""
-    if name not in {"meta.json", "events.jsonl", "cards.json", "cards_v2.json", "candidates.json", "selection.json", "roadmaps.json", "roadmaps_v2.json"}:
+    if name not in {"meta.json", "events.jsonl", "cards.json", "cards_v2.json", "candidates.json", "selection.json", "debate.json", "roadmaps.json", "roadmaps_v2.json"}:
         raise HTTPException(404, "unknown file")
     d = _run_dir(run)
     p = d / "site" / name

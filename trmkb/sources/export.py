@@ -78,6 +78,37 @@ def export_roadmaps(st: SourceStore, dst: Path) -> list[str]:
     return list(rms)
 
 
+def export_debate(cdir: Path, dst: Path) -> int:
+    """debate.json — 세 에이전트의 카드별 토론 기록 (사이트의 '에이전트 토론' 화면). 토론이 끝난 순서(파일 수정 시각)로.
+    각 기록: 1라운드 점수·이유, 2라운드 답변·최종 점수, 근거 있는 점수의 평균(profile). done 은 선정(순위)까지 끝났는가."""
+    sel = cdir / "selection"
+    files = sorted(sel.glob("debate_*.json"), key=lambda p: p.stat().st_mtime) if sel.exists() else []
+    recs = []
+    for p in files:
+        try:
+            d = json.loads(p.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        recs.append({"eid": d["eid"], "name": d["name"],
+                     "models": {m: {"r1": {k: v["r1"].get(k) for k in ("q1", "q2", "q3", "reasons", "contested")},
+                                    "final": {k: v["final"].get(k) for k in ("q1", "q2", "q3", "reasons", "replies", "changed")}}
+                                for m, v in d["models"].items()},
+                     "profile": {k: d["profile"].get(k, 0.0) for k in ("q1", "q2", "q3")}})
+    total = 0
+    cj = cdir / "cards.json"
+    if cj.exists():
+        try:
+            total = len(json.loads(cj.read_text(encoding="utf-8")))
+        except (OSError, ValueError):
+            total = len(recs)
+    dst.mkdir(parents=True, exist_ok=True)
+    tmp = dst / "debate.json.tmp"
+    tmp.write_text(json.dumps({"total": max(total, len(recs)), "done": (sel / "profiles.json").exists(),
+                               "models": sorted({m for r in recs for m in r["models"]}), "records": recs}, ensure_ascii=False), encoding="utf-8")
+    tmp.replace(dst / "debate.json")
+    return len(recs)
+
+
 def export_v2(st: SourceStore, dst: Path) -> dict:
     from .cards_v2 import Card
     from .grid import bad_column
@@ -136,6 +167,7 @@ def export_v2(st: SourceStore, dst: Path) -> dict:
         "q3": "Can the company get there? Is the gap between the requirement and current capability documented, with a dated plan to close it?"},
         "stances": stances}, ensure_ascii=False), encoding="utf-8")
     out["stances"] = list(stances)
+    out["debates"] = export_debate(cdir, dst)
     rms = {}
     for key in STANCES:
         p = cdir / "roadmaps" / f"rm_{key}.json"

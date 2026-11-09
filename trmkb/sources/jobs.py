@@ -181,7 +181,7 @@ def run_pipeline(run_dir: Path, *, top: int = 10, select_rounds: int = 2, select
     from ..roadmap import generate as G
     from .build import build_docs, finish, read_docs
     from .cards_v2 import Card, build_cards, dump
-    from .export import export_all
+    from .export import export_all, export_debate, export_v2
     from .make import build_context, generate as make_rm
     from .select import STANCES, debate_card, rank, write_outputs
     job = Job(run_dir)
@@ -225,6 +225,7 @@ def run_pipeline(run_dir: Path, *, top: int = 10, select_rounds: int = 2, select
         cdir = run_dir / "cards_v2"
         stats = dump(cards, cdir)
         job.state["cards"] = stats.get("cards", len(cards))
+        export_v2(st, run_dir / "site")                 # 카드·후보를 먼저 내보낸다: 사이트가 토론을 기다리는 동안 카드 화면을 보여 줄 수 있게
         # ---- select
         prof = st.profile
         if cards:
@@ -235,6 +236,7 @@ def run_pipeline(run_dir: Path, *, top: int = 10, select_rounds: int = 2, select
             out = cdir / "selection"; out.mkdir(parents=True, exist_ok=True)
             records = []
             from concurrent.futures import ThreadPoolExecutor
+            exp_lock = threading.Lock()
 
             def deb(c):
                 p = out / f"debate_{c['eid']}.json"
@@ -242,6 +244,8 @@ def run_pipeline(run_dir: Path, *, top: int = 10, select_rounds: int = 2, select
                     return json.loads(p.read_text(encoding="utf-8"))
                 rec = debate_card(llm, c, texts[c["eid"]], models, rounds=select_rounds)
                 p.write_text(json.dumps(rec, ensure_ascii=False, indent=1), encoding="utf-8")
+                with exp_lock:                           # 토론 하나가 끝날 때마다 debate.json 갱신 → 사이트가 실시간으로 보여 준다
+                    export_debate(cdir, run_dir / "site")
                 st.emit("job.stage", stage="select", msg=f"debated: {c['name'][:60]} (why {rec['profile']['q1']:.0f} / now {rec['profile']['q2']:.0f} / path {rec['profile']['q3']:.0f})")
                 return rec
             with ThreadPoolExecutor(max_workers=4) as ex:
