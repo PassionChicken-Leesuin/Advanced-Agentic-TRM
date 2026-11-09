@@ -11,6 +11,8 @@
 from __future__ import annotations
 
 import json
+import os
+import secrets
 import threading
 import time
 import traceback
@@ -23,6 +25,24 @@ from .store import SourceStore
 
 _LOCK = threading.Lock()
 _RUNNING: dict[str, threading.Thread] = {}
+_QUEUE: list[tuple[Path, dict]] = []          # 시작을 기다리는 작업 (먼저 온 순서)
+MAX_PARALLEL = int(os.environ.get("TRMKB_MAX_PARALLEL", "3"))   # 동시에 도는 작업 수 (OpenRouter 키 20개를 나눠 씀)
+
+
+class BudgetError(Exception):
+    """하루 비용 상한을 넘는 작업."""
+
+
+def new_run_dir(runs_root: Path) -> Path:
+    """추측할 수 없는 작업 이름. 결과 링크(?job=<이름>)가 곧 열쇠이므로 날짜·회사 이름을 넣지 않는다 (80비트 무작위)."""
+    for _ in range(5):
+        run = runs_root / f"up_{secrets.token_hex(10)}"
+        try:
+            run.mkdir(parents=True, exist_ok=False)
+            return run
+        except FileExistsError:
+            continue
+    raise RuntimeError("could not allocate a run id")
 SELECT_MODELS = ["openai/gpt-4.1", "anthropic/claude-sonnet-4.6", "google/gemini-2.5-flash"]
 
 
@@ -76,8 +96,7 @@ class Job:
 def open_job(runs_root: Path, company: str, *, descriptor: str = "", brief: str = "", cutoff: str | None = None) -> dict:
     """나눠 올리기 1단계: 빈 작업을 연다 (상태 receiving). 파일은 add_files 로 묶음씩 받고 finish_ingest 로 변환한다.
     요청 하나의 크기 제한(예: Cloudflare 100MB)을 넘는 많은 문서를 올리기 위함."""
-    run = runs_root / f"up_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{P.slug(company)}"
-    run.mkdir(parents=True, exist_ok=False)
+    run = new_run_dir(runs_root)
     job = Job(run)
     job.state.update(status="receiving", stage="upload", company=company, request={"descriptor": descriptor, "brief": brief, "cutoff": cutoff},
                      received=0, message="waiting for files")
@@ -121,8 +140,7 @@ def finish_ingest(run_dir: Path, *, internal_names: set[str] | None = None) -> d
 def create(runs_root: Path, company: str, files: list[tuple[str, bytes]], *, descriptor: str = "", brief: str = "",
            internal_names: set[str] | None = None, cutoff: str | None = None) -> dict:
     """run 폴더를 만들고 문서를 받아들인 뒤 (LLM 호출 없음) 작업 상태를 돌려준다. 이어서 start() 로 파이프라인을 띄운다."""
-    run = runs_root / f"up_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{P.slug(company)}"
-    run.mkdir(parents=True, exist_ok=False)
+    run = new_run_dir(runs_root)
     return _ingest_into(run, Job(run), company, files, descriptor=descriptor, brief=brief, internal_names=internal_names, cutoff=cutoff)
 
 
@@ -168,6 +186,12 @@ def run_pipeline(run_dir: Path, *, top: int = 10, select_rounds: int = 2, select
     from .select import STANCES, debate_card, rank, write_outputs
     job = Job(run_dir)
     st = SourceStore(run_dir)
+    fake = float(os.environ.get("TRMKB_JOB_FAKE_SECONDS", "0") or 0)
+    if fake > 0:                       # 시험용: LLM 없이 정해진 시간만 '진행 중'으로 있다가 끝남 (동시 처리·대기 줄 시험)
+        job.stage(st, "read", f"fake run for {fake:g}s")
+        time.sleep(fake)
+        job.done(st, "fake run finished")
+        return job.state
     llm = LLM()
     t0 = time.time()
     try:
@@ -266,30 +290,123 @@ def run_pipeline(run_dir: Path, *, top: int = 10, select_rounds: int = 2, select
     return job.state
 
 
-def start(run_dir: Path, **kw) -> bool:
-    """배경 스레드로 run_pipeline 을 띄운다. 이미 돌고 있는 작업이 있으면 False (한 번에 하나: API 키 한도·CPU 보호)."""
+def _launch(run_dir: Path, kw: dict) -> None:
+    """(잠금 안에서 부름) 배경 스레드로 run_pipeline 을 띄우고, 끝나면 대기 줄의 다음 작업을 띄운다."""
+    def body():
+        try:
+            run_pipeline(run_dir, **kw)
+        finally:
+            with _LOCK:                 # 끝난 자신을 먼저 빼야 빈자리로 센다 (동시에 끝나는 작업들이 서로를 '진행 중'으로 세지 않게)
+                _RUNNING.pop(run_dir.name, None)
+            _dispatch()
+    t = threading.Thread(target=body, daemon=True, name=f"job-{run_dir.name}")
+    _RUNNING[run_dir.name] = t
+    t.start()
+
+
+def _dispatch() -> None:
     with _LOCK:
         for k, t in list(_RUNNING.items()):
             if not t.is_alive():
                 _RUNNING.pop(k)
-        if _RUNNING:
-            return False
-        t = threading.Thread(target=run_pipeline, args=(run_dir,), kwargs=kw, daemon=True, name=f"job-{run_dir.name}")
-        _RUNNING[run_dir.name] = t
-        t.start()
-        return True
+        while _QUEUE and len(_RUNNING) < MAX_PARALLEL:
+            run_dir, kw = _QUEUE.pop(0)
+            _launch(run_dir, kw)
+
+
+def _reserved(runs_root: Path, today: str) -> float:
+    """오늘 쓴 비용 + 대기·진행 중 작업이 앞으로 더 쓸 것으로 예상되는 비용."""
+    total = 0.0
+    for p in runs_root.glob("up_*/job.json"):
+        try:
+            s = json.loads(p.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if _local_day(s.get("started")) != today:
+            continue
+        cost = float(s.get("cost_usd") or 0)
+        total += cost
+        if s.get("status") in ("queued", "running") and s.get("estimate_usd"):
+            total += max(0.0, float(s["estimate_usd"]) - cost)
+    return round(total, 2)
+
+
+def start(run_dir: Path, *, estimate_usd: float = 0.0, cap_usd: float | None = None, **kw) -> int:
+    """작업을 대기 줄에 넣고 자리가 있으면 바로 띄운다. 반환: 대기 순번 (0 = 바로 시작).
+    cap_usd 가 주어지면 오늘 쓴 비용 + 대기·진행 중 예상 비용 + 이번 예상 비용이 넘을 때 BudgetError (잠금 안에서 검사해 동시 요청도 안전)."""
+    job = Job(run_dir)
+    with _LOCK:
+        if cap_usd is not None:
+            have = _reserved(run_dir.parent, datetime.now().strftime("%Y-%m-%d"))
+            if have + estimate_usd > cap_usd:
+                job.state.update(status="error", error=f"daily budget reached: about ${have:.2f} used or reserved today, "
+                                 f"this run needs about ${estimate_usd:.2f}, limit ${cap_usd:g}", ended=_now())
+                job.save()
+                raise BudgetError(job.state["error"] + ". Try fewer documents or tomorrow.")
+        job.state.update(status="queued", estimate_usd=round(estimate_usd, 2), message="waiting for a free slot")
+        job.save()
+        _QUEUE.append((run_dir, kw))
+    _dispatch()
+    return queue_position(run_dir.name) or 0
+
+
+def queue_position(run: str) -> int | None:
+    """대기 줄에서 몇 번째인가 (1부터). 진행 중이거나 줄에 없으면 None."""
+    with _LOCK:
+        for i, (d, _) in enumerate(_QUEUE, 1):
+            if d.name == run:
+                return i
+    return None
+
+
+def load() -> dict:
+    _dispatch()                         # 상태를 물을 때마다 빈자리를 다시 확인 (만일의 누락 대비)
+    with _LOCK:
+        return {"running": sum(1 for t in _RUNNING.values() if t.is_alive()), "queued": len(_QUEUE), "max_parallel": MAX_PARALLEL}
+
+
+def _local_day(iso: str | None) -> str:
+    if not iso:
+        return ""
+    try:
+        return datetime.fromisoformat(iso).astimezone().strftime("%Y-%m-%d")
+    except ValueError:
+        return ""
 
 
 def spent_today(runs_root: Path) -> float:
     """오늘(서버 시각) 시작한 업로드 작업들이 쓴 비용 합계 (job.json 의 cost_usd)."""
-    today = datetime.now().strftime("%Y%m%d")
+    today = datetime.now().strftime("%Y-%m-%d")
     total = 0.0
-    for p in runs_root.glob(f"up_{today}_*/job.json"):
+    for p in runs_root.glob("up_*/job.json"):
         try:
-            total += float(json.loads(p.read_text(encoding="utf-8")).get("cost_usd") or 0)
+            s = json.loads(p.read_text(encoding="utf-8"))
         except (OSError, ValueError):
-            pass
+            continue
+        if _local_day(s.get("started")) == today:
+            total += float(s.get("cost_usd") or 0)
     return round(total, 2)
+
+
+def recover(runs_root: Path) -> dict:
+    """서버가 다시 켜질 때: 돌던 작업은 중단으로 표시하고, 대기 중이던 작업은 다시 줄에 넣는다 (먼저 온 순서)."""
+    failed, requeued = 0, []
+    for p in runs_root.glob("up_*/job.json"):
+        try:
+            s = json.loads(p.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if s.get("status") == "running":
+            job = Job(p.parent)
+            job.fail(None, "interrupted by a server restart; please upload the documents again")
+            failed += 1
+        elif s.get("status") == "queued" and s.get("documents"):
+            requeued.append((s.get("updated") or "", p.parent))
+    with _LOCK:
+        for _, d in sorted(requeued):
+            _QUEUE.append((d, {}))
+    _dispatch()
+    return {"failed": failed, "requeued": len(requeued)}
 
 
 def busy() -> str | None:

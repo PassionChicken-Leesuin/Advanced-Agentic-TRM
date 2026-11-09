@@ -22,7 +22,8 @@ from trmkb.i18n import _LABELS  # noqa: E402
 from trmkb.roadmap import generate as G  # noqa: E402
 from trmkb.store import EventLog, KBStore  # noqa: E402
 
-RUNS = ROOT / "runs"
+import os  # noqa: E402
+RUNS = Path(os.environ.get("TRMKB_RUNS_DIR") or ROOT / "runs")   # 시험 서버는 별도 폴더를 쓴다 (운영 작업과 섞이지 않게)
 STATIC = Path(__file__).resolve().parent / "static"
 
 app = FastAPI(title="trmkb viz")
@@ -78,7 +79,7 @@ def index(request: Request):
 def runs() -> list[dict]:
     out = []
     for p in sorted(RUNS.glob("*/")):
-        if not p.is_dir() or p.name.startswith("."):
+        if not p.is_dir() or p.name.startswith(".") or p.name.startswith("up_"):   # 업로드 작업은 링크로만 연다
             continue
         ev = p / "events.jsonl"
         n = sum(1 for _ in ev.open(encoding="utf-8")) if ev.exists() else 0
@@ -173,8 +174,8 @@ def structures_page() -> FileResponse:
 def v2_runs() -> list[dict]:
     out = []
     for p in sorted(RUNS.glob("*/")):
-        if not p.is_dir() or not (p / "documents.jsonl").exists() or not (p / "passages.jsonl").exists():
-            continue
+        if not p.is_dir() or p.name.startswith("up_") or not (p / "documents.jsonl").exists() or not (p / "passages.jsonl").exists():
+            continue   # 업로드 작업(up_*)은 목록에 내지 않는다: 결과 링크(?job=<이름>)를 아는 사람만 연다
         ev = p / "events.jsonl"
         n = sum(1 for _ in ev.open(encoding="utf-8")) if ev.exists() else 0
         out.append({"run": p.name, "events": n, "finished": (p / "tree.json").exists() and (p / "grid.json").exists()})
@@ -272,8 +273,6 @@ async def create_job(company: str = Form(...), descriptor: str = Form(""), brief
     if not any(Path(f.filename or "").suffix.lower() in ALLOWED for f in files):
         raise HTTPException(400, f"no supported files (allowed: {', '.join(sorted(ALLOWED))})")
     # 지원하지 않는 형식·읽을 수 없는 파일은 거절하지 않고 건너뜀 (job.json 의 skipped 에 이유와 함께 남음)
-    if J.busy():
-        raise HTTPException(409, f"another job is running ({J.busy()}); try again when it finishes")
     data = [(f.filename or "upload.txt", await f.read()) for f in files]
     try:
         state = J.create(RUNS, company, data, descriptor=descriptor, brief=brief, cutoff=cutoff.strip() or None,
@@ -286,23 +285,24 @@ async def create_job(company: str = Form(...), descriptor: str = Form(""), brief
         job.state.update(status="done", stage="ingest", message=f"dry run: {len(state['documents'])} documents converted, pipeline not started")
         job.save()
         return JSONResponse(job.state)
-    _budget_check(len(state["documents"]))
-    if not J.start(RUNS / state["run"]):
-        raise HTTPException(409, "another job is running; try again when it finishes")
-    return JSONResponse(state)
+    return JSONResponse(_enqueue(RUNS / state["run"], len(state["documents"])))
 
 
-# 공개 운영용 안전장치: 하루 비용 상한 (USD, 환경 변수 TRMKB_DAILY_USD, 기본 40) · 문서당 예상 비용으로 시작 전에 점검
+# 공개 운영용 안전장치: 하루 비용 상한 (USD, 환경 변수 TRMKB_DAILY_USD, 기본 100). 문서당 예상 비용으로,
+# 오늘 쓴 비용 + 대기·진행 중 작업의 남은 예상 비용까지 더해 시작 전에 점검한다. 동시 3개(TRMKB_MAX_PARALLEL), 나머지는 대기 줄.
 PER_DOC_USD = 0.06
 
 
-def _budget_check(n_docs: int) -> None:
+def _enqueue(run_dir: Path, n_docs: int) -> dict:
     import os
-    cap = float(os.environ.get("TRMKB_DAILY_USD", "40"))
-    spent = J.spent_today(RUNS)
-    need = round(n_docs * PER_DOC_USD, 2)
-    if spent + need > cap:
-        raise HTTPException(429, f"daily budget reached: about ${spent} used today, this run needs about ${need}, limit ${cap:g}. Try fewer documents or tomorrow.")
+    cap = float(os.environ.get("TRMKB_DAILY_USD", "100"))
+    try:
+        pos = J.start(run_dir, estimate_usd=round(n_docs * PER_DOC_USD, 2), cap_usd=cap)
+    except J.BudgetError as e:
+        raise HTTPException(429, str(e)) from e
+    state = J.status(run_dir) or {}
+    state["queue_position"] = pos or None
+    return state
 
 
 @app.post("/api/v2/jobs/new")
@@ -311,8 +311,6 @@ async def job_new(company: str = Form(...), descriptor: str = Form(""), brief: s
     company = company.strip()
     if not company or len(company) > 80:
         raise HTTPException(400, "company name is required (max 80 chars)")
-    if J.busy():
-        raise HTTPException(409, f"another job is running ({J.busy()}); try again when it finishes")
     return JSONResponse(J.open_job(RUNS, company, descriptor=descriptor, brief=brief, cutoff=cutoff.strip() or None))
 
 
@@ -339,10 +337,7 @@ async def job_start(run: str, internal: str = Form(""), dry_run: bool = Form(Fal
         job.state.update(status="done", stage="ingest", message=f"dry run: {len(state['documents'])} documents converted, pipeline not started")
         job.save()
         return JSONResponse(job.state)
-    _budget_check(len(state["documents"]))
-    if not J.start(d):
-        raise HTTPException(409, "another job is running; try again when it finishes")
-    return JSONResponse(state)
+    return JSONResponse(_enqueue(d, len(state["documents"])))
 
 
 @app.get("/api/v2/jobs/{run}")
@@ -350,7 +345,16 @@ def job_status(run: str) -> dict:
     s = J.status(_run_dir(run))
     if s is None:
         raise HTTPException(404, "no job for this run")
+    s = {k: v for k, v in s.items() if k != "request"}
+    s["queue_position"] = J.queue_position(run)
+    s["load"] = J.load()
     return s
+
+
+@app.on_event("startup")
+def _recover_jobs() -> None:
+    """다시 켜질 때: 돌던 작업은 중단 표시, 대기 중이던 작업은 다시 줄에 (먼저 온 순서)."""
+    print("job recovery:", J.recover(RUNS))
 
 
 @app.get("/api/v2/runs/{run}/site/{name}")
